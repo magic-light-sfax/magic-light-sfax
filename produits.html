@@ -607,6 +607,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
       <h2 id="modalTitle"></h2>
       <div class="ref" id="modalRef"></div>
       <p id="modalDesc"></p>
+      <div id="modalPrice" class="price"></div>
       <div class="hero-buttons">
         <a class="btn btn-gold" target="_blank" href="https://wa.me/21622181224">Demander sur WhatsApp</a>
         <a class="btn btn-dark" href="tel:+21622181224">Appeler</a>
@@ -665,11 +666,13 @@ const modalImg=document.querySelector('#modalImg');
 const modalTitle=document.querySelector('#modalTitle');
 const modalRef=document.querySelector('#modalRef');
 const modalDesc=document.querySelector('#modalDesc');
+  const modalPrice=document.querySelector('#modalPrice');
 document.querySelectorAll('.view-product').forEach(btn=>btn.addEventListener('click',()=>{
   if(!modal)return;
   modalImg.src=btn.dataset.img;
   modalTitle.textContent=btn.dataset.name;
   modalRef.textContent=btn.dataset.ref;
+  modalPrice.textContent=btn.dataset.price ? btn.dataset.price+' TND' : '';
   modalDesc.textContent=btn.dataset.desc;
   modal.classList.add('open');
 }));
@@ -709,6 +712,7 @@ if(year)year.textContent=new Date().getFullYear();
               data-img="${esc(p.image||"")}"
               data-name="${esc(p.name||"Produit")}"
               data-ref="${esc(p.reference||"")}"
+              data-price="${p.price===null||p.price===undefined||p.price===""?"":Number(p.price).toFixed(3)}"
               data-desc="${esc(p.description||"")}">Voir détails</button>
             <a class="smallbtn" target="_blank" href="https://wa.me/21622181224">WhatsApp</a>
           </div>
