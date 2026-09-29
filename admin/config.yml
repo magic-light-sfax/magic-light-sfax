@@ -1,0 +1,52 @@
+backend:
+  name: github
+  repo: magic-light-sfax/magic-light-sfax
+  branch: main
+
+media_folder: "assets/products"
+public_folder: "/assets/products"
+
+collections:
+  - name: "products"
+    label: "Produits"
+    folder: "content/products"
+    create: true
+    extension: "json"
+    format: "json"
+    identifier_field: "reference"
+    fields:
+      - label: "Nom du produit"
+        name: "name"
+        widget: "string"
+
+      - label: "Référence"
+        name: "reference"
+        widget: "string"
+
+      - label: "Catégorie"
+        name: "category"
+        widget: "string"
+
+      - label: "Description"
+        name: "description"
+        widget: "text"
+        required: false
+
+      - label: "Prix"
+        name: "price"
+        widget: "number"
+        required: false
+
+      - label: "Photo"
+        name: "image"
+        widget: "image"
+
+      - label: "Nouveauté"
+        name: "featured"
+        widget: "boolean"
+        default: true
+
+      - label: "Afficher sur le site"
+        name: "active"
+        widget: "boolean"
+        default: true
