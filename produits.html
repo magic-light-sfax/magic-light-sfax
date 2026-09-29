@@ -748,6 +748,7 @@ if(year)year.textContent=new Date().getFullYear();
     document.querySelector("#modalImg").src=btn.dataset.img||"";
     document.querySelector("#modalTitle").textContent=btn.dataset.name||"";
     document.querySelector("#modalRef").textContent=btn.dataset.ref||"";
+    document.querySelector("#modalPrice").textContent=btn.dataset.price ? btn.dataset.price+" TND" : "";
     document.querySelector("#modalDesc").textContent=btn.dataset.desc||"";
     modal.classList.add("open");
   });
