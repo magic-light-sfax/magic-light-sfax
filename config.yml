@@ -1,0 +1,36 @@
+backend:
+  name: github
+  repo: magic-light-sfax/magic-light-sfax
+  branch: main
+
+site_url: https://magic-light-sfax.netlify.app
+display_url: https://magic-light-sfax.netlify.app
+logo_url: https://magic-light-sfax.netlify.app/assets/logo.jpg
+
+media_folder: "assets/products"
+public_folder: "/assets/products"
+
+publish_mode: simple
+locale: "fr"
+
+collections:
+  - name: "products"
+    label: "Produits"
+    label_singular: "Produit"
+    folder: "content/products"
+    create: true
+    extension: "json"
+    format: "json"
+    identifier_field: "reference"
+    slug: "{{slug}}"
+    summary: "{{reference}} — {{name}}"
+    sortable_fields: ["name", "reference", "category"]
+    fields:
+      - {label: "Nom du produit", name: "name", widget: "string"}
+      - {label: "Référence", name: "reference", widget: "string", hint: "Exemple: ML-001"}
+      - {label: "Catégorie", name: "category", widget: "string", hint: "Ex: Lustres & suspensions, Spots LED, Solaire, RGB..."}
+      - {label: "Description", name: "description", widget: "text", required: false}
+      - {label: "Prix", name: "price", widget: "number", value_type: "float", min: 0, required: false, hint: "Laissez vide si vous ne voulez pas afficher le prix."}
+      - {label: "Photo", name: "image", widget: "image"}
+      - {label: "Nouveauté", name: "featured", widget: "boolean", default: true}
+      - {label: "Afficher sur le site", name: "active", widget: "boolean", default: true}

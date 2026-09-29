@@ -1,0 +1,8 @@
+{
+  "name": "magic-light-sfax",
+  "private": true,
+  "version": "9.0.0",
+  "scripts": {
+    "build": "node build.js"
+  }
+}

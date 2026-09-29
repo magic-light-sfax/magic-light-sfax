@@ -180,6 +180,13 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   .catalog .spread{grid-template-columns:1fr}
 }
 </style>
+
+<style>
+.admin-products-note{margin:0 0 18px;padding:12px 15px;border:1px solid #ead9b5;background:#fff9eb;border-radius:14px;color:#76571f;font-size:.88rem}
+.admin-price{font-weight:900;color:#a87925;margin-top:8px}
+.admin-empty{padding:24px;border:1px dashed #d5d9df;border-radius:16px;color:#777;text-align:center;background:#fff}
+</style>
+
 </head>
 <body>
 
@@ -387,6 +394,21 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
     </div>
   </div>
 </article></div></div></section>
+
+<section class="section soft" id="admin-catalogue">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="kicker">ADMIN CATALOGUE</div>
+        <h2>Nouveautés ajoutées depuis Admin</h2>
+        <p>Ces produits sont publiés depuis votre espace privé /admin/.</p>
+      </div>
+    </div>
+    <div class="admin-products-note">Pour ajouter un article: ouvrez <strong>/admin/</strong>, remplissez la fiche et cliquez sur Publish.</div>
+    <div class="grid" id="adminProductsGrid" data-mode="featured" data-limit="0"></div>
+  </div>
+</section>
+
 </main>
 
 
@@ -398,7 +420,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
       <div><h4>PRODUITS</h4><ul><li>Lustres & suspensions</li><li>LED & panneaux</li><li>Profilés LED</li><li>Solaire</li><li>Rubans RGB</li><li>Sécurité</li></ul></div>
       <div><h4>ADRESSE</h4><p>402 Avenue Majida Boulila – Sfax<br>Tel: (+216) 22 181 224<br>Yossri Gharbi</p></div>
     </div>
-    <div class="copy">Copyright © <span id="year"></span> MAGIC LIGHT</div>
+    <div class="copy">Copyright © <span id="year"></span> MAGIC LIGHT &nbsp; • &nbsp; <a href="/admin/" style="color:#c99a3c">Admin</a></div>
   </div>
 </footer>
 
@@ -484,5 +506,76 @@ modal?.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('
 const year=document.getElementById('year');
 if(year)year.textContent=new Date().getFullYear();
 </script>
+
+<script>
+(function(){
+  function esc(s){
+    return String(s ?? "").replace(/[&<>"']/g, m => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
+  function money(v){
+    if(v===null||v===undefined||v==="") return "";
+    const n=Number(v);
+    if(Number.isNaN(n)) return "";
+    return `<div class="admin-price">${n.toFixed(3)} TND</div>`;
+  }
+  function card(p){
+    const search=`${p.name||""} ${p.reference||""} ${p.category||""} ${p.description||""}`.toLowerCase();
+    return `
+      <article class="card admin-product-card" data-cat="${esc(p.category||"Autres")}" data-search="${esc(search)}">
+        <img src="${esc(p.image||"")}" alt="${esc(p.name||"Produit")}">
+        <div class="body">
+          <span class="badge">${esc(p.category||"Autres")}</span>
+          <h3>${esc(p.name||"Produit")}</h3>
+          <div class="ref">${esc(p.reference||"")}</div>
+          <p>${esc(p.description||"")}</p>
+          ${money(p.price)}
+          <div class="actions">
+            <button class="smallbtn primary view-product"
+              data-img="${esc(p.image||"")}"
+              data-name="${esc(p.name||"Produit")}"
+              data-ref="${esc(p.reference||"")}"
+              data-desc="${esc(p.description||"")}">Voir détails</button>
+            <a class="smallbtn" target="_blank" href="https://wa.me/21622181224">WhatsApp</a>
+          </div>
+        </div>
+      </article>`;
+  }
+  async function loadProducts(){
+    const host=document.getElementById("adminProductsGrid");
+    if(!host) return;
+    try{
+      const r=await fetch("/data/products.json?ts="+Date.now(),{cache:"no-store"});
+      if(!r.ok) throw new Error("HTTP "+r.status);
+      let products=await r.json();
+      const mode=host.dataset.mode||"all";
+      if(mode==="featured") products=products.filter(p=>p.featured!==false);
+      const limit=Number(host.dataset.limit||0);
+      if(limit>0) products=products.slice(-limit).reverse();
+      if(!products.length){
+        host.innerHTML='<div class="admin-empty">Les nouveaux produits ajoutés depuis Admin apparaîtront ici.</div>';
+        return;
+      }
+      host.innerHTML=products.map(card).join("");
+    }catch(err){
+      host.innerHTML='<div class="admin-empty">Catalogue Admin en attente de configuration.</div>';
+    }
+  }
+  document.addEventListener("click",function(e){
+    const btn=e.target.closest(".view-product");
+    if(!btn) return;
+    const modal=document.querySelector(".modal");
+    if(!modal) return;
+    document.querySelector("#modalImg").src=btn.dataset.img||"";
+    document.querySelector("#modalTitle").textContent=btn.dataset.name||"";
+    document.querySelector("#modalRef").textContent=btn.dataset.ref||"";
+    document.querySelector("#modalDesc").textContent=btn.dataset.desc||"";
+    modal.classList.add("open");
+  });
+  loadProducts();
+})();
+</script>
+
 </body>
 </html>
