@@ -608,7 +608,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
       <div class="ref" id="modalRef"></div>
       <p id="modalDesc"></p>
       <div id="modalPrice" style="display:block;font-size:22px;font-weight:800;color:#c99a3c;margin:14px 0;"></div>
-      <div class="hero-buttons">
+<button id="modalAddCart" class="btn btn-gold add-cart" type="button">🛒 Ajouter au panier</button>      <div class="hero-buttons">
         <a class="btn btn-gold" target="_blank" href="https://wa.me/21622181224">Demander sur WhatsApp</a>
         <a class="btn btn-dark" href="tel:+21622181224">Appeler</a>
       </div>
@@ -674,6 +674,11 @@ document.querySelectorAll('.view-product').forEach(btn=>btn.addEventListener('cl
   modalRef.textContent=btn.dataset.ref;
   const card=btn.closest('.card');
 modalPrice.textContent=card?.querySelector('.admin-price')?.textContent || '';
+  const modalAddCart=document.querySelector('#modalAddCart');
+if(modalAddCart){
+  modalAddCart.dataset.name=btn.dataset.name || "Produit";
+  modalAddCart.dataset.price=btn.dataset.price || (modalPrice.textContent || "").replace(/[^\d.]/g,"") || "0";
+}
   modalDesc.textContent=btn.dataset.desc;
   modal.classList.add('open');
 }));
@@ -750,6 +755,11 @@ if(year)year.textContent=new Date().getFullYear();
     document.querySelector("#modalTitle").textContent=btn.dataset.name||"";
     document.querySelector("#modalRef").textContent=btn.dataset.ref||"";
     document.querySelector("#modalPrice").textContent=btn.dataset.price ? btn.dataset.price+" TND" : "";
+    const modalAddCart=document.querySelector('#modalAddCart');
+if(modalAddCart){
+  modalAddCart.dataset.name=btn.dataset.name || "Produit";
+  modalAddCart.dataset.price=btn.dataset.price || "0";
+}
     document.querySelector("#modalDesc").textContent=btn.dataset.desc||"";
     modal.classList.add("open");
 });
