@@ -1,0 +1,10 @@
+{
+  "name": "Statue décorative femme",
+  "reference": "DECO-STATUE-001",
+  "category": "Décoration intérieure",
+  "description": "Objet décoratif élégant pour salon, entrée, bureau ou espace de réception.",
+  "price": 100.0,
+  "image": "/assets/products/07-statue-decorative-femme.png",
+  "featured": true,
+  "active": true
+}

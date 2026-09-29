@@ -1,0 +1,10 @@
+{
+  "name": "Applique extérieure LED IP44",
+  "reference": "IP44-001",
+  "category": "Éclairage extérieur",
+  "description": "Applique LED extérieure IP44 résistante à l'eau, idéale pour escaliers, passages, jardins et façades.",
+  "price": 10.0,
+  "image": "/assets/products/09-applique-exterieure-led-ip44.png",
+  "featured": true,
+  "active": true
+}

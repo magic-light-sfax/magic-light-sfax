@@ -1,0 +1,10 @@
+{
+  "name": "Ampoule LED Disco RGB E27",
+  "reference": "E27-RGB",
+  "category": "Éclairage décoratif",
+  "description": "Ampoule LED RGB à effets lumineux colorés, idéale pour la maison, les fêtes et les événements.",
+  "price": 25.0,
+  "image": "/assets/products/01-ampoule-led-disco-rgb-e27.png",
+  "featured": true,
+  "active": true
+}

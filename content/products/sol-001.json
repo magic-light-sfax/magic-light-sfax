@@ -1,0 +1,10 @@
+{
+  "name": "Lampe solaire de jardin sur piquet",
+  "reference": "SOL-001",
+  "category": "Éclairage solaire",
+  "description": "Lampe solaire sur piquet pour jardins, fermes et espaces extérieurs, avec installation simple.",
+  "price": 20.0,
+  "image": "/assets/products/10-lampe-solaire-jardin-piquet.png",
+  "featured": true,
+  "active": true
+}

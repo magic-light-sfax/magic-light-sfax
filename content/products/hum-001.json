@@ -1,0 +1,10 @@
+{
+  "name": "Humidificateur diffuseur d'arômes",
+  "reference": "HUM-001",
+  "category": "Décoration & Bien-être",
+  "description": "Humidificateur compact avec éclairage doux, adapté à l'aromathérapie et à une ambiance relaxante.",
+  "price": 35.0,
+  "image": "/assets/products/03-humidificateur-diffuseur-aromes.png",
+  "featured": true,
+  "active": true
+}
