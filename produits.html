@@ -672,7 +672,8 @@ document.querySelectorAll('.view-product').forEach(btn=>btn.addEventListener('cl
   modalImg.src=btn.dataset.img;
   modalTitle.textContent=btn.dataset.name;
   modalRef.textContent=btn.dataset.ref;
-  modalPrice.textContent=btn.dataset.price ? btn.dataset.price+' TND' : '';
+  const card=btn.closest('.card');
+modalPrice.textContent=card?.querySelector('.admin-price')?.textContent || '';
   modalDesc.textContent=btn.dataset.desc;
   modal.classList.add('open');
 }));
