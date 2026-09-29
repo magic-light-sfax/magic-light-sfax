@@ -715,6 +715,7 @@ if(year)year.textContent=new Date().getFullYear();
               data-ref="${esc(p.reference||"")}"
               data-price="${p.price===null||p.price===undefined||p.price===""?"":Number(p.price).toFixed(3)}"
               data-desc="${esc(p.description||"")}">Voir détails</button>
+              <button class="smallbtn add-cart" data-name="${esc(p.name||'Produit')}" data-price="${p.price??''}">🛒 Ajouter</button>
             <a class="smallbtn" target="_blank" href="https://wa.me/21622181224">WhatsApp</a>
           </div>
         </div>
@@ -751,8 +752,28 @@ if(year)year.textContent=new Date().getFullYear();
     document.querySelector("#modalPrice").textContent=btn.dataset.price ? btn.dataset.price+" TND" : "";
     document.querySelector("#modalDesc").textContent=btn.dataset.desc||"";
     modal.classList.add("open");
-  });
+});
+document.addEventListener("click", function(e){
+  const addBtn = e.target.closest(".add-cart");
+  if(!addBtn) return;
+
+  const name = addBtn.dataset.name || "Produit";
+  const price = Number(addBtn.dataset.price || 0);
+
+  let cart = JSON.parse(localStorage.getItem("magicLightCart") || "[]");
+  const existing = cart.find(item => item.name === name);
+
+  if(existing){
+    existing.qty += 1;
+  } else {
+    cart.push({ name: name, price: price, qty: 1 });
+  }
+
+  localStorage.setItem("magicLightCart", JSON.stringify(cart));
+  alert(name + " ajouté au panier");
+});
   loadProducts();
+  
 })();
 </script>
 
