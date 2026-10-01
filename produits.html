@@ -627,7 +627,34 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
     </div>
   </div>
 </div>
+<div id="cartModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;width:min(850px,95%);max-height:88vh;overflow:auto;border-radius:22px;padding:25px;position:relative">
 
+    <button id="cartCloseX" type="button"
+      style="position:absolute;right:18px;top:14px;border:0;background:#eee;width:40px;height:40px;border-radius:50%;font-size:22px;cursor:pointer">
+      ×
+    </button>
+
+    <h2 style="margin-top:0">🛒 PANIER</h2>
+
+    <div id="cartItems"></div>
+
+    <div style="border-top:2px solid #eee;margin-top:20px;padding-top:18px;font-size:22px;font-weight:800">
+      TOTAL : <span id="cartTotal">0.000 TND</span>
+    </div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:22px">
+      <button id="cartOk" type="button" class="btn btn-dark">
+        OK
+      </button>
+
+      <button id="cartPrint" type="button" class="btn btn-gold">
+        🖨 Imprimer
+      </button>
+    </div>
+
+  </div>
+</div>
 <script>
 const menu=document.querySelector('.menu');
 const links=document.querySelector('.links');
@@ -844,23 +871,84 @@ if(headerCartBtn){
       return;
     }
 
-    const details = cart.map(item => {
-  const qty = item.qty || 1;
-  const unitPrice = Number(item.price || 0);
-  const subtotal = unitPrice * qty;
+   const cartModal = document.getElementById("cartModal");
+const cartItems = document.getElementById("cartItems");
+const cartTotal = document.getElementById("cartTotal");
 
-  return item.name +
-    "\nQuantité : " + qty +
-    "\nPrix unitaire : " + unitPrice.toFixed(3) + " TND" +
-    "\nSous-total : " + subtotal.toFixed(3) + " TND";
-}).join("\n\n");
+const total = cart.reduce(
+  (sum,item) => sum + Number(item.price || 0) * (item.qty || 1),
+  0
+);
 
-    const total = cart.reduce(
-      (sum,item) => sum + Number(item.price || 0) * (item.qty || 1),
-      0
-    );
+if(cartItems){
+  cartItems.innerHTML = cart.map((item,index) => {
+    const qty = item.qty || 1;
+    const unitPrice = Number(item.price || 0);
+    const subtotal = unitPrice * qty;
 
-    alert("PANIER\n\n" + details + "\n\nTOTAL : " + total.toFixed(3) + " TND");
+    return `
+      <div style="padding:14px 0;border-bottom:1px solid #eee">
+        <div style="font-size:18px;font-weight:800;margin-bottom:6px">
+          ${index + 1}. ${item.name}
+        </div>
+        <div>Quantité : <strong>${qty}</strong></div>
+        <div>Prix unitaire : ${unitPrice.toFixed(3)} TND</div>
+        <div>Sous-total : <strong>${subtotal.toFixed(3)} TND</strong></div>
+      </div>
+    `;
+  }).join("");
+}
+
+if(cartTotal){
+  cartTotal.textContent = total.toFixed(3) + " TND";
+}
+
+if(cartModal){
+  cartModal.style.display = "flex";
+}
+
+const closeCart = function(){
+  if(cartModal) cartModal.style.display = "none";
+};
+
+const cartOk = document.getElementById("cartOk");
+const cartCloseX = document.getElementById("cartCloseX");
+
+if(cartOk) cartOk.onclick = closeCart;
+if(cartCloseX) cartCloseX.onclick = closeCart;
+
+const cartPrint = document.getElementById("cartPrint");
+
+if(cartPrint){
+  cartPrint.onclick = function(){
+    const printWindow = window.open("", "_blank");
+
+    if(!printWindow) return;
+
+    printWindow.document.write(`
+      <html>
+      <head>
+        <title>Commande MAGIC LIGHT</title>
+        <style>
+          body{font-family:Arial;padding:30px;color:#222}
+          h1{margin-bottom:5px}
+          .total{font-size:24px;font-weight:bold;margin-top:25px;border-top:2px solid #222;padding-top:15px}
+        </style>
+      </head>
+      <body>
+        <h1>MAGIC LIGHT</h1>
+        <h2>PANIER</h2>
+        ${cartItems ? cartItems.innerHTML : ""}
+        <div class="total">TOTAL : ${total.toFixed(3)} TND</div>
+      </body>
+      </html>
+    `);
+
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+  };
+}
   });
 }
   loadProducts();
