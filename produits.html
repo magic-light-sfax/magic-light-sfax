@@ -610,7 +610,17 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
       <div class="ref" id="modalRef"></div>
       <p id="modalDesc"></p>
       <div id="modalPrice" style="display:block;font-size:22px;font-weight:800;color:#c99a3c;margin:14px 0;"></div>
-<button id="modalAddCart" class="btn btn-gold add-cart" type="button">🛒 Ajouter au panier</button>      <div class="hero-buttons">
+<div id="modalCartControls" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0">
+  <div style="display:flex;align-items:center;border:1px solid #ddd;border-radius:30px;overflow:hidden">
+    <button type="button" id="qtyMinus" style="width:42px;height:42px;border:0;background:#fff;font-size:22px">−</button>
+    <span id="modalQty" style="min-width:40px;text-align:center;font-size:18px;font-weight:800">1</span>
+    <button type="button" id="qtyPlus" style="width:42px;height:42px;border:0;background:#fff;font-size:22px">+</button>
+  </div>
+
+  <button id="modalAddCart" class="btn btn-gold add-cart" type="button" style="margin:0">
+    🛒 Ajouter au panier
+  </button>
+</div>      <div class="hero-buttons">
         <a class="btn btn-gold" target="_blank" href="https://wa.me/21622181224">Demander sur WhatsApp</a>
         <a class="btn btn-dark" href="tel:+21622181224">Appeler</a>
       </div>
@@ -763,22 +773,53 @@ if(modalAddCart){
   modalAddCart.dataset.price=btn.dataset.price || "0";
 }
     document.querySelector("#modalDesc").textContent=btn.dataset.desc||"";
+    const resetQty = document.getElementById("modalQty");
+if(resetQty) resetQty.textContent = "1";
     modal.classList.add("open");
 });
-document.addEventListener("click", function(e){
-  const addBtn = e.target.closest(".add-cart");
-  if(!addBtn) return;
+  const qtyMinus = document.getElementById("qtyMinus");
+const qtyPlus = document.getElementById("qtyPlus");
+const modalQtyDisplay = document.getElementById("modalQty");
 
-  const name = addBtn.dataset.name || "Produit";
-  const price = Number(addBtn.dataset.price || 0);
+if(qtyMinus && qtyPlus && modalQtyDisplay){
+  qtyMinus.addEventListener("click", function(){
+    let q = parseInt(modalQtyDisplay.textContent, 10) || 1;
+    if(q > 1) q--;
+    modalQtyDisplay.textContent = q;
+  });
+
+  qtyPlus.addEventListener("click", function(){
+    let q = parseInt(modalQtyDisplay.textContent, 10) || 1;
+    q++;
+    modalQtyDisplay.textContent = q;
+  });
+}
+document.addEventListener("click", function(e){
+  const addBtn =
+    e.target.closest(".add-cart");
+if(!addBtn) return;
+
+const modalQty =
+  document.getElementById("modalQty"
+  );
+const qty = (addBtn.id === "modalAddCart" && modalQty)
+  ? Math.max(1,
+  parseInt(modalQty.textContent, 10)
+  || 1)
+  : 1;
+
+const name = addBtn.dataset.name 
+  || "Produit";
+const price = Number(addBtn.dataset.price || 0);
+ 
 
   let cart = JSON.parse(localStorage.getItem("magicLightCart") || "[]");
   const existing = cart.find(item => item.name === name);
 
   if(existing){
-    existing.qty += 1;
+    existing.qty += qty;
   } else {
-    cart.push({ name: name, price: price, qty: 1 });
+    cart.push({ name: name, price: price, qty: qty });
   }
 
   localStorage.setItem("magicLightCart", JSON.stringify(cart));
