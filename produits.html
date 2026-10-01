@@ -671,6 +671,9 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
       <button id="cartPdf" type="button" class="btn btn-gold">
   📄 Télécharger PDF
 </button>
+      <button id="cartWhatsApp" type="button" class="btn btn-gold">
+  🟢 Commander sur WhatsApp
+</button>
     </div>
 
   </div>
@@ -1065,7 +1068,51 @@ if(cartPdf){
 
     doc.save("Commande-MAGIC-LIGHT.pdf");
   };
-}                                
+}  
+    const cartWhatsApp = document.getElementById("cartWhatsApp");
+
+if(cartWhatsApp){
+  cartWhatsApp.onclick = function(){
+
+    const clientName = document.getElementById("clientName")?.value.trim() || "";
+    const clientPhone = document.getElementById("clientPhone")?.value.trim() || "";
+    const clientEmail = document.getElementById("clientEmail")?.value.trim() || "";
+    const clientAddress = document.getElementById("clientAddress")?.value.trim() || "";
+    const clientCity = document.getElementById("clientCity")?.value.trim() || "";
+
+    if(!clientName || !clientPhone || !clientEmail || !clientAddress){
+      alert("Veuillez remplir Nom, Téléphone, E-mail et Adresse avant de commander.");
+      return;
+    }
+
+    const productsText = cart.map((item,index) => {
+      const qty = item.qty || 1;
+      const unitPrice = Number(item.price || 0);
+      const subtotal = unitPrice * qty;
+
+      return (index + 1) + ". " + item.name +
+        "\nQuantité : " + qty +
+        "\nPrix unitaire : " + unitPrice.toFixed(3) + " TND" +
+        "\nSous-total : " + subtotal.toFixed(3) + " TND";
+    }).join("\n\n");
+
+    const message =
+      "🛒 COMMANDE MAGIC LIGHT\n\n" +
+      "👤 Nom : " + clientName + "\n" +
+      "📞 Téléphone : " + clientPhone + "\n" +
+      "📧 E-mail : " + clientEmail + "\n" +
+      "📍 Adresse : " + clientAddress + "\n" +
+      "🏙️ Ville : " + (clientCity || "-") + "\n\n" +
+      "📦 PRODUITS\n\n" +
+      productsText +
+      "\n\n💰 TOTAL : " + total.toFixed(3) + " TND";
+
+    window.open(
+      "https://wa.me/21622181224?text=" + encodeURIComponent(message),
+      "_blank"
+    );
+  };
+}
   });
 }
   loadProducts();
