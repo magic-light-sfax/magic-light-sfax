@@ -211,6 +211,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
         <a class="link" href="references.html">RÉFÉRENCES</a>
         <a class="link" href="catalogue.html">CATALOGUE</a>
         <a class="link" href="contact.html">CONTACT</a>
+        <a class="link" href="#" id="cartBtn">🛒 PANIER (<span id="cartCount">0</span>)</a>
       </div>
       <div class="social-mini">
         <a target="_blank" href="https://www.facebook.com/share/1KeZYzrZwP/">f</a>
@@ -780,9 +781,16 @@ document.addEventListener("click", function(e){
   }
 
   localStorage.setItem("magicLightCart", JSON.stringify(cart));
+  const cartCount = document.getElementById("cartCount");
+if(cartCount) cartCount.textContent = cart.reduce((t,item)=>t+(item.qty||1),0);
   alert(name + " ajouté au panier");
 });
+  const savedCart = JSON.parse(localStorage.getItem("magicLightCart") || "[]");
+const savedCount = savedCart.reduce((t,item)=>t+(item.qty||1),0);
+const headerCartCount = document.getElementById("cartCount");
+if(headerCartCount) headerCartCount.textContent = savedCount;
   loadProducts();
+  });
   
 })();
 </script>
