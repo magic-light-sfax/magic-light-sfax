@@ -642,7 +642,24 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
     <div style="border-top:2px solid #eee;margin-top:20px;padding-top:18px;font-size:22px;font-weight:800">
       TOTAL : <span id="cartTotal">0.000 TND</span>
     </div>
+<div style="margin-top:22px;padding:18px;background:#f7f7f7;border-radius:14px">
+  <h3 style="margin-top:0">Informations client</h3>
 
+  <input id="clientName" type="text" placeholder="Nom et prénom *"
+    style="width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:8px">
+
+  <input id="clientPhone" type="tel" placeholder="Téléphone *"
+    style="width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:8px">
+
+  <input id="clientEmail" type="email" placeholder="E-mail *"
+    style="width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:8px">
+
+  <input id="clientAddress" type="text" placeholder="Adresse *"
+    style="width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:8px">
+
+  <input id="clientCity" type="text" placeholder="Ville"
+    style="width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:8px">
+</div>
     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:22px">
       <button id="cartOk" type="button" class="btn btn-dark">
         OK
@@ -651,13 +668,16 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
       <button id="cartPrint" type="button" class="btn btn-gold">
         🖨 Imprimer
       </button>
+      <button id="cartPdf" type="button" class="btn btn-gold">
+  📄 Télécharger PDF
+</button>
     </div>
 
   </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-const menu=document.querySelector('.menu');
-const links=document.querySelector('.links');
+const menu=document.querySelector('.menu');const links=document.querySelector('.links');
 menu?.addEventListener('click',()=>links.classList.toggle('open'));
 
 document.querySelectorAll('.link').forEach(a=>a.addEventListener('click',()=>links?.classList.remove('open')));
@@ -921,6 +941,16 @@ const cartPrint = document.getElementById("cartPrint");
 
 if(cartPrint){
   cartPrint.onclick = function(){
+    const clientName = document.getElementById("clientName")?.value.trim() || "";
+const clientPhone = document.getElementById("clientPhone")?.value.trim() || "";
+const clientEmail = document.getElementById("clientEmail")?.value.trim() || "";
+const clientAddress = document.getElementById("clientAddress")?.value.trim() || "";
+const clientCity = document.getElementById("clientCity")?.value.trim() || "";
+
+if(!clientName || !clientPhone || !clientEmail || !clientAddress){
+  alert("Veuillez remplir Nom, Téléphone, E-mail et Adresse avant d’imprimer.");
+  return;
+}
     const printWindow = window.open("", "_blank");
 
     if(!printWindow) return;
@@ -937,6 +967,14 @@ if(cartPrint){
       </head>
       <body>
         <h1>MAGIC LIGHT</h1>
+        <div style="margin:15px 0;padding:15px;border:1px solid #ddd">
+  <h3>Informations client</h3>
+  <div><strong>Nom et prénom :</strong> ${clientName}</div>
+  <div><strong>Téléphone :</strong> ${clientPhone}</div>
+  <div><strong>E-mail :</strong> ${clientEmail}</div>
+  <div><strong>Adresse :</strong> ${clientAddress}</div>
+  <div><strong>Ville :</strong> ${clientCity || "-"}</div>
+</div>
         <h2>PANIER</h2>
         ${cartItems ? cartItems.innerHTML : ""}
         <div class="total">TOTAL : ${total.toFixed(3)} TND</div>
@@ -949,6 +987,85 @@ if(cartPrint){
     printWindow.print();
   };
 }
+const cartPdf = document.getElementById("cartPdf");
+
+if(cartPdf){
+  cartPdf.onclick = function(){
+
+    const clientName = document.getElementById("clientName")?.value.trim() || "";
+    const clientPhone = document.getElementById("clientPhone")?.value.trim() || "";
+    const clientEmail = document.getElementById("clientEmail")?.value.trim() || "";
+    const clientAddress = document.getElementById("clientAddress")?.value.trim() || "";
+    const clientCity = document.getElementById("clientCity")?.value.trim() || "";
+
+    if(!clientName || !clientPhone || !clientEmail || !clientAddress){
+      alert("Veuillez remplir Nom, Téléphone, E-mail et Adresse avant de télécharger le PDF.");
+      return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    let y = 20;
+
+    doc.setFontSize(20);
+    doc.text("MAGIC LIGHT", 20, y);
+
+    y += 12;
+    doc.setFontSize(14);
+    doc.text("Informations client", 20, y);
+
+    y += 9;
+    doc.setFontSize(11);
+    doc.text("Nom : " + clientName, 20, y);
+    y += 7;
+    doc.text("Telephone : " + clientPhone, 20, y);
+    y += 7;
+    doc.text("E-mail : " + clientEmail, 20, y);
+    y += 7;
+    doc.text("Adresse : " + clientAddress, 20, y);
+    y += 7;
+    doc.text("Ville : " + (clientCity || "-"), 20, y);
+
+    y += 14;
+    doc.setFontSize(16);
+    doc.text("PANIER", 20, y);
+    y += 10;
+
+    cart.forEach((item,index) => {
+      const qty = item.qty || 1;
+      const unitPrice = Number(item.price || 0);
+      const subtotal = unitPrice * qty;
+
+      if(y > 260){
+        doc.addPage();
+        y = 20;
+      }
+
+      doc.setFontSize(12);
+      doc.text((index + 1) + ". " + item.name, 20, y);
+      y += 7;
+
+      doc.setFontSize(10);
+      doc.text("Quantite : " + qty, 25, y);
+      y += 6;
+      doc.text("Prix unitaire : " + unitPrice.toFixed(3) + " TND", 25, y);
+      y += 6;
+      doc.text("Sous-total : " + subtotal.toFixed(3) + " TND", 25, y);
+      y += 11;
+    });
+
+    if(y > 260){
+      doc.addPage();
+      y = 20;
+    }
+
+    doc.setFontSize(16);
+    doc.text("TOTAL : " + total.toFixed(3) + " TND", 20, y);
+
+    doc.save("Commande-MAGIC-LIGHT.pdf");
+  };
+}                                
   });
 }
   loadProducts();
