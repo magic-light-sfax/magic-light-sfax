@@ -661,55 +661,114 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
 </style>
 
 
-<style id="mobile-v8-3-drawer-stability">
-/* V8.3 - lock the mobile drawer to one column; no horizontal shift when accordions open */
+<style id="mobile-v8-3-flex-nowrap-fix">
+/* V8.3 - keep the mobile drawer in ONE vertical column.
+   The desktop .links rule uses flex-wrap:wrap; with flex-direction:column
+   that made long category lists wrap into a second column on phones. */
 @media (max-width:780px){
-  html,body{overflow-x:clip!important;max-width:100%!important}
   .header .links{
+    flex-direction:column!important;
+    flex-wrap:nowrap!important;
+    align-content:stretch!important;
     overflow-y:auto!important;
-    overflow-x:clip!important;
-    overscroll-behavior-x:none!important;
-    touch-action:pan-y!important;
-    contain:paint;
+    overflow-x:hidden!important;
   }
-  .mobile-drawer-head,.drawer-tabs,.drawer-categories-panel{
-    width:auto!important;
-    min-width:0!important;
-    max-width:none!important;
-    margin-left:-18px!important;
-    margin-right:-18px!important;
-  }
-  .drawer-categories-panel,.drawer-cat-group,.drawer-cat-children{
-    min-width:0!important;
+  .header .links > *{
+    flex:0 0 auto!important;
     max-width:100%!important;
-    overflow-x:clip!important;
-    transform:none!important;
-    translate:none!important;
   }
-  .drawer-cat-group{width:100%!important;margin:0!important}
-  .drawer-cat-children{width:100%!important;margin:0!important;padding:0!important}
-  .drawer-cat-all,.drawer-cat-head,.drawer-subcat{
+  .drawer-tabs,.drawer-categories-panel{
+    flex:none!important;
+  }
+  .drawer-cat-group,.drawer-cat-children{
+    display:block;
+  }
+  .drawer-cat-children{display:none}
+  .drawer-cat-group.open .drawer-cat-children{display:block}
+}
+</style>
+
+
+<style id="mobile-v8-4-professional-drawer-fix">
+/* V8.4 - professional mobile drawer: single clean column, no horizontal drift */
+@media (max-width:780px){
+  html,body{max-width:100%!important;overflow-x:hidden!important}
+  .header .links{
+    width:min(86vw,380px)!important;
+    max-width:380px!important;
     box-sizing:border-box!important;
-    width:100%!important;
-    min-width:0!important;
-    max-width:100%!important;
-    margin:0!important;
-    transform:none!important;
-    translate:none!important;
+    flex-flow:column nowrap!important;
+    align-items:stretch!important;
+    align-content:stretch!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:contain!important;
+    touch-action:pan-y!important;
+    direction:ltr!important;
+    scrollbar-width:thin;
   }
-  .drawer-cat-head{padding-left:18px!important;padding-right:18px!important}
-  .drawer-subcat{
-    display:flex!important;
-    align-items:center!important;
-    justify-content:flex-start!important;
+  .header .links,.header .links *{box-sizing:border-box!important}
+  .drawer-tabs{
+    width:auto!important;max-width:none!important;
+    margin:0 -18px!important;
+    flex:0 0 auto!important;
+    overflow:hidden!important;
+  }
+  .drawer-categories-panel{
+    width:auto!important;max-width:none!important;min-width:0!important;
+    margin:0 -18px!important;padding:0!important;
+    flex:0 0 auto!important;
+    overflow:hidden!important;
     position:relative!important;
-    left:auto!important;right:auto!important;
-    padding:10px 42px 10px 34px!important;
-    white-space:normal!important;
-    overflow-wrap:break-word!important;
-    word-break:normal!important;
+    left:auto!important;right:auto!important;transform:none!important;
   }
-  .drawer-subcat:after{right:18px!important}
+  .drawer-cat-group,.drawer-cat-children{
+    display:block;
+    width:100%!important;max-width:100%!important;min-width:0!important;
+    margin:0!important;padding:0!important;
+    position:static!important;left:auto!important;right:auto!important;
+    transform:none!important;float:none!important;clear:both!important;
+    overflow:hidden!important;
+  }
+  .drawer-cat-children{display:none}
+  .drawer-cat-group.open .drawer-cat-children{display:block!important}
+  .drawer-cat-all,.drawer-cat-head,.drawer-subcat{
+    width:100%!important;max-width:100%!important;min-width:0!important;
+    margin:0!important;box-sizing:border-box!important;
+    position:relative!important;left:auto!important;right:auto!important;
+    transform:none!important;float:none!important;
+  }
+  .drawer-cat-all,.drawer-cat-head{
+    min-height:54px!important;padding:13px 18px!important;
+    font-size:.98rem!important;line-height:1.25!important;
+  }
+  .drawer-cat-head{background:#fff!important;font-weight:800!important}
+  .drawer-cat-group.open .drawer-cat-head{background:#f7f7f7!important}
+  .drawer-cat-head > span:first-child{
+    flex:1 1 auto!important;min-width:0!important;
+    white-space:normal!important;overflow-wrap:break-word!important;
+  }
+  .drawer-cat-head .cat-sign{
+    flex:0 0 28px!important;width:28px!important;text-align:center!important;
+    font-size:1.35rem!important;line-height:1!important;
+  }
+  .drawer-subcat{
+    min-height:50px!important;
+    padding:12px 42px 12px 30px!important;
+    background:#fff!important;
+    border-bottom:1px solid #e8e8e8!important;
+    font-size:.93rem!important;font-weight:500!important;line-height:1.3!important;
+    white-space:normal!important;overflow-wrap:break-word!important;word-break:normal!important;
+    overflow:hidden!important;
+    text-align:left!important;
+  }
+  .drawer-subcat:after{
+    right:18px!important;left:auto!important;top:50%!important;
+    transform:translateY(-50%)!important;
+    position:absolute!important;
+  }
+  .drawer-close-label{font-weight:800!important}
+  .mobile-drawer-head{box-sizing:border-box!important}
 }
 </style>
 
@@ -886,13 +945,9 @@ drawerTabs.forEach(btn=>btn.addEventListener('click',()=>setDrawerTab(btn.datase
 document.querySelectorAll('.drawer-cat-head').forEach(btn=>btn.addEventListener('click',()=>{
   const group=btn.closest('.drawer-cat-group');
   const open=!group?.classList.contains('open');
-  btn.blur();
-  const resetDrawerX=()=>{
-    if(links) links.scrollLeft=0;
-    document.documentElement.scrollLeft=0;
-    document.body.scrollLeft=0;
-  };
-  resetDrawerX();
+  if(links) links.scrollLeft=0;
+  document.documentElement.scrollLeft=0;
+  document.body.scrollLeft=0;
   document.querySelectorAll('.drawer-cat-group.open').forEach(g=>g!==group&&g.classList.remove('open'));
   group?.classList.toggle('open',open);
   const sign=btn.querySelector('.cat-sign');
@@ -900,7 +955,6 @@ document.querySelectorAll('.drawer-cat-head').forEach(btn=>btn.addEventListener(
   document.querySelectorAll('.drawer-cat-group').forEach(g=>{
     if(g!==group){const s=g.querySelector('.cat-sign'); if(s) s.textContent='+';}
   });
-  requestAnimationFrame(()=>{resetDrawerX();requestAnimationFrame(resetDrawerX);});
 }));
 const originalSetMobileMenu=setMobileMenu;
 setMobileMenu=function(open){
@@ -997,5 +1051,24 @@ modal?.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('
 const year=document.getElementById('year');
 if(year)year.textContent=new Date().getFullYear();
 </script>
+
+<script id="mobile-v8-4-drawer-lock-js">
+(function(){
+  function lockDrawerX(){
+    var drawer=document.querySelector('.header .links');
+    var panel=document.querySelector('.drawer-categories-panel');
+    if(drawer) drawer.scrollLeft=0;
+    if(panel) panel.scrollLeft=0;
+  }
+  document.addEventListener('click',function(e){
+    if(e.target.closest('.menu,.drawer-tab,.drawer-cat-head')){
+      requestAnimationFrame(lockDrawerX);
+      setTimeout(lockDrawerX,50);
+    }
+  });
+  window.addEventListener('resize',lockDrawerX);
+})();
+</script>
+
 </body>
 </html>
