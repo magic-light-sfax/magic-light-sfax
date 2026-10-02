@@ -180,37 +180,332 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   .catalog .spread{grid-template-columns:1fr}
 }
 </style>
+
+<style id="mobile-header-v2">
+/* ===== MAGIC LIGHT • MOBILE HEADER V2 ===== */
+.mobile-cart,.mobile-drawer-head,.drawer-contact,.menu-overlay{display:none}
+
+@media (max-width:900px){
+  .header{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    background:#fff;
+    border-bottom:1px solid var(--line);
+    box-shadow:0 6px 22px rgba(17,18,21,.08);
+  }
+  .header .top{
+    min-height:0;
+    display:grid;
+    grid-template-columns:46px minmax(0,1fr) 46px;
+    grid-template-areas:
+      "menu logo cart"
+      "call call call"
+      "search search search";
+    align-items:center;
+    gap:8px 10px;
+    padding:10px 0 12px;
+  }
+  .header .menu{
+    grid-area:menu;
+    display:grid;
+    place-items:center;
+    width:44px;
+    height:44px;
+    padding:0;
+    border:1px solid #e4e6ea;
+    border-radius:13px;
+    background:#fff;
+    color:#15171b;
+    font-size:1.45rem;
+    line-height:1;
+    cursor:pointer;
+  }
+  .header .logo{
+    grid-area:logo;
+    min-width:0;
+    gap:9px;
+    justify-self:start;
+  }
+  .header .logo img{
+    width:50px;
+    height:50px;
+    flex:0 0 50px;
+    border-width:1px;
+  }
+  .header .logo > div{min-width:0}
+  .header .logo strong{
+    font-size:1.12rem;
+    line-height:1.05;
+    letter-spacing:.035em;
+    white-space:nowrap;
+  }
+  .header .logo small{
+    font-size:.72rem;
+    line-height:1.2;
+    margin-top:4px;
+    white-space:nowrap;
+  }
+  .header .call{
+    grid-area:call;
+    min-height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:5px 10px;
+    border-radius:10px;
+    background:#f7f7f8;
+    color:#747b85;
+    font-size:.75rem;
+    font-weight:800;
+    line-height:1;
+  }
+  .header .call b{
+    margin:0;
+    color:#9a6d20;
+    font-size:.88rem;
+    white-space:nowrap;
+  }
+  .header .search{
+    grid-area:search;
+    width:100%;
+    max-width:none;
+    grid-template-columns:1fr 52px;
+    border:1px solid #d9dde3;
+    border-radius:15px;
+    background:#fff;
+    box-shadow:0 4px 14px rgba(0,0,0,.035);
+  }
+  .header .search input{
+    min-width:0;
+    height:46px;
+    padding:0 15px;
+    font-size:.96rem;
+    background:transparent;
+  }
+  .header .search button{
+    width:52px;
+    min-width:52px;
+    background:var(--gold);
+    font-size:1.12rem;
+  }
+  .header .lang{display:none}
+  .mobile-cart{
+    grid-area:cart;
+    display:grid;
+    place-items:center;
+    position:relative;
+    width:44px;
+    height:44px;
+    border-radius:13px;
+    background:#111215;
+    color:#fff;
+    font-size:1.18rem;
+    justify-self:end;
+  }
+  .mobile-cart-count{
+    position:absolute;
+    right:-5px;
+    top:-6px;
+    min-width:21px;
+    height:21px;
+    padding:0 5px;
+    display:grid;
+    place-items:center;
+    border-radius:999px;
+    background:#d83a3a;
+    color:#fff;
+    border:2px solid #fff;
+    font-size:.68rem;
+    font-weight:900;
+    line-height:1;
+  }
+  .header .nav{
+    height:0;
+    border:0;
+  }
+  .header .navrow{
+    min-height:0;
+    position:static;
+  }
+  .header .social-mini{display:none}
+  .header .links{
+    display:flex !important;
+    position:fixed !important;
+    z-index:1003;
+    top:0 !important;
+    bottom:0;
+    left:0 !important;
+    right:auto !important;
+    width:min(86vw,340px);
+    height:100dvh;
+    padding:0 18px 28px;
+    flex-direction:column;
+    align-items:stretch;
+    gap:0;
+    overflow-y:auto;
+    background:#fff;
+    border:0;
+    border-radius:0 22px 22px 0;
+    box-shadow:20px 0 50px rgba(0,0,0,.18);
+    transform:translateX(-105%);
+    transition:transform .28s ease;
+    visibility:hidden;
+    pointer-events:none;
+  }
+  .header .links.open{
+    transform:translateX(0);
+    visibility:visible;
+    pointer-events:auto;
+  }
+  .mobile-drawer-head{
+    min-height:82px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin:0 -18px 10px;
+    padding:14px 16px 12px 18px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(135deg,#fff,#f8f4ea);
+  }
+  .mobile-drawer-brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+  }
+  .mobile-drawer-brand img{
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    object-fit:cover;
+    border:1px solid #e8e8e8;
+  }
+  .mobile-drawer-brand strong{display:block;font-size:1rem;line-height:1.1}
+  .mobile-drawer-brand small{display:block;color:var(--muted);font-size:.69rem;margin-top:3px}
+  .menu-close{
+    width:40px;
+    height:40px;
+    border:0;
+    border-radius:12px;
+    background:#111215;
+    color:#fff;
+    font-size:1.45rem;
+    cursor:pointer;
+  }
+  .header .link{
+    width:100%;
+    padding:14px 10px;
+    border-bottom:1px solid #eef0f2;
+    font-size:.95rem;
+    font-weight:900;
+    color:#252931;
+  }
+  .header .link:hover,.header .link.active{
+    color:#9a6d20;
+    background:#fff9ed;
+  }
+  .header .desktop-extra-link{display:none !important}
+  .header #cartBtn{
+    margin-top:8px;
+    border:1px solid #ecd7aa;
+    border-radius:13px;
+    background:#fff8e8;
+    color:#7f5b1e;
+  }
+  .drawer-contact{
+    display:grid;
+    gap:8px;
+    margin-top:16px;
+  }
+  .drawer-contact a{
+    min-height:44px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:12px;
+    font-weight:900;
+  }
+  .drawer-phone{background:#111215;color:#fff}
+  .drawer-whatsapp{background:#1fa855;color:#fff}
+  .menu-overlay{
+    display:block;
+    position:fixed;
+    inset:0;
+    z-index:1002;
+    background:rgba(0,0,0,.48);
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transition:opacity .25s ease,visibility .25s ease;
+  }
+  .menu-overlay.open{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+  }
+  body.menu-open{overflow:hidden}
+}
+
+@media (max-width:480px){
+  .container{width:min(100% - 20px,1220px)}
+  .header .top{grid-template-columns:44px minmax(0,1fr) 44px;gap:7px 8px}
+  .header .logo img{width:46px;height:46px;flex-basis:46px}
+  .header .logo strong{font-size:1.02rem}
+  .header .logo small{font-size:.67rem}
+  .header .call{font-size:.7rem}
+  .header .call b{font-size:.82rem}
+  .header .search input{font-size:.91rem}
+}
+</style>
+
 </head>
 <body>
 
 <header class="header">
   <div class="container top">
+    <button class="menu" type="button" aria-label="Ouvrir le menu" aria-controls="mobileNav" aria-expanded="false">☰</button>
     <a class="logo" href="index.html">
       <img src="assets/logo.jpg" alt="MAGIC LIGHT">
       <div><strong>MAGIC LIGHT</strong><small>Éclairage & Décoration</small></div>
     </a>
-    <div class="call">APPELEZ-NOUS AU : <b>(+216) 22 181 224</b></div>
-    <div class="search"><input type="search" placeholder="Rechercher un produit"><button>⌕</button></div>
+    <a class="call" href="tel:+21622181224"><span>APPELEZ-NOUS AU :</span><b>(+216) 22 181 224</b></a>
+    <form class="search" role="search" action="produits.html" method="get">
+      <input name="q" type="search" placeholder="Rechercher un produit" autocomplete="off" aria-label="Rechercher un produit">
+      <button type="submit" aria-label="Rechercher">⌕</button>
+    </form>
     <div class="lang">FR • AR<small>Catalogue & contact</small></div>
+    <a class="mobile-cart" href="produits.html#panier" aria-label="Ouvrir le panier">🛒<span class="mobile-cart-count">0</span></a>
   </div>
   <div class="nav">
     <div class="container navrow">
-      <button class="menu">☰</button>
-      <div class="links">
+      <div class="links" id="mobileNav">
+        <div class="mobile-drawer-head">
+          <div class="mobile-drawer-brand"><img src="assets/logo.jpg" alt=""><div><strong>MAGIC LIGHT</strong><small>Éclairage & Décoration</small></div></div>
+          <button class="menu-close" type="button" aria-label="Fermer le menu">×</button>
+        </div>
         <a class="link" href="index.html">ACCUEIL</a>
         <a class="link" href="produits.html">PRODUITS</a>
-        <a class="link" href="index.html#presentation">PRÉSENTATION</a>
+        <a class="link desktop-extra-link" href="index.html#presentation">PRÉSENTATION</a>
         <a class="link" href="nouveautes.html">NOUVEAUTÉS</a>
-        <a class="link" href="references.html">RÉFÉRENCES</a>
+        <a class="link desktop-extra-link" href="references.html">RÉFÉRENCES</a>
         <a class="link" href="catalogue.html">CATALOGUE</a>
         <a class="link active" href="contact.html">CONTACT</a>
+        <a class="link" href="produits.html#panier" id="cartBtn">🛒 PANIER (<span id="cartCount">0</span>)</a>
+        <div class="drawer-contact">
+          <a class="drawer-phone" href="tel:+21622181224">📞 22 181 224</a>
+          <a class="drawer-whatsapp" target="_blank" rel="noopener" href="https://wa.me/21622181224">WhatsApp</a>
+        </div>
       </div>
       <div class="social-mini">
-        <a target="_blank" href="https://www.facebook.com/share/1KeZYzrZwP/">f</a>
-        <a target="_blank" href="https://www.instagram.com/magic_light_yossri/">ig</a>
+        <a target="_blank" rel="noopener" href="https://www.facebook.com/share/1KeZYzrZwP/">f</a>
+        <a target="_blank" rel="noopener" href="https://www.instagram.com/magic_light_yossri/">ig</a>
       </div>
     </div>
   </div>
+  <div class="menu-overlay" aria-hidden="true"></div>
 </header>
 
 
@@ -266,9 +561,52 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
 <script>
 const menu=document.querySelector('.menu');
 const links=document.querySelector('.links');
-menu?.addEventListener('click',()=>links.classList.toggle('open'));
+const menuClose=document.querySelector('.menu-close');
+const menuOverlay=document.querySelector('.menu-overlay');
 
-document.querySelectorAll('.link').forEach(a=>a.addEventListener('click',()=>links?.classList.remove('open')));
+function setMobileMenu(open){
+  if(!links) return;
+  links.classList.toggle('open',open);
+  menuOverlay?.classList.toggle('open',open);
+  document.body.classList.toggle('menu-open',open);
+  menu?.setAttribute('aria-expanded',open?'true':'false');
+}
+menu?.addEventListener('click',()=>setMobileMenu(true));
+menuClose?.addEventListener('click',()=>setMobileMenu(false));
+menuOverlay?.addEventListener('click',()=>setMobileMenu(false));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')setMobileMenu(false)});
+links?.querySelectorAll('.link').forEach(a=>a.addEventListener('click',()=>setMobileMenu(false)));
+
+function getMagicLightCartCount(){
+  try{
+    const cart=JSON.parse(localStorage.getItem('magicLightCart')||'[]');
+    return Array.isArray(cart)?cart.reduce((t,item)=>t+(Number(item.qty)||1),0):0;
+  }catch(e){return 0}
+}
+function syncMagicLightCartCount(){
+  const count=getMagicLightCartCount();
+  const desktopCount=document.getElementById('cartCount');
+  if(desktopCount) desktopCount.textContent=count;
+  document.querySelectorAll('.mobile-cart-count').forEach(el=>el.textContent=count);
+}
+window.syncMagicLightCartCount=syncMagicLightCartCount;
+syncMagicLightCartCount();
+window.addEventListener('storage',syncMagicLightCartCount);
+
+const mobileCart=document.querySelector('.mobile-cart');
+mobileCart?.addEventListener('click',e=>{
+  const cartModal=document.getElementById('cartModal');
+  const cartBtn=document.getElementById('cartBtn');
+  if(cartModal && cartBtn){
+    e.preventDefault();
+    cartBtn.click();
+  }
+});
+window.addEventListener('load',()=>{
+  if(location.hash==='#panier' && document.getElementById('cartModal')){
+    setTimeout(()=>document.getElementById('cartBtn')?.click(),60);
+  }
+});
 
 // Slider
 const slides=[...document.querySelectorAll('.slide')];
