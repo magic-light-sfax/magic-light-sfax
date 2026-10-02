@@ -468,6 +468,35 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
 }
 </style>
 
+
+<style id="mobile-header-v3-compact">
+/* ===== MAGIC LIGHT • MOBILE HEADER V3 COMPACT ===== */
+@media (max-width:900px){
+  .header .top{
+    grid-template-areas:
+      "menu logo cart"
+      "search search search" !important;
+    gap:8px 10px !important;
+    padding:8px 0 10px !important;
+  }
+  .header .call{display:none !important}
+  .header .logo img{width:46px !important;height:46px !important;flex-basis:46px !important}
+  .header .logo strong{font-size:1.04rem !important}
+  .header .logo small{font-size:.68rem !important;margin-top:2px !important}
+  .header .menu,.mobile-cart{width:42px !important;height:42px !important;border-radius:12px !important}
+  .header .search{border-radius:14px !important}
+  .header .search input{height:44px !important;font-size:.93rem !important}
+  .header .search button{width:50px !important;min-width:50px !important}
+}
+@media (max-width:390px){
+  .header .top{grid-template-columns:42px minmax(0,1fr) 42px !important;gap:7px !important}
+  .header .logo{gap:7px !important}
+  .header .logo img{width:42px !important;height:42px !important;flex-basis:42px !important}
+  .header .logo strong{font-size:.96rem !important}
+  .header .logo small{font-size:.63rem !important}
+}
+</style>
+
 </head>
 <body>
 
