@@ -713,6 +713,93 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
 }
 </style>
 
+
+<style id="mobile-v4-polish">
+/* ===== MAGIC LIGHT • MOBILE V4: PRODUCT + CART ===== */
+@media (max-width:620px){
+  /* Product detail: close button always visible inside the sheet */
+  .modalbox{position:relative !important}
+  .modal .close{
+    position:absolute !important;
+    top:12px !important;
+    right:12px !important;
+    z-index:500 !important;
+    width:44px !important;
+    height:44px !important;
+    border-radius:50% !important;
+    background:rgba(17,18,21,.94) !important;
+    color:#fff !important;
+    border:2px solid rgba(255,255,255,.92) !important;
+    box-shadow:0 7px 20px rgba(0,0,0,.28) !important;
+    font-size:25px !important;
+    line-height:1 !important;
+  }
+
+  /* Cart becomes a bottom sheet / checkout panel */
+  #cartModal{
+    padding:0 !important;
+    align-items:flex-end !important;
+    background:rgba(8,10,13,.68) !important;
+  }
+  #cartModal .cart-panel{
+    width:100% !important;
+    max-width:none !important;
+    max-height:94dvh !important;
+    border-radius:24px 24px 0 0 !important;
+    padding:18px 16px calc(18px + env(safe-area-inset-bottom)) !important;
+    box-shadow:0 -18px 60px rgba(0,0,0,.26) !important;
+  }
+  #cartModal .cart-title{
+    margin:0 54px 14px 0 !important;
+    font-size:1.42rem !important;
+  }
+  #cartCloseX{
+    right:14px !important;top:12px !important;
+    width:42px !important;height:42px !important;
+    background:#f1f2f4 !important;font-size:24px !important;
+  }
+  #cartItems{display:grid;gap:10px}
+  .cart-item{
+    border:1px solid #e7e9ed;
+    border-radius:16px;
+    padding:13px;
+    background:#fff;
+    box-shadow:0 5px 16px rgba(0,0,0,.04);
+  }
+  .cart-item-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+  .cart-item-name{font-size:.97rem;font-weight:900;line-height:1.25}
+  .cart-remove{
+    flex:0 0 auto;border:0;background:#fff1f1;color:#b42318;border-radius:999px;
+    padding:6px 9px;font-size:.68rem;font-weight:900;cursor:pointer;
+  }
+  .cart-item-meta{margin-top:7px;color:#747b85;font-size:.76rem}
+  .cart-item-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+  .cart-qty{display:grid;grid-template-columns:36px 40px 36px;align-items:center;border:1px solid #dfe2e7;border-radius:12px;overflow:hidden}
+  .cart-qty button{height:38px;border:0;background:#fff;font-size:19px;font-weight:900;cursor:pointer}
+  .cart-qty span{text-align:center;font-weight:900;font-size:.92rem}
+  .cart-subtotal{text-align:right;font-weight:900;font-size:.92rem}
+  .cart-total-box{
+    display:flex !important;align-items:center;justify-content:space-between;gap:12px;
+    margin-top:14px !important;padding-top:14px !important;font-size:1.28rem !important;
+  }
+  .cart-client{margin-top:14px !important;padding:14px !important;border-radius:16px !important}
+  .cart-client h3{font-size:1.05rem !important;margin:0 0 9px !important}
+  .cart-client input{height:46px !important;margin:5px 0 !important;padding:0 13px !important;border-radius:11px !important;font-size:.9rem !important}
+  .cart-actions{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:8px !important;
+    margin-top:14px !important;
+  }
+  .cart-actions .btn{width:100% !important;min-height:45px !important;border-radius:12px !important;padding:0 10px !important;font-size:.78rem !important}
+  #cartWhatsApp{grid-column:1 / -1 !important;background:#20ad5a !important;color:#fff !important}
+  #cartOk{grid-column:1 / -1 !important;order:4;background:#fff !important;color:#222 !important;border-color:#dfe2e7 !important}
+  #cartPrint{order:1}
+  #cartPdf{order:2}
+  #cartWhatsApp{order:3}
+}
+</style>
+
 </head>
 <body>
 
@@ -1165,22 +1252,22 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
     </div>
   </div>
 </div>
-<div id="cartModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;align-items:center;justify-content:center;padding:20px">
-  <div style="background:#fff;width:min(850px,95%);max-height:88vh;overflow:auto;border-radius:22px;padding:25px;position:relative">
+<div id="cartModal" class="cart-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;align-items:center;justify-content:center;padding:20px">
+  <div class="cart-panel" style="background:#fff;width:min(850px,95%);max-height:88vh;overflow:auto;border-radius:22px;padding:25px;position:relative">
 
     <button id="cartCloseX" type="button"
       style="position:absolute;right:18px;top:14px;border:0;background:#eee;width:40px;height:40px;border-radius:50%;font-size:22px;cursor:pointer">
       ×
     </button>
 
-    <h2 style="margin-top:0">🛒 PANIER</h2>
+    <h2 class="cart-title" style="margin-top:0">🛒 PANIER</h2>
 
     <div id="cartItems"></div>
 
-    <div style="border-top:2px solid #eee;margin-top:20px;padding-top:18px;font-size:22px;font-weight:800">
-      TOTAL : <span id="cartTotal">0.000 TND</span>
+    <div class="cart-total-box" style="border-top:2px solid #eee;margin-top:20px;padding-top:18px;font-size:22px;font-weight:800">
+      <span>TOTAL</span><span id="cartTotal">0.000 TND</span>
     </div>
-<div style="margin-top:22px;padding:18px;background:#f7f7f7;border-radius:14px">
+<div class="cart-client" style="margin-top:22px;padding:18px;background:#f7f7f7;border-radius:14px">
   <h3 style="margin-top:0">Informations client</h3>
 
   <input id="clientName" type="text" placeholder="Nom et prénom *"
@@ -1198,7 +1285,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   <input id="clientCity" type="text" placeholder="Ville"
     style="width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:8px">
 </div>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:22px">
+    <div class="cart-actions" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:22px">
       <button id="cartOk" type="button" class="btn btn-dark">
         OK
       </button>
@@ -1482,232 +1569,242 @@ if(headerCartBtn){
   headerCartBtn.addEventListener("click", function(e){
     e.preventDefault();
 
-    const cart = JSON.parse(localStorage.getItem("magicLightCart") || "[]");
+    let cart = JSON.parse(localStorage.getItem("magicLightCart") || "[]");
 
     if(cart.length === 0){
       alert("Votre panier est vide");
       return;
     }
 
-   const cartModal = document.getElementById("cartModal");
-const cartItems = document.getElementById("cartItems");
-const cartTotal = document.getElementById("cartTotal");
+    const cartModal = document.getElementById("cartModal");
+    const cartItems = document.getElementById("cartItems");
+    const cartTotal = document.getElementById("cartTotal");
+    let total = 0;
 
-const total = cart.reduce(
-  (sum,item) => sum + Number(item.price || 0) * (item.qty || 1),
-  0
-);
+    const escapeHtml = (value) => String(value ?? "")
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;")
+      .replace(/'/g,"&#039;");
 
-if(cartItems){
-  cartItems.innerHTML = cart.map((item,index) => {
-    const qty = item.qty || 1;
-    const unitPrice = Number(item.price || 0);
-    const subtotal = unitPrice * qty;
+    const updateCartCount = () => {
+      window.syncMagicLightCartCount?.();
+      const count = cart.reduce((sum,item)=>sum + (item.qty || 1),0);
+      const desktopCount = document.getElementById("cartCount");
+      if(desktopCount) desktopCount.textContent = count;
+    };
 
-    return `
-      <div style="padding:14px 0;border-bottom:1px solid #eee">
-        <div style="font-size:18px;font-weight:800;margin-bottom:6px">
-          ${index + 1}. ${item.name}
-        </div>
-        <div>Quantité : <strong>${qty}</strong></div>
-        <div>Prix unitaire : ${unitPrice.toFixed(3)} TND</div>
-        <div>Sous-total : <strong>${subtotal.toFixed(3)} TND</strong></div>
-      </div>
-    `;
-  }).join("");
-}
+    const renderCart = () => {
+      cart = JSON.parse(localStorage.getItem("magicLightCart") || "[]");
+      total = cart.reduce(
+        (sum,item) => sum + Number(item.price || 0) * (item.qty || 1),
+        0
+      );
 
-if(cartTotal){
-  cartTotal.textContent = total.toFixed(3) + " TND";
-}
+      if(cartItems){
+        if(!cart.length){
+          cartItems.innerHTML = '<div style="padding:22px;text-align:center;color:#777">Votre panier est vide</div>';
+        } else {
+          cartItems.innerHTML = cart.map((item,index) => {
+            const qty = item.qty || 1;
+            const unitPrice = Number(item.price || 0);
+            const subtotal = unitPrice * qty;
 
-if(cartModal){
-  cartModal.style.display = "flex";
-}
-
-const closeCart = function(){
-  if(cartModal) cartModal.style.display = "none";
-};
-
-const cartOk = document.getElementById("cartOk");
-const cartCloseX = document.getElementById("cartCloseX");
-
-if(cartOk) cartOk.onclick = closeCart;
-if(cartCloseX) cartCloseX.onclick = closeCart;
-
-const cartPrint = document.getElementById("cartPrint");
-
-if(cartPrint){
-  cartPrint.onclick = function(){
-    const clientName = document.getElementById("clientName")?.value.trim() || "";
-const clientPhone = document.getElementById("clientPhone")?.value.trim() || "";
-const clientEmail = document.getElementById("clientEmail")?.value.trim() || "";
-const clientAddress = document.getElementById("clientAddress")?.value.trim() || "";
-const clientCity = document.getElementById("clientCity")?.value.trim() || "";
-
-if(!clientName || !clientPhone || !clientEmail || !clientAddress){
-  alert("Veuillez remplir Nom, Téléphone, E-mail et Adresse avant d’imprimer.");
-  return;
-}
-    const printWindow = window.open("", "_blank");
-
-    if(!printWindow) return;
-
-    printWindow.document.write(`
-      <html>
-      <head>
-        <title>Commande MAGIC LIGHT</title>
-        <style>
-          body{font-family:Arial;padding:30px;color:#222}
-          h1{margin-bottom:5px}
-          .total{font-size:24px;font-weight:bold;margin-top:25px;border-top:2px solid #222;padding-top:15px}
-        </style>
-      </head>
-      <body>
-        <h1>MAGIC LIGHT</h1>
-        <div style="margin:15px 0;padding:15px;border:1px solid #ddd">
-  <h3>Informations client</h3>
-  <div><strong>Nom et prénom :</strong> ${clientName}</div>
-  <div><strong>Téléphone :</strong> ${clientPhone}</div>
-  <div><strong>E-mail :</strong> ${clientEmail}</div>
-  <div><strong>Adresse :</strong> ${clientAddress}</div>
-  <div><strong>Ville :</strong> ${clientCity || "-"}</div>
-</div>
-        <h2>PANIER</h2>
-        ${cartItems ? cartItems.innerHTML : ""}
-        <div class="total">TOTAL : ${total.toFixed(3)} TND</div>
-      </body>
-      </html>
-    `);
-
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-  };
-}
-const cartPdf = document.getElementById("cartPdf");
-
-if(cartPdf){
-  cartPdf.onclick = function(){
-
-    const clientName = document.getElementById("clientName")?.value.trim() || "";
-    const clientPhone = document.getElementById("clientPhone")?.value.trim() || "";
-    const clientEmail = document.getElementById("clientEmail")?.value.trim() || "";
-    const clientAddress = document.getElementById("clientAddress")?.value.trim() || "";
-    const clientCity = document.getElementById("clientCity")?.value.trim() || "";
-
-    if(!clientName || !clientPhone || !clientEmail || !clientAddress){
-      alert("Veuillez remplir Nom, Téléphone, E-mail et Adresse avant de télécharger le PDF.");
-      return;
-    }
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    let y = 20;
-
-    doc.setFontSize(20);
-    doc.text("MAGIC LIGHT", 20, y);
-
-    y += 12;
-    doc.setFontSize(14);
-    doc.text("Informations client", 20, y);
-
-    y += 9;
-    doc.setFontSize(11);
-    doc.text("Nom : " + clientName, 20, y);
-    y += 7;
-    doc.text("Telephone : " + clientPhone, 20, y);
-    y += 7;
-    doc.text("E-mail : " + clientEmail, 20, y);
-    y += 7;
-    doc.text("Adresse : " + clientAddress, 20, y);
-    y += 7;
-    doc.text("Ville : " + (clientCity || "-"), 20, y);
-
-    y += 14;
-    doc.setFontSize(16);
-    doc.text("PANIER", 20, y);
-    y += 10;
-
-    cart.forEach((item,index) => {
-      const qty = item.qty || 1;
-      const unitPrice = Number(item.price || 0);
-      const subtotal = unitPrice * qty;
-
-      if(y > 260){
-        doc.addPage();
-        y = 20;
+            return `
+              <div class="cart-item" data-cart-index="${index}">
+                <div class="cart-item-head">
+                  <div class="cart-item-name">${index + 1}. ${escapeHtml(item.name)}</div>
+                  <button class="cart-remove" type="button" data-cart-action="remove" data-index="${index}">Supprimer</button>
+                </div>
+                <div class="cart-item-meta">Prix unitaire : ${unitPrice.toFixed(3)} TND</div>
+                <div class="cart-item-bottom">
+                  <div class="cart-qty" aria-label="Quantité">
+                    <button type="button" data-cart-action="minus" data-index="${index}" aria-label="Diminuer">−</button>
+                    <span>${qty}</span>
+                    <button type="button" data-cart-action="plus" data-index="${index}" aria-label="Augmenter">+</button>
+                  </div>
+                  <div class="cart-subtotal">${subtotal.toFixed(3)} TND</div>
+                </div>
+              </div>
+            `;
+          }).join("");
+        }
       }
 
-      doc.setFontSize(12);
-      doc.text((index + 1) + ". " + item.name, 20, y);
-      y += 7;
+      if(cartTotal) cartTotal.textContent = total.toFixed(3) + " TND";
+      updateCartCount();
+    };
 
-      doc.setFontSize(10);
-      doc.text("Quantite : " + qty, 25, y);
-      y += 6;
-      doc.text("Prix unitaire : " + unitPrice.toFixed(3) + " TND", 25, y);
-      y += 6;
-      doc.text("Sous-total : " + subtotal.toFixed(3) + " TND", 25, y);
-      y += 11;
+    renderCart();
+
+    if(cartModal) cartModal.style.display = "flex";
+
+    if(cartItems){
+      cartItems.onclick = function(event){
+        const control = event.target.closest("[data-cart-action]");
+        if(!control) return;
+
+        const index = Number(control.dataset.index);
+        const action = control.dataset.cartAction;
+        cart = JSON.parse(localStorage.getItem("magicLightCart") || "[]");
+        if(!cart[index]) return;
+
+        if(action === "plus"){
+          cart[index].qty = (cart[index].qty || 1) + 1;
+        } else if(action === "minus"){
+          const nextQty = (cart[index].qty || 1) - 1;
+          if(nextQty <= 0) cart.splice(index,1);
+          else cart[index].qty = nextQty;
+        } else if(action === "remove"){
+          cart.splice(index,1);
+        }
+
+        localStorage.setItem("magicLightCart", JSON.stringify(cart));
+        renderCart();
+      };
+    }
+
+    const closeCart = function(){
+      if(cartModal) cartModal.style.display = "none";
+    };
+
+    const cartOk = document.getElementById("cartOk");
+    const cartCloseX = document.getElementById("cartCloseX");
+    if(cartOk) cartOk.onclick = closeCart;
+    if(cartCloseX) cartCloseX.onclick = closeCart;
+
+    const getClientData = () => ({
+      name: document.getElementById("clientName")?.value.trim() || "",
+      phone: document.getElementById("clientPhone")?.value.trim() || "",
+      email: document.getElementById("clientEmail")?.value.trim() || "",
+      address: document.getElementById("clientAddress")?.value.trim() || "",
+      city: document.getElementById("clientCity")?.value.trim() || ""
     });
 
-    if(y > 260){
-      doc.addPage();
-      y = 20;
+    const validateClient = (message) => {
+      const c = getClientData();
+      if(!c.name || !c.phone || !c.email || !c.address){
+        alert(message);
+        return null;
+      }
+      return c;
+    };
+
+    const cartPrint = document.getElementById("cartPrint");
+    if(cartPrint){
+      cartPrint.onclick = function(){
+        renderCart();
+        const c = validateClient("Veuillez remplir Nom, Téléphone, E-mail et Adresse avant d’imprimer.");
+        if(!c) return;
+
+        const printWindow = window.open("", "_blank");
+        if(!printWindow) return;
+
+        const rows = cart.map((item,index) => {
+          const qty = item.qty || 1;
+          const unitPrice = Number(item.price || 0);
+          const subtotal = unitPrice * qty;
+          return `<div class="item"><strong>${index + 1}. ${escapeHtml(item.name)}</strong><br>Quantité : ${qty}<br>Prix unitaire : ${unitPrice.toFixed(3)} TND<br>Sous-total : ${subtotal.toFixed(3)} TND</div>`;
+        }).join("");
+
+        printWindow.document.write(`
+          <html><head><title>Commande MAGIC LIGHT</title>
+          <style>
+            body{font-family:Arial;padding:30px;color:#222;max-width:850px;margin:auto}
+            h1{margin-bottom:5px}.client{margin:15px 0;padding:15px;border:1px solid #ddd;border-radius:10px}
+            .item{padding:12px 0;border-bottom:1px solid #ddd;line-height:1.45}
+            .total{font-size:24px;font-weight:bold;margin-top:25px;border-top:2px solid #222;padding-top:15px}
+          </style></head><body>
+          <h1>MAGIC LIGHT</h1>
+          <div class="client"><h3>Informations client</h3>
+          <div><strong>Nom et prénom :</strong> ${escapeHtml(c.name)}</div>
+          <div><strong>Téléphone :</strong> ${escapeHtml(c.phone)}</div>
+          <div><strong>E-mail :</strong> ${escapeHtml(c.email)}</div>
+          <div><strong>Adresse :</strong> ${escapeHtml(c.address)}</div>
+          <div><strong>Ville :</strong> ${escapeHtml(c.city || "-")}</div></div>
+          <h2>PANIER</h2>${rows}
+          <div class="total">TOTAL : ${total.toFixed(3)} TND</div>
+          </body></html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+      };
     }
 
-    doc.setFontSize(16);
-    doc.text("TOTAL : " + total.toFixed(3) + " TND", 20, y);
+    const cartPdf = document.getElementById("cartPdf");
+    if(cartPdf){
+      cartPdf.onclick = function(){
+        renderCart();
+        const c = validateClient("Veuillez remplir Nom, Téléphone, E-mail et Adresse avant de télécharger le PDF.");
+        if(!c) return;
+        if(!window.jspdf || !window.jspdf.jsPDF){
+          alert("PDF indisponible. Vérifiez votre connexion Internet.");
+          return;
+        }
 
-    doc.save("Commande-MAGIC-LIGHT.pdf");
-  };
-}  
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        let y = 20;
+        doc.setFontSize(20); doc.text("MAGIC LIGHT",20,y);
+        y += 12; doc.setFontSize(14); doc.text("Informations client",20,y);
+        y += 9; doc.setFontSize(11);
+        doc.text("Nom : " + c.name,20,y); y += 7;
+        doc.text("Telephone : " + c.phone,20,y); y += 7;
+        doc.text("E-mail : " + c.email,20,y); y += 7;
+        doc.text("Adresse : " + c.address,20,y); y += 7;
+        doc.text("Ville : " + (c.city || "-"),20,y);
+        y += 14; doc.setFontSize(16); doc.text("PANIER",20,y); y += 10;
+
+        cart.forEach((item,index) => {
+          const qty = item.qty || 1;
+          const unitPrice = Number(item.price || 0);
+          const subtotal = unitPrice * qty;
+          if(y > 260){ doc.addPage(); y = 20; }
+          doc.setFontSize(12); doc.text((index + 1) + ". " + item.name,20,y); y += 7;
+          doc.setFontSize(10); doc.text("Quantite : " + qty,25,y); y += 6;
+          doc.text("Prix unitaire : " + unitPrice.toFixed(3) + " TND",25,y); y += 6;
+          doc.text("Sous-total : " + subtotal.toFixed(3) + " TND",25,y); y += 11;
+        });
+
+        if(y > 260){ doc.addPage(); y = 20; }
+        doc.setFontSize(16); doc.text("TOTAL : " + total.toFixed(3) + " TND",20,y);
+        doc.save("Commande-MAGIC-LIGHT.pdf");
+      };
+    }
+
     const cartWhatsApp = document.getElementById("cartWhatsApp");
+    if(cartWhatsApp){
+      cartWhatsApp.onclick = function(){
+        renderCart();
+        const c = validateClient("Veuillez remplir Nom, Téléphone, E-mail et Adresse avant de commander.");
+        if(!c) return;
+        if(!cart.length){ alert("Votre panier est vide"); return; }
 
-if(cartWhatsApp){
-  cartWhatsApp.onclick = function(){
+        const productsText = cart.map((item,index) => {
+          const qty = item.qty || 1;
+          const unitPrice = Number(item.price || 0);
+          const subtotal = unitPrice * qty;
+          return (index + 1) + ". " + item.name +
+            "\nQuantité : " + qty +
+            "\nPrix unitaire : " + unitPrice.toFixed(3) + " TND" +
+            "\nSous-total : " + subtotal.toFixed(3) + " TND";
+        }).join("\n\n");
 
-    const clientName = document.getElementById("clientName")?.value.trim() || "";
-    const clientPhone = document.getElementById("clientPhone")?.value.trim() || "";
-    const clientEmail = document.getElementById("clientEmail")?.value.trim() || "";
-    const clientAddress = document.getElementById("clientAddress")?.value.trim() || "";
-    const clientCity = document.getElementById("clientCity")?.value.trim() || "";
+        const message =
+          "🛒 COMMANDE MAGIC LIGHT\n\n" +
+          "👤 Nom : " + c.name + "\n" +
+          "📞 Téléphone : " + c.phone + "\n" +
+          "📧 E-mail : " + c.email + "\n" +
+          "📍 Adresse : " + c.address + "\n" +
+          "🏙️ Ville : " + (c.city || "-") + "\n\n" +
+          "📦 PRODUITS\n\n" + productsText +
+          "\n\n💰 TOTAL : " + total.toFixed(3) + " TND";
 
-    if(!clientName || !clientPhone || !clientEmail || !clientAddress){
-      alert("Veuillez remplir Nom, Téléphone, E-mail et Adresse avant de commander.");
-      return;
+        window.open("https://wa.me/21622181224?text=" + encodeURIComponent(message),"_blank");
+      };
     }
-
-    const productsText = cart.map((item,index) => {
-      const qty = item.qty || 1;
-      const unitPrice = Number(item.price || 0);
-      const subtotal = unitPrice * qty;
-
-      return (index + 1) + ". " + item.name +
-        "\nQuantité : " + qty +
-        "\nPrix unitaire : " + unitPrice.toFixed(3) + " TND" +
-        "\nSous-total : " + subtotal.toFixed(3) + " TND";
-    }).join("\n\n");
-
-    const message =
-      "🛒 COMMANDE MAGIC LIGHT\n\n" +
-      "👤 Nom : " + clientName + "\n" +
-      "📞 Téléphone : " + clientPhone + "\n" +
-      "📧 E-mail : " + clientEmail + "\n" +
-      "📍 Adresse : " + clientAddress + "\n" +
-      "🏙️ Ville : " + (clientCity || "-") + "\n\n" +
-      "📦 PRODUITS\n\n" +
-      productsText +
-      "\n\n💰 TOTAL : " + total.toFixed(3) + " TND";
-
-    window.open(
-      "https://wa.me/21622181224?text=" + encodeURIComponent(message),
-      "_blank"
-    );
-  };
-}
   });
 }
   loadProducts();
