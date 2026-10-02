@@ -179,6 +179,11 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   .section-head{flex-direction:column;align-items:flex-start}
   .catalog .spread{grid-template-columns:1fr}
 }
+
+/* V7 PERFORMANCE: render off-screen cards only when needed */
+@supports (content-visibility:auto){
+  .card,.refitem,.catalog .spread{content-visibility:auto;contain-intrinsic-size:320px 420px}
+}
 </style>
 
 <style id="mobile-header-v2">
@@ -497,7 +502,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   <div class="container top">
     <button class="menu" type="button" aria-label="Ouvrir le menu" aria-controls="mobileNav" aria-expanded="false">☰</button>
     <a class="logo" href="index.html">
-      <img src="assets/logo.jpg" alt="MAGIC LIGHT">
+      <img src="assets/logo.jpg" alt="MAGIC LIGHT" decoding="async" fetchpriority="high">
       <div><strong>MAGIC LIGHT</strong><small>Éclairage & Décoration</small></div>
     </a>
     <a class="call" href="tel:+21622181224"><span>APPELEZ-NOUS AU :</span><b>(+216) 22 181 224</b></a>
@@ -512,7 +517,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
     <div class="container navrow">
       <div class="links" id="mobileNav">
         <div class="mobile-drawer-head">
-          <div class="mobile-drawer-brand"><img src="assets/logo.jpg" alt=""><div><strong>MAGIC LIGHT</strong><small>Éclairage & Décoration</small></div></div>
+          <div class="mobile-drawer-brand"><img src="assets/logo.jpg" alt="" decoding="async" fetchpriority="high"><div><strong>MAGIC LIGHT</strong><small>Éclairage & Décoration</small></div></div>
           <button class="menu-close" type="button" aria-label="Fermer le menu">×</button>
         </div>
         <a class="link" href="index.html">ACCUEIL</a>
@@ -542,7 +547,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
 <section class="pagehero"><div class="container"><div class="kicker">CATALOGUE</div><h1>Catalogue MAGIC LIGHT</h1><p>Une sélection visuelle structurée par familles et solutions.</p></div></section>
 <section class="section soft"><div class="container"><div class="catalog">
     <div class="spread">
-      <img src="assets/lustre-anneau.png" alt="Lustre anneau moderne">
+      <img src="assets/lustre-anneau.png" alt="Lustre anneau moderne" decoding="async" loading="lazy">
       <div class="copy">
         <div class="kicker">MAGIC LIGHT</div>
         <h3>Lustre anneau moderne</h3><p>Lustre anneau contemporain avec plusieurs points lumineux pour séjour et salle à manger.</p>
@@ -552,7 +557,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
       </div>
     </div>
     <div class="spread">
-      <img src="assets/fomsi-panel-led.png" alt="FOMSI panneaux LED 3 CCT">
+      <img src="assets/fomsi-panel-led.png" alt="FOMSI panneaux LED 3 CCT" decoding="async" loading="lazy">
       <div class="copy">
         <div class="kicker">MAGIC LIGHT</div>
         <h3>FOMSI panneaux LED 3 CCT</h3><p>Panneaux et plafonniers FOMSI avec trois températures de couleur 3000K / 4000K / 6000K.</p>
@@ -562,7 +567,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
       </div>
     </div>
     <div class="spread">
-      <img src="assets/applique-murale-3000k-6000k.png" alt="Applique murale LED 3000K / 6000K">
+      <img src="assets/applique-murale-3000k-6000k.png" alt="Applique murale LED 3000K / 6000K" decoding="async" loading="lazy">
       <div class="copy">
         <div class="kicker">MAGIC LIGHT</div>
         <h3>Applique murale LED 3000K / 6000K</h3><p>Applique murale moderne disponible en lumière chaude et blanche.</p>
@@ -572,7 +577,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
       </div>
     </div>
     <div class="spread">
-      <img src="assets/eclairage-escalier-auto.png" alt="Éclairage escalier LED automatique">
+      <img src="assets/eclairage-escalier-auto.png" alt="Éclairage escalier LED automatique" decoding="async" loading="lazy">
       <div class="copy">
         <div class="kicker">MAGIC LIGHT</div>
         <h3>Éclairage escalier LED automatique</h3><p>Kit d’éclairage automatique pour escaliers avec capteurs et contrôleur.</p>
@@ -582,7 +587,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
       </div>
     </div>
     <div class="spread">
-      <img src="assets/camera-wifi-imou.png" alt="Caméra extérieure Wi‑Fi IMOU">
+      <img src="assets/camera-wifi-imou.png" alt="Caméra extérieure Wi‑Fi IMOU" decoding="async" loading="lazy">
       <div class="copy">
         <div class="kicker">MAGIC LIGHT</div>
         <h3>Caméra extérieure Wi‑Fi IMOU</h3><p>Caméra extérieure Full HD avec vision nocturne, IP67, détection humaine et accès à distance.</p>
@@ -592,7 +597,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
       </div>
     </div>
     <div class="spread">
-      <img src="assets/suspension-moderne.png" alt="Suspension Design Moderne">
+      <img src="assets/suspension-moderne.png" alt="Suspension Design Moderne" decoding="async" loading="lazy">
       <div class="copy">
         <div class="kicker">MAGIC LIGHT</div>
         <h3>Suspension Design Moderne</h3><p>Suspension élégante en plusieurs finitions pour maison, bureau et commerces.</p>
@@ -620,7 +625,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
 <div class="modal">
   <div class="modalbox">
     <button class="close">×</button>
-    <img id="modalImg" src="" alt="">
+    <img id="modalImg" src="" alt="" decoding="async" loading="lazy">
     <div class="modalcopy">
       <div class="kicker">MAGIC LIGHT</div>
       <h2 id="modalTitle"></h2>

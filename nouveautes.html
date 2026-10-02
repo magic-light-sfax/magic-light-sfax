@@ -179,6 +179,11 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   .section-head{flex-direction:column;align-items:flex-start}
   .catalog .spread{grid-template-columns:1fr}
 }
+
+/* V7 PERFORMANCE: render off-screen cards only when needed */
+@supports (content-visibility:auto){
+  .card,.refitem,.catalog .spread{content-visibility:auto;contain-intrinsic-size:320px 420px}
+}
 </style>
 
 <style>
@@ -504,7 +509,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   <div class="container top">
     <button class="menu" type="button" aria-label="Ouvrir le menu" aria-controls="mobileNav" aria-expanded="false">☰</button>
     <a class="logo" href="index.html">
-      <img src="assets/logo.jpg" alt="MAGIC LIGHT">
+      <img src="assets/logo.jpg" alt="MAGIC LIGHT" decoding="async" fetchpriority="high">
       <div><strong>MAGIC LIGHT</strong><small>Éclairage & Décoration</small></div>
     </a>
     <a class="call" href="tel:+21622181224"><span>APPELEZ-NOUS AU :</span><b>(+216) 22 181 224</b></a>
@@ -519,7 +524,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
     <div class="container navrow">
       <div class="links" id="mobileNav">
         <div class="mobile-drawer-head">
-          <div class="mobile-drawer-brand"><img src="assets/logo.jpg" alt=""><div><strong>MAGIC LIGHT</strong><small>Éclairage & Décoration</small></div></div>
+          <div class="mobile-drawer-brand"><img src="assets/logo.jpg" alt="" decoding="async" fetchpriority="high"><div><strong>MAGIC LIGHT</strong><small>Éclairage & Décoration</small></div></div>
           <button class="menu-close" type="button" aria-label="Fermer le menu">×</button>
         </div>
         <a class="link" href="index.html">ACCUEIL</a>
@@ -549,7 +554,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
 <section class="pagehero"><div class="container"><div class="kicker">NOUVEAUTÉS</div><h1>Nouveautés MAGIC LIGHT</h1><p>Les 10 nouveaux visuels de la dernière série.</p></div></section>
 <section class="section soft"><div class="container"><div class="grid">
 <article class="card" data-cat="Lustres &amp; suspensions" data-search="lustre anneau moderne ml-lus-011 lustres &amp; suspensions lustre anneau contemporain avec plusieurs points lumineux pour séjour et salle à manger.">
-  <img src="assets/lustre-anneau.png" alt="Lustre anneau moderne">
+  <img src="assets/lustre-anneau.png" alt="Lustre anneau moderne" decoding="async" loading="lazy">
   <div class="body">
     <span class="badge">Lustres &amp; suspensions</span>
     <h3>Lustre anneau moderne</h3>
@@ -566,7 +571,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   </div>
 </article>
 <article class="card" data-cat="Ampoules &amp; lampes" data-search="lustres &amp; ampoules filament ml-fil-012 ampoules &amp; lampes sélection de lustres, suspensions et ampoules filament pour ambiance chaleureuse.">
-  <img src="assets/lustres-ampoules-filament.png" alt="Lustres &amp; ampoules filament">
+  <img src="assets/lustres-ampoules-filament.png" alt="Lustres &amp; ampoules filament" decoding="async" loading="lazy">
   <div class="body">
     <span class="badge">Ampoules &amp; lampes</span>
     <h3>Lustres &amp; ampoules filament</h3>
@@ -583,7 +588,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   </div>
 </article>
 <article class="card" data-cat="Plafonniers &amp; panneaux LED" data-search="fomsi panneaux led 3 cct ml-fom-013 plafonniers &amp; panneaux led panneaux et plafonniers fomsi avec trois températures de couleur 3000k / 4000k / 6000k.">
-  <img src="assets/fomsi-panel-led.png" alt="FOMSI panneaux LED 3 CCT">
+  <img src="assets/fomsi-panel-led.png" alt="FOMSI panneaux LED 3 CCT" decoding="async" loading="lazy">
   <div class="body">
     <span class="badge">Plafonniers &amp; panneaux LED</span>
     <h3>FOMSI panneaux LED 3 CCT</h3>
@@ -600,7 +605,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   </div>
 </article>
 <article class="card" data-cat="Profilés LED" data-search="profilés led aluminium ml-pro-014 profilés led profilés encastrés et saillie pour éclairage architectural, meubles et faux plafonds.">
-  <img src="assets/profiles-led-aluminium.png" alt="Profilés LED aluminium">
+  <img src="assets/profiles-led-aluminium.png" alt="Profilés LED aluminium" decoding="async" loading="lazy">
   <div class="body">
     <span class="badge">Profilés LED</span>
     <h3>Profilés LED aluminium</h3>
@@ -617,7 +622,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   </div>
 </article>
 <article class="card" data-cat="Éclairage extérieur" data-search="applique murale led 3000k / 6000k ml-apl-015 éclairage extérieur applique murale moderne disponible en lumière chaude et blanche.">
-  <img src="assets/applique-murale-3000k-6000k.png" alt="Applique murale LED 3000K / 6000K">
+  <img src="assets/applique-murale-3000k-6000k.png" alt="Applique murale LED 3000K / 6000K" decoding="async" loading="lazy">
   <div class="body">
     <span class="badge">Éclairage extérieur</span>
     <h3>Applique murale LED 3000K / 6000K</h3>
@@ -634,7 +639,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   </div>
 </article>
 <article class="card" data-cat="Décoration lumineuse" data-search="kit fibre optique ciel étoilé ml-fib-016 décoration lumineuse fibre optique multicolore pour plafond ciel étoilé, chambres, hôtels et restaurants.">
-  <img src="assets/fibre-optique.png" alt="Kit fibre optique ciel étoilé">
+  <img src="assets/fibre-optique.png" alt="Kit fibre optique ciel étoilé" decoding="async" loading="lazy">
   <div class="body">
     <span class="badge">Décoration lumineuse</span>
     <h3>Kit fibre optique ciel étoilé</h3>
@@ -651,7 +656,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   </div>
 </article>
 <article class="card" data-cat="Éclairage intelligent" data-search="éclairage escalier led automatique ml-esc-017 éclairage intelligent kit d’éclairage automatique pour escaliers avec capteurs et contrôleur.">
-  <img src="assets/eclairage-escalier-auto.png" alt="Éclairage escalier LED automatique">
+  <img src="assets/eclairage-escalier-auto.png" alt="Éclairage escalier LED automatique" decoding="async" loading="lazy">
   <div class="body">
     <span class="badge">Éclairage intelligent</span>
     <h3>Éclairage escalier LED automatique</h3>
@@ -668,7 +673,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   </div>
 </article>
 <article class="card" data-cat="Accessoires électriques" data-search="câble avec interrupteur ml-acc-018 accessoires électriques câble d’alimentation avec fiche et interrupteur pour lampes et petits luminaires.">
-  <img src="assets/cable-interrupteur.png" alt="Câble avec interrupteur">
+  <img src="assets/cable-interrupteur.png" alt="Câble avec interrupteur" decoding="async" loading="lazy">
   <div class="body">
     <span class="badge">Accessoires électriques</span>
     <h3>Câble avec interrupteur</h3>
@@ -685,7 +690,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   </div>
 </article>
 <article class="card" data-cat="Sécurité &amp; surveillance" data-search="caméra extérieure wi‑fi imou ml-cam-019 sécurité &amp; surveillance caméra extérieure full hd avec vision nocturne, ip67, détection humaine et accès à distance.">
-  <img src="assets/camera-wifi-imou.png" alt="Caméra extérieure Wi‑Fi IMOU">
+  <img src="assets/camera-wifi-imou.png" alt="Caméra extérieure Wi‑Fi IMOU" decoding="async" loading="lazy">
   <div class="body">
     <span class="badge">Sécurité &amp; surveillance</span>
     <h3>Caméra extérieure Wi‑Fi IMOU</h3>
@@ -702,7 +707,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   </div>
 </article>
 <article class="card" data-cat="Rubans &amp; RGB" data-search="ruban rgb / néon led ml-rgb-020 rubans &amp; rgb ruban multicolore pour maison, gaming, magasins, fêtes et créations personnalisées.">
-  <img src="assets/ruban-rgb-neon.png" alt="Ruban RGB / Néon LED">
+  <img src="assets/ruban-rgb-neon.png" alt="Ruban RGB / Néon LED" decoding="async" loading="lazy">
   <div class="body">
     <span class="badge">Rubans &amp; RGB</span>
     <h3>Ruban RGB / Néon LED</h3>
@@ -752,7 +757,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
 <div class="modal">
   <div class="modalbox">
     <button class="close">×</button>
-    <img id="modalImg" src="" alt="">
+    <img id="modalImg" src="" alt="" decoding="async" loading="lazy">
     <div class="modalcopy">
       <div class="kicker">MAGIC LIGHT</div>
       <h2 id="modalTitle"></h2>
@@ -891,7 +896,7 @@ if(year)year.textContent=new Date().getFullYear();
     const search=`${p.name||""} ${p.reference||""} ${p.category||""} ${p.description||""}`.toLowerCase();
     return `
       <article class="card admin-product-card" data-cat="${esc(p.category||"Autres")}" data-search="${esc(search)}">
-        <img src="${esc(p.image||"")}" alt="${esc(p.name||"Produit")}">
+        <img src="${esc(p.image||"")}" alt="${esc(p.name||"Produit")}" decoding="async" loading="lazy">
         <div class="body">
           <span class="badge">${esc(p.category||"Autres")}</span>
           <h3>${esc(p.name||"Produit")}</h3>

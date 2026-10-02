@@ -179,6 +179,11 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   .section-head{flex-direction:column;align-items:flex-start}
   .catalog .spread{grid-template-columns:1fr}
 }
+
+/* V7 PERFORMANCE: render off-screen cards only when needed */
+@supports (content-visibility:auto){
+  .card,.refitem,.catalog .spread{content-visibility:auto;contain-intrinsic-size:320px 420px}
+}
 </style>
 
 <style id="mobile-header-v2">
@@ -497,7 +502,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   <div class="container top">
     <button class="menu" type="button" aria-label="Ouvrir le menu" aria-controls="mobileNav" aria-expanded="false">☰</button>
     <a class="logo" href="index.html">
-      <img src="assets/logo.jpg" alt="MAGIC LIGHT">
+      <img src="assets/logo.jpg" alt="MAGIC LIGHT" decoding="async" fetchpriority="high">
       <div><strong>MAGIC LIGHT</strong><small>Éclairage & Décoration</small></div>
     </a>
     <a class="call" href="tel:+21622181224"><span>APPELEZ-NOUS AU :</span><b>(+216) 22 181 224</b></a>
@@ -512,7 +517,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
     <div class="container navrow">
       <div class="links" id="mobileNav">
         <div class="mobile-drawer-head">
-          <div class="mobile-drawer-brand"><img src="assets/logo.jpg" alt=""><div><strong>MAGIC LIGHT</strong><small>Éclairage & Décoration</small></div></div>
+          <div class="mobile-drawer-brand"><img src="assets/logo.jpg" alt="" decoding="async" fetchpriority="high"><div><strong>MAGIC LIGHT</strong><small>Éclairage & Décoration</small></div></div>
           <button class="menu-close" type="button" aria-label="Fermer le menu">×</button>
         </div>
         <a class="link" href="index.html">ACCUEIL</a>
@@ -540,7 +545,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
 
 <main>
 <section class="pagehero"><div class="container"><div class="kicker">RÉFÉRENCES & INSPIRATIONS</div><h1>Applications & ambiances</h1><p>Des idées d’intégration dans la maison, le commerce, les hôtels, les escaliers et l’extérieur.</p></div></section>
-<section class="section"><div class="container"><div class="refgrid"><div class="refitem"><img src="assets/lustre-anneau.png"><div class="label"><strong>Salon &amp; salle à manger</strong><span>Lustre anneau contemporain</span></div></div><div class="refitem"><img src="assets/lustres-ampoules-filament.png"><div class="label"><strong>Ambiance vintage</strong><span>Filament, lustres et lampes déco</span></div></div><div class="refitem"><img src="assets/profiles-led-aluminium.png"><div class="label"><strong>Architecture intérieure</strong><span>Profilés LED encastrés et saillie</span></div></div><div class="refitem"><img src="assets/applique-murale-3000k-6000k.png"><div class="label"><strong>Façades &amp; murs</strong><span>Appliques modernes 3000K / 6000K</span></div></div><div class="refitem"><img src="assets/fibre-optique.png"><div class="label"><strong>Ciel étoilé</strong><span>Fibre optique pour chambres et hôtels</span></div></div><div class="refitem"><img src="assets/eclairage-escalier-auto.png"><div class="label"><strong>Escaliers intelligents</strong><span>Éclairage automatique avec capteurs</span></div></div><div class="refitem"><img src="assets/camera-wifi-imou.png"><div class="label"><strong>Sécurité extérieure</strong><span>Caméra Wi‑Fi et vision nocturne</span></div></div><div class="refitem"><img src="assets/ruban-rgb-neon.png"><div class="label"><strong>Gaming &amp; événements</strong><span>Rubans RGB et néon multicolore</span></div></div><div class="refitem"><img src="assets/fomsi-panel-led.png"><div class="label"><strong>Plafonniers LED</strong><span>FOMSI 3 CCT pour espaces modernes</span></div></div></div></div></section>
+<section class="section"><div class="container"><div class="refgrid"><div class="refitem"><img src="assets/lustre-anneau.png" decoding="async" loading="lazy"><div class="label"><strong>Salon &amp; salle à manger</strong><span>Lustre anneau contemporain</span></div></div><div class="refitem"><img src="assets/lustres-ampoules-filament.png" decoding="async" loading="lazy"><div class="label"><strong>Ambiance vintage</strong><span>Filament, lustres et lampes déco</span></div></div><div class="refitem"><img src="assets/profiles-led-aluminium.png" decoding="async" loading="lazy"><div class="label"><strong>Architecture intérieure</strong><span>Profilés LED encastrés et saillie</span></div></div><div class="refitem"><img src="assets/applique-murale-3000k-6000k.png" decoding="async" loading="lazy"><div class="label"><strong>Façades &amp; murs</strong><span>Appliques modernes 3000K / 6000K</span></div></div><div class="refitem"><img src="assets/fibre-optique.png" decoding="async" loading="lazy"><div class="label"><strong>Ciel étoilé</strong><span>Fibre optique pour chambres et hôtels</span></div></div><div class="refitem"><img src="assets/eclairage-escalier-auto.png" decoding="async" loading="lazy"><div class="label"><strong>Escaliers intelligents</strong><span>Éclairage automatique avec capteurs</span></div></div><div class="refitem"><img src="assets/camera-wifi-imou.png" decoding="async" loading="lazy"><div class="label"><strong>Sécurité extérieure</strong><span>Caméra Wi‑Fi et vision nocturne</span></div></div><div class="refitem"><img src="assets/ruban-rgb-neon.png" decoding="async" loading="lazy"><div class="label"><strong>Gaming &amp; événements</strong><span>Rubans RGB et néon multicolore</span></div></div><div class="refitem"><img src="assets/fomsi-panel-led.png" decoding="async" loading="lazy"><div class="label"><strong>Plafonniers LED</strong><span>FOMSI 3 CCT pour espaces modernes</span></div></div></div></div></section>
 </main>
 
 
@@ -560,7 +565,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
 <div class="modal">
   <div class="modalbox">
     <button class="close">×</button>
-    <img id="modalImg" src="" alt="">
+    <img id="modalImg" src="" alt="" decoding="async" loading="lazy">
     <div class="modalcopy">
       <div class="kicker">MAGIC LIGHT</div>
       <h2 id="modalTitle"></h2>
