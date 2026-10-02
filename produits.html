@@ -2428,18 +2428,8 @@ if(headerCartBtn){
   });
   window.addEventListener('resize',lockDrawerX);
 })();
-</script>
-
-</body></html>
-        `);
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
-      };
-    }
-
-    const cartPdf = document.getElementById("cartPdf");
-    if(cartPdf){
+const cartPdf = document.getElementById("cartPdf");
+if(cartPdf){
       cartPdf.onclick = function(){
         renderCart();
         const c = validateClient("Veuillez remplir Nom, Téléphone, E-mail et Adresse avant de télécharger le PDF.");
