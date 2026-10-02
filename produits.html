@@ -1638,16 +1638,16 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
 </article></div>
 </div></section>
 
-<section class="section soft" id="admin-catalogue">
+<section class="section soft" id="admin-catalogue" style="padding:0">
   <div class="container">
-    <div class="section-head">
+   <div class="section-head" style="display:none">
       <div>
         <div class="kicker">ADMIN CATALOGUE</div>
         <h2>Produits ajoutés depuis Admin</h2>
         <p>Ces produits sont publiés depuis votre espace privé /admin/.</p>
       </div>
     </div>
-    <div class="admin-products-note">Pour ajouter un article: ouvrez <strong>/admin/</strong>, remplissez la fiche et cliquez sur Publish.</div>
+    <div class="admin-products-note" style="display:none">Pour ajouter un article: ouvrez <strong>/admin/</strong>, remplissez la fiche et cliquez sur Publish.</div>
     <div class="grid" id="adminProductsGrid" data-mode="all" data-limit="0"></div>
   </div>
 </section>
