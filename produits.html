@@ -861,6 +861,65 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   #cartModal .cart-actions .btn{font-size:.74rem !important}
 }
 </style>
+
+<style id="mobile-product-v6">
+/* ===== MAGIC LIGHT • PRODUCT DETAIL V6 ===== */
+.product-gallery{
+  position:relative;background:#f4f5f7;min-width:0;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.product-gallery-stage{
+  position:relative;min-height:420px;display:grid;place-items:center;background:#f4f5f7;
+  overflow:hidden;touch-action:pan-y;
+}
+.product-gallery-stage #modalImg{
+  width:100%;height:100%;max-height:72vh;object-fit:contain;background:#f4f5f7;cursor:zoom-in;
+}
+.gallery-nav,.gallery-zoom{
+  position:absolute;border:0;display:grid;place-items:center;cursor:pointer;z-index:6;
+  background:rgba(17,18,21,.90);color:#fff;box-shadow:0 5px 18px rgba(0,0,0,.18)
+}
+.gallery-nav{top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;font-size:24px}
+.gallery-nav.prev{left:12px}.gallery-nav.next{right:12px}
+.gallery-zoom{right:12px;bottom:12px;min-width:42px;height:42px;border-radius:12px;padding:0 12px;font-weight:900}
+.gallery-thumbs{display:flex;gap:8px;padding:10px;overflow-x:auto;background:#fff;border-top:1px solid #eceef1;scrollbar-width:none}
+.gallery-thumbs::-webkit-scrollbar{display:none}
+.gallery-thumb{flex:0 0 66px;width:66px;height:54px;padding:0;border:2px solid transparent;border-radius:10px;overflow:hidden;background:#f4f5f7;cursor:pointer}
+.gallery-thumb.active{border-color:var(--gold)}
+.gallery-thumb img{width:100%;height:100%;object-fit:cover;background:#f4f5f7}
+.product-specs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0 4px}
+.product-spec{padding:10px 11px;border:1px solid var(--line);border-radius:12px;background:#fafafa;min-width:0}
+.product-spec span{display:block;color:#8b919a;font-size:.69rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.product-spec strong{display:block;margin-top:3px;font-size:.84rem;overflow-wrap:anywhere}
+.product-spec[hidden]{display:none !important}
+#productPdf{cursor:pointer}
+#imageZoom{
+  position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.96);display:none;align-items:center;justify-content:center;padding:18px;
+}
+#imageZoom.open{display:flex}
+#imageZoom img{max-width:100%;max-height:92dvh;object-fit:contain;touch-action:pinch-zoom}
+#zoomClose{position:absolute;right:16px;top:16px;width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:#fff;color:#111;font-size:26px;cursor:pointer}
+.zoom-hint{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);color:#fff;background:rgba(0,0,0,.45);border-radius:999px;padding:7px 12px;font-size:.76rem;white-space:nowrap}
+@media(max-width:620px){
+  .product-gallery-stage{min-height:250px;height:42dvh;max-height:360px}
+  .product-gallery-stage #modalImg{height:100% !important;min-height:0 !important;max-height:none !important}
+  .gallery-nav{width:38px;height:38px;font-size:21px}
+  .gallery-zoom{height:38px;min-width:38px;font-size:.75rem;padding:0 10px}
+  .gallery-thumbs{padding:8px;gap:7px}
+  .gallery-thumb{flex-basis:58px;width:58px;height:48px}
+  .product-specs{grid-template-columns:1fr 1fr;margin-top:10px}
+  .product-spec{padding:8px 9px}
+  .product-spec strong{font-size:.78rem}
+  .modalcopy .hero-buttons{grid-template-columns:1fr 1fr !important}
+  #productPdf{grid-column:1 / -1 !important}
+  #modalWhatsApp{grid-column:auto !important}
+}
+@media(max-width:390px){
+  .product-gallery-stage{height:35dvh;min-height:210px;max-height:290px}
+  .product-specs{gap:6px}
+}
+</style>
+
 </head>
 <body>
 
@@ -1289,13 +1348,27 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
 <div class="modal">
   <div class="modalbox">
     <button class="close">×</button>
-    <img id="modalImg" src="" alt="">
+    <div class="product-gallery" id="productGallery">
+      <div class="product-gallery-stage" id="productGalleryStage">
+        <img id="modalImg" src="" alt="">
+        <button class="gallery-nav prev" id="galleryPrev" type="button" aria-label="Image précédente">‹</button>
+        <button class="gallery-nav next" id="galleryNext" type="button" aria-label="Image suivante">›</button>
+        <button class="gallery-zoom" id="galleryZoom" type="button">🔍 Zoom</button>
+      </div>
+      <div class="gallery-thumbs" id="galleryThumbs"></div>
+    </div>
     <div class="modalcopy">
       <div class="kicker">MAGIC LIGHT</div>
       <h2 id="modalTitle"></h2>
       <div class="ref" id="modalRef"></div>
       <p id="modalDesc"></p>
       <div id="modalPrice" style="display:block;font-size:22px;font-weight:800;color:#c99a3c;margin:14px 0;"></div>
+      <div class="product-specs" id="modalSpecs">
+        <div class="product-spec"><span>Référence</span><strong id="specRef">—</strong></div>
+        <div class="product-spec" id="specPowerRow" hidden><span>Puissance</span><strong id="specPower"></strong></div>
+        <div class="product-spec" id="specDimensionsRow" hidden><span>Dimensions</span><strong id="specDimensions"></strong></div>
+        <div class="product-spec"><span>Disponibilité</span><strong id="specStock">Nous contacter</strong></div>
+      </div>
 <div id="modalCartControls" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0">
   <div style="display:flex;align-items:center;border:1px solid #ddd;border-radius:30px;overflow:hidden">
     <button type="button" id="qtyMinus" style="width:42px;height:42px;border:0;background:#fff;font-size:22px">−</button>
@@ -1307,11 +1380,17 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
     🛒 Ajouter au panier
   </button>
 </div>      <div class="hero-buttons">
-        <a class="btn btn-gold" target="_blank" href="https://wa.me/21622181224">Demander sur WhatsApp</a>
+        <button class="btn btn-light" id="productPdf" type="button">📄 Fiche technique PDF</button>
+        <a class="btn btn-gold" id="modalWhatsApp" target="_blank" href="https://wa.me/21622181224">Demander sur WhatsApp</a>
         <a class="btn btn-dark" href="tel:+21622181224">Appeler</a>
       </div>
     </div>
   </div>
+</div>
+<div id="imageZoom" aria-hidden="true">
+  <button id="zoomClose" type="button" aria-label="Fermer">×</button>
+  <img id="zoomImg" src="" alt="Agrandissement produit">
+  <div class="zoom-hint">Pincez l’image pour zoomer</div>
 </div>
 <div id="cartModal" class="cart-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;align-items:center;justify-content:center;padding:20px">
   <div class="cart-panel" style="background:#fff;width:min(850px,95%);max-height:88vh;overflow:auto;border-radius:22px;padding:25px;position:relative">
@@ -1465,30 +1544,156 @@ if(initialSearch && searchInput){
   requestAnimationFrame(()=>applyMagicSearch(initialSearch));
 }
 
-// Product modal
+// Product modal V6
 const modal=document.querySelector('.modal');
 const modalImg=document.querySelector('#modalImg');
 const modalTitle=document.querySelector('#modalTitle');
 const modalRef=document.querySelector('#modalRef');
 const modalDesc=document.querySelector('#modalDesc');
-  const modalPrice=document.querySelector('#modalPrice');
-document.querySelectorAll('.view-product').forEach(btn=>btn.addEventListener('click',()=>{
-  if(!modal)return;
-  modalImg.src=btn.dataset.img;
-  modalTitle.textContent=btn.dataset.name;
-  modalRef.textContent=btn.dataset.ref;
-  const card=btn.closest('.card');
-modalPrice.textContent=card?.querySelector('.admin-price')?.textContent || '';
-  const modalAddCart=document.querySelector('#modalAddCart');
-if(modalAddCart){
-  modalAddCart.dataset.name=btn.dataset.name || "Produit";
-  modalAddCart.dataset.price=btn.dataset.price || (modalPrice.textContent || "").replace(/[^\d.]/g,"") || "0";
+const modalPrice=document.querySelector('#modalPrice');
+const galleryThumbs=document.getElementById('galleryThumbs');
+const galleryPrev=document.getElementById('galleryPrev');
+const galleryNext=document.getElementById('galleryNext');
+const galleryZoom=document.getElementById('galleryZoom');
+const galleryStage=document.getElementById('productGalleryStage');
+const imageZoom=document.getElementById('imageZoom');
+const zoomImg=document.getElementById('zoomImg');
+const zoomClose=document.getElementById('zoomClose');
+let modalImages=[];
+let modalImageIndex=0;
+window.magicCurrentProduct=null;
+
+function magicProductImages(btn){
+  const out=[];
+  const add=v=>{ if(v && !out.includes(v)) out.push(v); };
+  add(btn?.dataset?.img || '');
+  (btn?.dataset?.images || '').split('|').map(x=>x.trim()).filter(Boolean).forEach(add);
+  return out;
 }
-  modalDesc.textContent=btn.dataset.desc;
+function magicExtractPower(btn){
+  const explicit=(btn?.dataset?.watt || '').trim();
+  if(explicit) return explicit;
+  const text=`${btn?.dataset?.name||''} ${btn?.dataset?.desc||''}`;
+  const m=text.match(/\b\d+(?:[.,]\d+)?(?:\s*\+\s*\d+(?:[.,]\d+)?)?\s*W\b/i);
+  return m ? m[0].replace(/\s+/g,'') : '';
+}
+function magicRenderGallery(index){
+  if(!modalImages.length){
+    modalImg.removeAttribute('src');
+    if(galleryThumbs) galleryThumbs.innerHTML='';
+    return;
+  }
+  modalImageIndex=(index+modalImages.length)%modalImages.length;
+  modalImg.src=modalImages[modalImageIndex];
+  modalImg.alt=modalTitle?.textContent || 'Produit MAGIC LIGHT';
+  if(galleryThumbs){
+    galleryThumbs.innerHTML=modalImages.map((src,i)=>
+      `<button class="gallery-thumb ${i===modalImageIndex?'active':''}" type="button" data-gallery-index="${i}" aria-label="Image ${i+1}"><img src="${src.replace(/"/g,'&quot;')}" alt=""></button>`
+    ).join('');
+    galleryThumbs.style.display=modalImages.length>1?'flex':'none';
+  }
+  if(galleryPrev) galleryPrev.style.display=modalImages.length>1?'grid':'none';
+  if(galleryNext) galleryNext.style.display=modalImages.length>1?'grid':'none';
+}
+window.openMagicProduct=function(btn){
+  if(!btn || !modal) return;
+  const card=btn.closest('.card');
+  const name=btn.dataset.name || 'Produit';
+  const ref=btn.dataset.ref || '';
+  const desc=btn.dataset.desc || '';
+  const priceRaw=btn.dataset.price || (card?.querySelector('.admin-price')?.textContent || '').replace(/[^\d.]/g,'') || '';
+  const price=priceRaw ? Number(priceRaw) : 0;
+  const power=magicExtractPower(btn);
+  const dimensions=(btn.dataset.dimensions || '').trim();
+  const stock=(btn.dataset.stock || '').trim() || 'Nous contacter';
+
+  modalTitle.textContent=name;
+  modalRef.textContent=ref;
+  modalDesc.textContent=desc;
+  modalPrice.textContent=priceRaw ? Number(priceRaw).toFixed(3)+' TND' : '';
+  modalImages=magicProductImages(btn);
+  magicRenderGallery(0);
+
+  const specRef=document.getElementById('specRef');
+  const specPower=document.getElementById('specPower');
+  const specPowerRow=document.getElementById('specPowerRow');
+  const specDimensions=document.getElementById('specDimensions');
+  const specDimensionsRow=document.getElementById('specDimensionsRow');
+  const specStock=document.getElementById('specStock');
+  if(specRef) specRef.textContent=ref || '—';
+  if(specPower){specPower.textContent=power; if(specPowerRow) specPowerRow.hidden=!power;}
+  if(specDimensions){specDimensions.textContent=dimensions; if(specDimensionsRow) specDimensionsRow.hidden=!dimensions;}
+  if(specStock) specStock.textContent=stock;
+
+  const modalAddCart=document.querySelector('#modalAddCart');
+  if(modalAddCart){
+    modalAddCart.dataset.name=name;
+    modalAddCart.dataset.price=priceRaw || '0';
+  }
+  const resetQty=document.getElementById('modalQty');
+  if(resetQty) resetQty.textContent='1';
+
+  const modalWhatsApp=document.getElementById('modalWhatsApp');
+  if(modalWhatsApp){
+    const wa=`Bonjour MAGIC LIGHT, je souhaite des informations sur : ${name}${ref?' ('+ref+')':''}${priceRaw?' - '+Number(priceRaw).toFixed(3)+' TND':''}`;
+    modalWhatsApp.href='https://wa.me/21622181224?text='+encodeURIComponent(wa);
+  }
+
+  window.magicCurrentProduct={name,ref,desc,price,power,dimensions,stock,images:[...modalImages]};
   modal.classList.add('open');
-}));
+};
+
+document.querySelectorAll('.view-product').forEach(btn=>btn.addEventListener('click',()=>window.openMagicProduct(btn)));
 document.querySelector('.close')?.addEventListener('click',()=>modal?.classList.remove('open'));
 modal?.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open')});
+galleryPrev?.addEventListener('click',()=>magicRenderGallery(modalImageIndex-1));
+galleryNext?.addEventListener('click',()=>magicRenderGallery(modalImageIndex+1));
+galleryThumbs?.addEventListener('click',e=>{
+  const b=e.target.closest('[data-gallery-index]');
+  if(b) magicRenderGallery(Number(b.dataset.galleryIndex)||0);
+});
+function openZoom(){
+  if(!modalImg?.src || !imageZoom || !zoomImg) return;
+  zoomImg.src=modalImg.src;
+  imageZoom.classList.add('open');
+  imageZoom.setAttribute('aria-hidden','false');
+}
+galleryZoom?.addEventListener('click',openZoom);
+modalImg?.addEventListener('click',openZoom);
+zoomClose?.addEventListener('click',()=>{imageZoom?.classList.remove('open');imageZoom?.setAttribute('aria-hidden','true')});
+imageZoom?.addEventListener('click',e=>{if(e.target===imageZoom){imageZoom.classList.remove('open');imageZoom.setAttribute('aria-hidden','true')}});
+let touchStartX=0;
+galleryStage?.addEventListener('touchstart',e=>{touchStartX=e.changedTouches[0]?.clientX||0},{passive:true});
+galleryStage?.addEventListener('touchend',e=>{
+  if(modalImages.length<2) return;
+  const dx=(e.changedTouches[0]?.clientX||0)-touchStartX;
+  if(Math.abs(dx)>45) magicRenderGallery(modalImageIndex+(dx<0?1:-1));
+},{passive:true});
+
+document.getElementById('productPdf')?.addEventListener('click',()=>{
+  const p=window.magicCurrentProduct;
+  if(!p) return;
+  if(!window.jspdf?.jsPDF){alert('PDF indisponible. Veuillez réessayer.');return;}
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF();
+  let y=20;
+  doc.setFontSize(20);doc.text('MAGIC LIGHT',20,y);y+=10;
+  doc.setFontSize(11);doc.text('402 Avenue Majida Boulila - Sfax | 22 181 224',20,y);y+=14;
+  doc.setFontSize(17);doc.text(String(p.name||'Produit'),20,y,{maxWidth:170});y+=12;
+  doc.setFontSize(11);
+  if(p.ref){doc.text('Reference : '+p.ref,20,y);y+=7;}
+  if(p.power){doc.text('Puissance : '+p.power,20,y);y+=7;}
+  if(p.dimensions){doc.text('Dimensions : '+p.dimensions,20,y);y+=7;}
+  doc.text('Disponibilite : '+(p.stock||'Nous contacter'),20,y);y+=9;
+  if(p.price){doc.setFontSize(14);doc.text('Prix : '+Number(p.price).toFixed(3)+' TND',20,y);y+=11;doc.setFontSize(11);}
+  if(p.desc){
+    doc.setFontSize(12);doc.text('Description',20,y);y+=7;doc.setFontSize(10);
+    const lines=doc.splitTextToSize(String(p.desc),170);doc.text(lines,20,y);y+=lines.length*5+8;
+  }
+  doc.setFontSize(9);doc.text('Fiche produit generee depuis magic-light-sfax.netlify.app',20,285);
+  const safe=(p.ref||p.name||'produit').replace(/[^a-z0-9_-]+/gi,'-');
+  doc.save('Fiche-MAGIC-LIGHT-'+safe+'.pdf');
+});
 
 const year=document.getElementById('year');
 if(year)year.textContent=new Date().getFullYear();
@@ -1509,6 +1714,16 @@ if(year)year.textContent=new Date().getFullYear();
   }
   function card(p){
     const search=`${p.name||""} ${p.reference||""} ${p.category||""} ${p.description||""}`.toLowerCase();
+    const gallery=[];
+    const addImage=v=>{ if(v && !gallery.includes(v)) gallery.push(v); };
+    addImage(p.image);
+    if(Array.isArray(p.images)) p.images.forEach(addImage);
+    else if(typeof p.images==="string") p.images.split(/[|,]/).map(x=>x.trim()).filter(Boolean).forEach(addImage);
+    if(Array.isArray(p.gallery)) p.gallery.forEach(addImage);
+    [p.image2,p.image3,p.image4,p.image5].forEach(addImage);
+    const watt=p.watt ?? p.power ?? p.puissance ?? "";
+    const dimensions=p.dimensions ?? p.dimension ?? p.size ?? "";
+    const stock=p.stock ?? p.availability ?? p.disponibilite ?? "";
     return `
       <article class="card admin-product-card" data-cat="${esc(p.category||"Autres")}" data-search="${esc(search)}">
         <img src="${esc(p.image||"")}" alt="${esc(p.name||"Produit")}">
@@ -1521,9 +1736,13 @@ if(year)year.textContent=new Date().getFullYear();
           <div class="actions">
             <button class="smallbtn primary view-product"
               data-img="${esc(p.image||"")}"
+              data-images="${esc(gallery.join('|'))}"
               data-name="${esc(p.name||"Produit")}"
               data-ref="${esc(p.reference||"")}"
               data-price="${p.price===null||p.price===undefined||p.price===""?"":Number(p.price).toFixed(3)}"
+              data-watt="${esc(watt)}"
+              data-dimensions="${esc(dimensions)}"
+              data-stock="${esc(stock)}"
               data-desc="${esc(p.description||"")}">Voir détails</button>
               <button class="smallbtn add-cart" data-name="${esc(p.name||'Produit')}" data-price="${p.price??''}">🛒 Ajouter</button>
             <a class="smallbtn" target="_blank" href="https://wa.me/21622181224">WhatsApp</a>
@@ -1555,22 +1774,8 @@ if(year)year.textContent=new Date().getFullYear();
   document.addEventListener("click",function(e){
     const btn=e.target.closest(".view-product");
     if(!btn) return;
-    const modal=document.querySelector(".modal");
-    if(!modal) return;
-    document.querySelector("#modalImg").src=btn.dataset.img||"";
-    document.querySelector("#modalTitle").textContent=btn.dataset.name||"";
-    document.querySelector("#modalRef").textContent=btn.dataset.ref||"";
-    document.querySelector("#modalPrice").textContent=btn.dataset.price ? btn.dataset.price+" TND" : "";
-    const modalAddCart=document.querySelector('#modalAddCart');
-if(modalAddCart){
-  modalAddCart.dataset.name=btn.dataset.name || "Produit";
-  modalAddCart.dataset.price=btn.dataset.price || "0";
-}
-    document.querySelector("#modalDesc").textContent=btn.dataset.desc||"";
-    const resetQty = document.getElementById("modalQty");
-if(resetQty) resetQty.textContent = "1";
-    modal.classList.add("open");
-});
+    window.openMagicProduct?.(btn);
+  });
   const qtyMinus = document.getElementById("qtyMinus");
 const qtyPlus = document.getElementById("qtyPlus");
 const modalQtyDisplay = document.getElementById("modalQty");
