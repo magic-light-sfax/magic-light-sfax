@@ -522,6 +522,75 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
 }
 </style>
 
+
+<style id="mobile-v8-categories-popup">
+/* V8 - Mobile category drawer + add-to-cart success popup */
+.drawer-tabs,.drawer-categories-panel,.mobile-category-trigger,.add-success-modal{display:none}
+@media (max-width:780px){
+  .drawer-tabs{
+    display:grid;grid-template-columns:1fr 1fr;gap:0;margin:4px 0 0;
+    border-top:1px solid #ececec;border-bottom:1px solid #ececec;background:#fff;
+  }
+  .drawer-tab{
+    min-height:54px;border:0;background:#fff;font:inherit;font-weight:900;font-size:1rem;
+    color:#2c3138;cursor:pointer;position:relative;
+  }
+  .drawer-tab.active{color:#a87513}
+  .drawer-tab.active:after{
+    content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:#cfa136;
+  }
+  .drawer-categories-panel{display:block;padding:0 0 18px;background:#fff}
+  .drawer-show-menu .drawer-categories-panel{display:none}
+  .drawer-show-categories > .link,.drawer-show-categories > .drawer-contact{display:none!important}
+  .drawer-cat-all,.drawer-cat-head,.drawer-subcat{
+    width:100%;min-height:56px;display:flex;align-items:center;justify-content:space-between;
+    gap:12px;padding:14px 18px;border:0;border-bottom:1px solid #ececec;background:#fff;
+    color:#2c3138;text-decoration:none;font:inherit;font-weight:800;text-align:left;cursor:pointer;
+  }
+  .drawer-cat-all{color:#a87513;background:#fffaf0}
+  .drawer-cat-head .cat-sign{font-size:1.45rem;font-weight:500;line-height:1}
+  .drawer-cat-group.open .drawer-cat-head{background:#fafafa}
+  .drawer-cat-children{display:none;background:#fbfbfb}
+  .drawer-cat-group.open .drawer-cat-children{display:block}
+  .drawer-subcat{padding-left:34px;font-weight:650;min-height:50px;font-size:.94rem;background:#fbfbfb}
+  .drawer-subcat:after{content:"›";font-size:1.2rem;color:#aaa}
+  .mobile-category-trigger{
+    display:flex;align-items:center;justify-content:space-between;width:100%;margin:0 0 14px;
+    padding:12px 15px;border:1px solid #ddd;border-radius:12px;background:#fff;font-weight:900;
+    color:#25282d;font-size:.98rem;
+  }
+  .filterbar{display:none!important}
+  .add-success-modal{
+    display:none;position:fixed;inset:0;z-index:10050;background:rgba(0,0,0,.55);
+    align-items:center;justify-content:center;padding:18px;
+  }
+  .add-success-modal.open{display:flex}
+  .add-success-card{
+    width:min(100%,520px);max-height:88vh;overflow:auto;background:#fff;border-radius:18px;
+    box-shadow:0 24px 70px rgba(0,0,0,.3);position:relative;
+  }
+  .add-success-head{
+    background:#111215;color:#fff;padding:18px 54px 18px 18px;font-size:1.05rem;font-weight:900;
+    display:flex;gap:10px;align-items:center;
+  }
+  .add-success-close{
+    position:absolute;right:12px;top:10px;width:38px;height:38px;border:0;border-radius:50%;
+    background:rgba(255,255,255,.14);color:#fff;font-size:1.5rem;font-weight:900;cursor:pointer;
+  }
+  .add-success-product{display:grid;grid-template-columns:96px 1fr;gap:14px;padding:18px;align-items:center}
+  .add-success-product img{width:96px;height:96px;object-fit:cover;border-radius:12px;border:1px solid #eee}
+  .add-success-product strong{font-size:1rem;line-height:1.25;display:block;margin-bottom:7px}
+  .add-success-product small{display:block;color:#666;margin-top:4px}
+  .add-success-summary{padding:0 18px 16px;font-size:.95rem}
+  .add-success-row{display:flex;justify-content:space-between;gap:14px;padding:8px 0;border-top:1px solid #eee}
+  .add-success-row.total{font-size:1.08rem;font-weight:900}
+  .add-success-actions{display:grid;grid-template-columns:1fr;gap:10px;padding:0 18px 18px}
+  .add-success-actions button{min-height:52px;border:0;border-radius:999px;font:inherit;font-weight:900;cursor:pointer}
+  .add-success-continue{background:#111215;color:#fff}
+  .add-success-order{background:#d3a437;color:#171717}
+}
+</style>
+
 </head>
 <body>
 
@@ -545,6 +614,45 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
       <div class="links" id="mobileNav">
         <div class="mobile-drawer-head">
           <div class="mobile-drawer-brand"><img src="assets/logo.jpg" alt="" decoding="async" fetchpriority="high"><div><strong>MAGIC LIGHT</strong><small>Éclairage & Décoration</small></div></div>
+        <div class="drawer-tabs" role="tablist" aria-label="Navigation mobile">
+          <button class="drawer-tab active" type="button" data-drawer-tab="categories" role="tab" aria-selected="true">Catégories</button>
+          <button class="drawer-tab" type="button" data-drawer-tab="menu" role="tab" aria-selected="false">Menu</button>
+        </div>
+        <div class="drawer-categories-panel" aria-label="Catégories produits">
+          <a class="drawer-cat-all" href="produits.html#products" data-drawer-filter="all"><span>Tous les produits</span><span>›</span></a>
+          <div class="drawer-cat-group">
+            <button class="drawer-cat-head" type="button"><span>Éclairage</span><span class="cat-sign">+</span></button>
+            <div class="drawer-cat-children">
+              <a class="drawer-subcat" href="produits.html?cat=Ampoules%20%26%20lampes#products" data-drawer-filter="Ampoules &amp; lampes">Ampoules &amp; lampes</a>
+              <a class="drawer-subcat" href="produits.html?cat=Lustres%20%26%20suspensions#products" data-drawer-filter="Lustres &amp; suspensions">Lustres &amp; suspensions</a>
+              <a class="drawer-subcat" href="produits.html?cat=Plafonniers%20%26%20panneaux%20LED#products" data-drawer-filter="Plafonniers &amp; panneaux LED">Plafonniers &amp; panneaux LED</a>
+              <a class="drawer-subcat" href="produits.html?cat=Profil%C3%A9s%20LED#products" data-drawer-filter="Profilés LED">Profilés LED</a>
+              <a class="drawer-subcat" href="produits.html?cat=Rubans%20%26%20RGB#products" data-drawer-filter="Rubans &amp; RGB">Rubans &amp; RGB</a>
+              <a class="drawer-subcat" href="produits.html?cat=%C3%89clairage%20d%C3%A9coratif#products" data-drawer-filter="Éclairage décoratif">Éclairage décoratif</a>
+              <a class="drawer-subcat" href="produits.html?cat=%C3%89clairage%20ext%C3%A9rieur#products" data-drawer-filter="Éclairage extérieur">Éclairage extérieur</a>
+              <a class="drawer-subcat" href="produits.html?cat=%C3%89clairage%20intelligent#products" data-drawer-filter="Éclairage intelligent">Éclairage intelligent</a>
+              <a class="drawer-subcat" href="produits.html?cat=%C3%89clairage%20professionnel#products" data-drawer-filter="Éclairage professionnel">Éclairage professionnel</a>
+              <a class="drawer-subcat" href="produits.html?cat=%C3%89clairage%20r%C3%A9sidentiel#products" data-drawer-filter="Éclairage résidentiel">Éclairage résidentiel</a>
+              <a class="drawer-subcat" href="produits.html?cat=%C3%89clairage%20solaire#products" data-drawer-filter="Éclairage solaire">Éclairage solaire</a>
+              <a class="drawer-subcat" href="produits.html?cat=%C3%89clairage%20%C3%A9v%C3%A9nementiel#products" data-drawer-filter="Éclairage événementiel">Éclairage événementiel</a>
+            </div>
+          </div>
+          <div class="drawer-cat-group">
+            <button class="drawer-cat-head" type="button"><span>Électricité</span><span class="cat-sign">+</span></button>
+            <div class="drawer-cat-children">
+              <a class="drawer-subcat" href="produits.html?cat=Accessoires%20%C3%A9lectriques#products" data-drawer-filter="Accessoires électriques">Accessoires électriques</a>
+              <a class="drawer-subcat" href="produits.html?cat=S%C3%A9curit%C3%A9%20%26%20surveillance#products" data-drawer-filter="Sécurité &amp; surveillance">Sécurité &amp; surveillance</a>
+            </div>
+          </div>
+          <div class="drawer-cat-group">
+            <button class="drawer-cat-head" type="button"><span>Décoration & styles</span><span class="cat-sign">+</span></button>
+            <div class="drawer-cat-children">
+              <a class="drawer-subcat" href="produits.html?cat=D%C3%A9coration%20lumineuse#products" data-drawer-filter="Décoration lumineuse">Décoration lumineuse</a>
+              <a class="drawer-subcat" href="produits.html?cat=Style%20industriel#products" data-drawer-filter="Style industriel">Style industriel</a>
+            </div>
+          </div>
+        </div>
+
           <button class="menu-close" type="button" aria-label="Fermer le menu">×</button>
         </div>
         <a class="link active" href="index.html">ACCUEIL</a>
@@ -885,6 +993,38 @@ menuClose?.addEventListener('click',()=>setMobileMenu(false));
 menuOverlay?.addEventListener('click',()=>setMobileMenu(false));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')setMobileMenu(false)});
 links?.querySelectorAll('.link').forEach(a=>a.addEventListener('click',()=>setMobileMenu(false)));
+
+// V8 - Mobile drawer tabs / category accordion
+const drawerTabs=[...document.querySelectorAll('[data-drawer-tab]')];
+function setDrawerTab(tab){
+  if(!links) return;
+  const categories=tab!=='menu';
+  links.classList.toggle('drawer-show-categories',categories);
+  links.classList.toggle('drawer-show-menu',!categories);
+  drawerTabs.forEach(btn=>{
+    const on=btn.dataset.drawerTab===(categories?'categories':'menu');
+    btn.classList.toggle('active',on);
+    btn.setAttribute('aria-selected',on?'true':'false');
+  });
+}
+drawerTabs.forEach(btn=>btn.addEventListener('click',()=>setDrawerTab(btn.dataset.drawerTab)));
+document.querySelectorAll('.drawer-cat-head').forEach(btn=>btn.addEventListener('click',()=>{
+  const group=btn.closest('.drawer-cat-group');
+  const open=!group?.classList.contains('open');
+  document.querySelectorAll('.drawer-cat-group.open').forEach(g=>g!==group&&g.classList.remove('open'));
+  group?.classList.toggle('open',open);
+  const sign=btn.querySelector('.cat-sign');
+  if(sign) sign.textContent=open?'−':'+';
+  document.querySelectorAll('.drawer-cat-group').forEach(g=>{
+    if(g!==group){const s=g.querySelector('.cat-sign'); if(s) s.textContent='+';}
+  });
+}));
+const originalSetMobileMenu=setMobileMenu;
+setMobileMenu=function(open){
+  originalSetMobileMenu(open);
+  if(open) setDrawerTab('categories');
+};
+
 
 function getMagicLightCartCount(){
   try{
