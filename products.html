@@ -2423,20 +2423,23 @@ if(headerCartBtn){
   });
 }
   loadProducts();
-  const adminSection = document.getElementById("admin-catalogue");
+ const adminSection = document.getElementById("admin-catalogue");
 const adminGrid = document.getElementById("adminProductsGrid");
 
-if (adminSection && adminGrid) {
-  const updateAdminSection = function () {
-    adminSection.style.display =
-      adminGrid.children.length > 0 ? "" : "none";
-  };
+function updateAdminSection(){
+  if(!adminSection || !adminGrid) return;
 
-  updateAdminSection();
+  const hasProducts = adminGrid.querySelector(".card");
 
+  adminSection.style.display = hasProducts ? "" : "none";
+}
+
+updateAdminSection();
+
+if(adminGrid){
   new MutationObserver(updateAdminSection).observe(
     adminGrid,
-    { childList: true }
+    { childList:true, subtree:true }
   );
 }
  
