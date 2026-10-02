@@ -2423,6 +2423,22 @@ if(headerCartBtn){
   });
 }
   loadProducts();
+  const adminSection = document.getElementById("admin-catalogue");
+const adminGrid = document.getElementById("adminProductsGrid");
+
+if (adminSection && adminGrid) {
+  const updateAdminSection = function () {
+    adminSection.style.display =
+      adminGrid.children.length > 0 ? "" : "none";
+  };
+
+  updateAdminSection();
+
+  new MutationObserver(updateAdminSection).observe(
+    adminGrid,
+    { childList: true }
+  );
+}
  
   
 })();
