@@ -2004,6 +2004,25 @@ window.openMagicProduct=function(btn){
   modalRef.textContent=ref;
   modalDesc.textContent=desc;
   modalPrice.textContent=priceRaw ? Number(priceRaw).toFixed(3)+' TND' : '';
+  if(modalPrice){
+  modalPrice.style.setProperty('display', priceRaw ? 'block' : 'none', 'important');
+}
+
+const forceSpecs = document.getElementById('modalSpecs');
+if(forceSpecs){
+  forceSpecs.style.setProperty('display', 'grid', 'important');
+}
+
+const forceCart = document.getElementById('modalCartControls');
+if(forceCart){
+  forceCart.style.setProperty('display', 'grid', 'important');
+}
+
+const forcePdf = document.getElementById('productPdf');
+if(forcePdf){
+  forcePdf.style.setProperty('display', 'block', 'important');
+}
+  modalPrice.textContent=priceRaw ? Number(priceRaw).toFixed(3)+' TND' : '';
   modalImages=magicProductImages(btn);
   magicRenderGallery(0);
 
