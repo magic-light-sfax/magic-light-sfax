@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MAGIC LIGHT | Produits</title>
   
+<meta name="magic-light-mobile-version" content="9.0-stable">
 <meta name="description" content="MAGIC LIGHT - Éclairage & Décoration à Sfax">
 <style>
 :root{
@@ -191,6 +192,23 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
 .admin-products-note{margin:0 0 18px;padding:12px 15px;border:1px solid #ead9b5;background:#fff9eb;border-radius:14px;color:#76571f;font-size:.88rem}
 .admin-price{font-weight:900;color:#a87925;margin-top:8px}
 .admin-empty{padding:24px;border:1px dashed #d5d9df;border-radius:16px;color:#777;text-align:center;background:#fff}
+ #admin-catalogue{
+  padding:0 !important;
+  margin:0 !important;
+}
+
+#admin-catalogue .section-head,
+#admin-catalogue .admin-products-note{
+  display:none !important;
+}
+
+#adminProductsGrid:empty{
+  display:none !important;
+}
+
+#admin-catalogue:has(#adminProductsGrid:empty){
+  display:none !important;
+} 
 </style>
 
 
@@ -994,214 +1012,124 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
 }
 </style>
 
-
-<style id="mobile-v8-1-compact-menu">
-/* V8.1 - compact mobile menu inspired by the reference layout */
-.drawer-close-label{display:none}
-@media (max-width:780px){
-  .header .links{
-    width:min(84vw,360px);
-    padding:0 18px 22px;
-    border-radius:0;
-    box-shadow:14px 0 34px rgba(0,0,0,.22);
-  }
-  .mobile-drawer-head{
-    min-height:52px;height:52px;
-    margin:0 -18px;
-    padding:0 14px 0 18px;
-    display:flex;align-items:center;justify-content:space-between;gap:12px;
-    background:#26353b;color:#fff;border-bottom:0;
-    position:sticky;top:0;z-index:6;
-  }
-  .mobile-drawer-brand{display:none!important}
-  .drawer-close-label{display:block;font-size:1rem;font-weight:900;letter-spacing:.01em}
-  .menu-close{
-    width:38px;height:38px;border:0;border-radius:0;background:transparent;color:#fff;
-    font-size:1.75rem;font-weight:700;line-height:1;display:grid;place-items:center;padding:0;
-  }
-  .drawer-tabs{
-    margin:0 -18px;min-height:46px;height:46px;
-    position:sticky;top:52px;z-index:5;
-    border-top:0;border-bottom:1px solid #e5e5e5;background:#fff;
-  }
-  .drawer-tab{min-height:46px;height:46px;font-size:.96rem;font-weight:800;padding:0 8px}
-  .drawer-tab.active:after{height:3px}
-  .drawer-categories-panel{margin:0 -18px;padding:0 0 12px;background:#fff}
-  .drawer-cat-all,.drawer-cat-head,.drawer-subcat{
-    min-height:48px;padding:10px 18px;font-size:.96rem;line-height:1.25;gap:10px;
-    border-bottom:1px solid #e9e9e9;
-  }
-  .drawer-cat-all{min-height:50px;background:#fffaf0;font-weight:850}
-  .drawer-cat-head{font-weight:750}
-  .drawer-cat-head .cat-sign{font-size:1.3rem;font-weight:500}
-  .drawer-cat-group.open .drawer-cat-head{background:#fafafa}
-  .drawer-subcat{
-    min-height:44px;padding:9px 18px 9px 34px;font-size:.9rem;font-weight:500;background:#fff;
-  }
-  .drawer-subcat:after{font-size:1rem;color:#a7a7a7}
-  .header .link{padding:12px 10px;font-size:.93rem}
-  .header #cartBtn{margin-top:6px}
-  .drawer-contact{margin-top:8px}
-}
-</style>
-
-
-<style id="mobile-v8-2-drawer-fix">
-/* V8.2 - prevent horizontal drift in expanded mobile categories */
-@media (max-width:780px){
-  html,body{max-width:100%;overflow-x:hidden!important}
-  .header .links{
-    overflow-y:auto!important;
-    overflow-x:hidden!important;
-    overscroll-behavior-x:none;
-    touch-action:pan-y;
-  }
-  .drawer-tabs,.drawer-categories-panel,.drawer-cat-group,.drawer-cat-children{
-    width:100%!important;
-    min-width:0!important;
-    max-width:100%!important;
-    overflow-x:hidden!important;
-  }
-  .drawer-cat-all,.drawer-cat-head,.drawer-subcat{
-    width:100%!important;
-    min-width:0!important;
-    max-width:100%!important;
-  }
-  .drawer-cat-head > span:first-child{
-    min-width:0;
-    overflow-wrap:anywhere;
-  }
-  .drawer-subcat{
-    position:relative;
-    justify-content:flex-start!important;
-    white-space:normal!important;
-    overflow-wrap:anywhere;
-    word-break:normal;
-    padding-left:30px!important;
-    padding-right:34px!important;
-    line-height:1.25!important;
-  }
-  .drawer-subcat:after{
-    position:absolute;
-    right:16px;
-    top:50%;
-    transform:translateY(-50%);
-  }
-}
-</style>
-
-
-<style id="mobile-v8-3-flex-nowrap-fix">
-/* V8.3 - keep the mobile drawer in ONE vertical column.
-   The desktop .links rule uses flex-wrap:wrap; with flex-direction:column
-   that made long category lists wrap into a second column on phones. */
-@media (max-width:780px){
-  .header .links{
-    flex-direction:column!important;
-    flex-wrap:nowrap!important;
-    align-content:stretch!important;
-    overflow-y:auto!important;
-    overflow-x:hidden!important;
-  }
-  .header .links > *{
-    flex:0 0 auto!important;
-    max-width:100%!important;
-  }
-  .drawer-tabs,.drawer-categories-panel{
-    flex:none!important;
-  }
-  .drawer-cat-group,.drawer-cat-children{
-    display:block;
-  }
-  .drawer-cat-children{display:none}
-  .drawer-cat-group.open .drawer-cat-children{display:block}
-}
-</style>
-
-
-<style id="mobile-v8-4-professional-drawer-fix">
-/* V8.4 - professional mobile drawer: single clean column, no horizontal drift */
+<style id="mobile-v9-professional-drawer">
+/* MAGIC LIGHT V9 — stable compact mobile catalogue drawer */
 @media (max-width:780px){
   html,body{max-width:100%!important;overflow-x:hidden!important}
+
   .header .links{
-    width:min(86vw,380px)!important;
-    max-width:380px!important;
-    box-sizing:border-box!important;
+    width:min(84vw,360px)!important;
+    max-width:360px!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    padding:0 16px 22px!important;
     flex-flow:column nowrap!important;
     align-items:stretch!important;
     align-content:stretch!important;
+    gap:0!important;
     overflow-y:auto!important;
     overflow-x:hidden!important;
     overscroll-behavior:contain!important;
     touch-action:pan-y!important;
-    direction:ltr!important;
     scrollbar-width:thin;
+    border-radius:0!important;
+    box-shadow:16px 0 38px rgba(0,0,0,.24)!important;
   }
   .header .links,.header .links *{box-sizing:border-box!important}
+  .header .links > *{flex:0 0 auto!important;min-width:0!important;max-width:100%!important}
+
+  .mobile-drawer-head{
+    min-height:50px!important;height:50px!important;
+    margin:0 -16px!important;padding:0 14px 0 16px!important;
+    position:sticky!important;top:0!important;z-index:8!important;
+    display:flex!important;align-items:center!important;justify-content:space-between!important;
+    background:#26353b!important;color:#fff!important;border:0!important;
+  }
+  .mobile-drawer-brand{display:none!important}
+  .drawer-close-label{display:block!important;font-size:.98rem!important;font-weight:900!important;letter-spacing:.01em!important}
+  .menu-close{
+    width:38px!important;height:38px!important;padding:0!important;
+    border:0!important;border-radius:0!important;background:transparent!important;color:#fff!important;
+    display:grid!important;place-items:center!important;font-size:1.65rem!important;font-weight:700!important;line-height:1!important;
+  }
+
   .drawer-tabs{
+    display:grid!important;grid-template-columns:1fr 1fr!important;
     width:auto!important;max-width:none!important;
-    margin:0 -18px!important;
-    flex:0 0 auto!important;
-    overflow:hidden!important;
+    min-height:46px!important;height:46px!important;
+    margin:0 -16px!important;
+    position:sticky!important;top:50px!important;z-index:7!important;
+    overflow:hidden!important;background:#fff!important;
+    border-top:0!important;border-bottom:1px solid #e7e7e7!important;
   }
+  .drawer-tab{
+    min-height:46px!important;height:46px!important;padding:0 8px!important;
+    border:0!important;background:#fff!important;color:#2c3138!important;
+    font-size:.95rem!important;font-weight:850!important;position:relative!important;
+  }
+  .drawer-tab.active{color:#a87513!important}
+  .drawer-tab.active:after{content:""!important;position:absolute!important;left:0!important;right:0!important;bottom:0!important;height:3px!important;background:#cfa136!important}
+
   .drawer-categories-panel{
-    width:auto!important;max-width:none!important;min-width:0!important;
-    margin:0 -18px!important;padding:0!important;
-    flex:0 0 auto!important;
-    overflow:hidden!important;
-    position:relative!important;
-    left:auto!important;right:auto!important;transform:none!important;
+    display:block!important;width:auto!important;max-width:none!important;min-width:0!important;
+    margin:0 -16px!important;padding:0 0 10px!important;
+    position:static!important;transform:none!important;overflow:hidden!important;background:#fff!important;
   }
+  .drawer-show-menu .drawer-categories-panel{display:none!important}
+  .drawer-show-categories > .link,.drawer-show-categories > .drawer-contact{display:none!important}
+
   .drawer-cat-group,.drawer-cat-children{
-    display:block;
     width:100%!important;max-width:100%!important;min-width:0!important;
-    margin:0!important;padding:0!important;
-    position:static!important;left:auto!important;right:auto!important;
-    transform:none!important;float:none!important;clear:both!important;
-    overflow:hidden!important;
+    margin:0!important;padding:0!important;position:static!important;transform:none!important;
+    float:none!important;clear:both!important;overflow:hidden!important;
   }
-  .drawer-cat-children{display:none}
+  .drawer-cat-children{display:none!important;background:#fff!important}
   .drawer-cat-group.open .drawer-cat-children{display:block!important}
+
   .drawer-cat-all,.drawer-cat-head,.drawer-subcat{
     width:100%!important;max-width:100%!important;min-width:0!important;
-    margin:0!important;box-sizing:border-box!important;
-    position:relative!important;left:auto!important;right:auto!important;
-    transform:none!important;float:none!important;
+    margin:0!important;border:0!important;border-bottom:1px solid #e9e9e9!important;
+    display:flex!important;align-items:center!important;justify-content:space-between!important;
+    gap:10px!important;text-align:left!important;text-decoration:none!important;
+    position:relative!important;transform:none!important;float:none!important;
+    white-space:normal!important;overflow-wrap:break-word!important;word-break:normal!important;
   }
-  .drawer-cat-all,.drawer-cat-head{
-    min-height:54px!important;padding:13px 18px!important;
-    font-size:.98rem!important;line-height:1.25!important;
+  .drawer-cat-all{
+    min-height:50px!important;padding:11px 16px!important;
+    background:#fffaf0!important;color:#9f7119!important;font-size:.96rem!important;font-weight:900!important;
   }
-  .drawer-cat-head{background:#fff!important;font-weight:800!important}
-  .drawer-cat-group.open .drawer-cat-head{background:#f7f7f7!important}
-  .drawer-cat-head > span:first-child{
-    flex:1 1 auto!important;min-width:0!important;
-    white-space:normal!important;overflow-wrap:break-word!important;
+  .drawer-cat-head{
+    min-height:52px!important;padding:11px 16px!important;background:#fff!important;
+    color:#2c3138!important;font-size:.97rem!important;font-weight:850!important;line-height:1.25!important;
   }
+  .drawer-cat-group.open .drawer-cat-head{background:#f8f8f8!important}
+  .drawer-cat-head > span:first-child{flex:1 1 auto!important;min-width:0!important}
   .drawer-cat-head .cat-sign{
-    flex:0 0 28px!important;width:28px!important;text-align:center!important;
-    font-size:1.35rem!important;line-height:1!important;
+    flex:0 0 26px!important;width:26px!important;text-align:center!important;
+    font-size:1.28rem!important;font-weight:600!important;line-height:1!important;
   }
   .drawer-subcat{
-    min-height:50px!important;
-    padding:12px 42px 12px 30px!important;
-    background:#fff!important;
-    border-bottom:1px solid #e8e8e8!important;
-    font-size:.93rem!important;font-weight:500!important;line-height:1.3!important;
-    white-space:normal!important;overflow-wrap:break-word!important;word-break:normal!important;
-    overflow:hidden!important;
-    text-align:left!important;
+    min-height:46px!important;padding:10px 38px 10px 28px!important;
+    background:#fff!important;color:#30343a!important;font-size:.90rem!important;font-weight:500!important;line-height:1.3!important;
   }
   .drawer-subcat:after{
-    right:18px!important;left:auto!important;top:50%!important;
-    transform:translateY(-50%)!important;
-    position:absolute!important;
+    content:"›"!important;position:absolute!important;right:15px!important;top:50%!important;
+    transform:translateY(-50%)!important;color:#aaa!important;font-size:1rem!important;
   }
-  .drawer-close-label{font-weight:800!important}
-  .mobile-drawer-head{box-sizing:border-box!important}
+
+  .header .link{padding:12px 10px!important;font-size:.92rem!important}
+  .header #cartBtn{margin-top:6px!important}
+  .drawer-contact{margin-top:8px!important}
+
+  .mobile-category-trigger{
+    display:flex!important;align-items:center!important;justify-content:space-between!important;
+    min-height:48px!important;width:100%!important;margin:0 0 14px!important;
+    padding:11px 14px!important;border:1px solid #ddd!important;border-radius:12px!important;
+    background:#fff!important;color:#25282d!important;font-size:.96rem!important;font-weight:900!important;
+  }
+  .filterbar{display:none!important}
 }
 </style>
-
 </head>
 <body>
 
@@ -1234,7 +1162,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
         <div class="drawer-categories-panel" aria-label="Catégories produits">
           <a class="drawer-cat-all" href="produits.html#products" data-drawer-filter="all"><span>Tous les produits</span><span>›</span></a>
           <div class="drawer-cat-group">
-            <button class="drawer-cat-head" type="button"><span>Éclairage</span><span class="cat-sign">+</span></button>
+            <button class="drawer-cat-head" type="button" aria-expanded="false"><span>Éclairage</span><span class="cat-sign">+</span></button>
             <div class="drawer-cat-children">
               <a class="drawer-subcat" href="produits.html?cat=Ampoules%20%26%20lampes#products" data-drawer-filter="Ampoules &amp; lampes">Ampoules &amp; lampes</a>
               <a class="drawer-subcat" href="produits.html?cat=Lustres%20%26%20suspensions#products" data-drawer-filter="Lustres &amp; suspensions">Lustres &amp; suspensions</a>
@@ -1251,14 +1179,14 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
             </div>
           </div>
           <div class="drawer-cat-group">
-            <button class="drawer-cat-head" type="button"><span>Électricité</span><span class="cat-sign">+</span></button>
+            <button class="drawer-cat-head" type="button" aria-expanded="false"><span>Électricité</span><span class="cat-sign">+</span></button>
             <div class="drawer-cat-children">
               <a class="drawer-subcat" href="produits.html?cat=Accessoires%20%C3%A9lectriques#products" data-drawer-filter="Accessoires électriques">Accessoires électriques</a>
               <a class="drawer-subcat" href="produits.html?cat=S%C3%A9curit%C3%A9%20%26%20surveillance#products" data-drawer-filter="Sécurité &amp; surveillance">Sécurité &amp; surveillance</a>
             </div>
           </div>
           <div class="drawer-cat-group">
-            <button class="drawer-cat-head" type="button"><span>Décoration & styles</span><span class="cat-sign">+</span></button>
+            <button class="drawer-cat-head" type="button" aria-expanded="false"><span>Décoration & styles</span><span class="cat-sign">+</span></button>
             <div class="drawer-cat-children">
               <a class="drawer-subcat" href="produits.html?cat=D%C3%A9coration%20lumineuse#products" data-drawer-filter="Décoration lumineuse">Décoration lumineuse</a>
               <a class="drawer-subcat" href="produits.html?cat=Style%20industriel#products" data-drawer-filter="Style industriel">Style industriel</a>
@@ -1638,9 +1566,8 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
 </article></div>
 </div></section>
 
-<section class="section soft" id="admin-catalogue" style="padding:0">
-  <div class="container">
-   <div class="section-head" style="display:none">
+<section class="section soft" id="admin-catalogue" >  <div class="container">
+    <div class="section-head" style="display:none">
       <div>
         <div class="kicker">ADMIN CATALOGUE</div>
         <h2>Produits ajoutés depuis Admin</h2>
@@ -1830,10 +1757,11 @@ document.querySelectorAll('.drawer-cat-head').forEach(btn=>btn.addEventListener(
   document.body.scrollLeft=0;
   document.querySelectorAll('.drawer-cat-group.open').forEach(g=>g!==group&&g.classList.remove('open'));
   group?.classList.toggle('open',open);
+  btn.setAttribute('aria-expanded',open?'true':'false');
   const sign=btn.querySelector('.cat-sign');
   if(sign) sign.textContent=open?'−':'+';
   document.querySelectorAll('.drawer-cat-group').forEach(g=>{
-    if(g!==group){const s=g.querySelector('.cat-sign'); if(s) s.textContent='+';}
+    if(g!==group){const s=g.querySelector('.cat-sign'); if(s) s.textContent='+'; const h=g.querySelector('.drawer-cat-head'); if(h) h.setAttribute('aria-expanded','false');}
   });
 }));
 const originalSetMobileMenu=setMobileMenu;
@@ -2003,25 +1931,6 @@ window.openMagicProduct=function(btn){
   modalTitle.textContent=name;
   modalRef.textContent=ref;
   modalDesc.textContent=desc;
-  modalPrice.textContent=priceRaw ? Number(priceRaw).toFixed(3)+' TND' : '';
-  if(modalPrice){
-  modalPrice.style.setProperty('display', priceRaw ? 'block' : 'none', 'important');
-}
-
-const forceSpecs = document.getElementById('modalSpecs');
-if(forceSpecs){
-  forceSpecs.style.setProperty('display', 'grid', 'important');
-}
-
-const forceCart = document.getElementById('modalCartControls');
-if(forceCart){
-  forceCart.style.setProperty('display', 'grid', 'important');
-}
-
-const forcePdf = document.getElementById('productPdf');
-if(forcePdf){
-  forcePdf.style.setProperty('display', 'block', 'important');
-}
   modalPrice.textContent=priceRaw ? Number(priceRaw).toFixed(3)+' TND' : '';
   modalImages=magicProductImages(btn);
   magicRenderGallery(0);
@@ -2430,25 +2339,16 @@ if(headerCartBtn){
           <div><strong>Ville :</strong> ${escapeHtml(c.city || "-")}</div></div>
           <h2>PANIER</h2>${rows}
           <div class="total">TOTAL : ${total.toFixed(3)} TND</div>
-          
-<script id="mobile-v8-4-drawer-lock-js">
-(function(){
-  function lockDrawerX(){
-    var drawer=document.querySelector('.header .links');
-    var panel=document.querySelector('.drawer-categories-panel');
-    if(drawer) drawer.scrollLeft=0;
-    if(panel) panel.scrollLeft=0;
-  }
-  document.addEventListener('click',function(e){
-    if(e.target.closest('.menu,.drawer-tab,.drawer-cat-head')){
-      requestAnimationFrame(lockDrawerX);
-      setTimeout(lockDrawerX,50);
+</body></html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+      };
     }
-  });
-  window.addEventListener('resize',lockDrawerX);
-})();
-const cartPdf = document.getElementById("cartPdf");
-if(cartPdf){
+
+    const cartPdf = document.getElementById("cartPdf");
+    if(cartPdf){
       cartPdf.onclick = function(){
         renderCart();
         const c = validateClient("Veuillez remplir Nom, Téléphone, E-mail et Adresse avant de télécharger le PDF.");
@@ -2522,6 +2422,25 @@ if(cartPdf){
   });
 }
   loadProducts();
+ const adminSection = document.getElementById("admin-catalogue");
+const adminGrid = document.getElementById("adminProductsGrid");
+
+function updateAdminSection(){
+  if(!adminSection || !adminGrid) return;
+
+  const hasProducts = adminGrid.querySelector(".card");
+
+  adminSection.style.display = hasProducts ? "" : "none";
+}
+
+updateAdminSection();
+
+if(adminGrid){
+  new MutationObserver(updateAdminSection).observe(
+    adminGrid,
+    { childList:true, subtree:true }
+  );
+}
  
   
 })();

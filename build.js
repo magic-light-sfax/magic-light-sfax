@@ -22,6 +22,9 @@ rm(DIST); ensure(DIST);
 for(const f of ["index.html","produits.html","nouveautes.html","references.html","catalogue.html","contact.html"]){
   copyFile(path.join(ROOT,f),path.join(DIST,f));
 }
+
+// Compatibility alias: /products serves the same canonical page as /produits.
+copyFile(path.join(ROOT,"produits.html"),path.join(DIST,"products.html"));
 copyDir(path.join(ROOT,"assets"),path.join(DIST,"assets"));
 copyDir(path.join(ROOT,"admin"),path.join(DIST,"admin"));
 
