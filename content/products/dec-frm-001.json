@@ -1,0 +1,12 @@
+{
+  "name": "Cadres photo décoratifs fleuris",
+  "reference": "DEC-FRM-001",
+  "category": "Décoration intérieure",
+  "description": "Ensemble de cadres photo décoratifs à motifs floraux, idéal pour mettre en valeur vos photos dans un intérieur élégant.",
+  "price": 30.0,
+  "promo": true,
+  "discount": 50,
+  "image": "/assets/products/dec-frm-001-cadres-photo-fleuris.png",
+  "featured": true,
+  "active": true
+}

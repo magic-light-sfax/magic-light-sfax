@@ -1,0 +1,12 @@
+{
+  "name": "Horloge murale style montre ancienne",
+  "reference": "DEC-CLK-005",
+  "category": "Décoration intérieure",
+  "description": "Grande horloge murale inspirée d’une montre ancienne, avec chiffres romains et détails mécaniques.",
+  "price": 320.0,
+  "promo": true,
+  "discount": 50,
+  "image": "/assets/products/dec-clk-005-horloge-style-montre-ancienne.png",
+  "featured": true,
+  "active": true
+}

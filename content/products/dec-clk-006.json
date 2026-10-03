@@ -1,0 +1,12 @@
+{
+  "name": "Horloges de table vintage",
+  "reference": "DEC-CLK-006",
+  "category": "Décoration intérieure",
+  "description": "Horloge de table décorative au style vintage avec chiffres romains, disponible en finitions rouge et ivoire.",
+  "price": 65.0,
+  "promo": true,
+  "discount": 50,
+  "image": "/assets/products/dec-clk-006-horloges-table-vintage.png",
+  "featured": true,
+  "active": true
+}

@@ -1,0 +1,12 @@
+{
+  "name": "Horloge murale vintage à engrenages",
+  "reference": "DEC-CLK-001",
+  "category": "Décoration intérieure",
+  "description": "Horloge murale décorative grand format au style vintage, avec chiffres romains et motif d’engrenages.",
+  "price": 300.0,
+  "promo": true,
+  "discount": 50,
+  "image": "/assets/products/dec-clk-001-horloge-engrenages.png",
+  "featured": true,
+  "active": true
+}

@@ -1,0 +1,12 @@
+{
+  "name": "Horloge murale industrielle multicolore",
+  "reference": "DEC-CLK-002",
+  "category": "Décoration intérieure",
+  "description": "Horloge murale au style industriel avec chiffres multicolores, idéale pour salon, bureau ou espace commercial.",
+  "price": 85.0,
+  "promo": true,
+  "discount": 50,
+  "image": "/assets/products/dec-clk-002-horloge-industrielle-multicolore.png",
+  "featured": true,
+  "active": true
+}

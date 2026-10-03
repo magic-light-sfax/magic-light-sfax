@@ -1,0 +1,12 @@
+{
+  "name": "Cadre photo multiple multicolore",
+  "reference": "DEC-FRM-002",
+  "category": "Décoration intérieure",
+  "description": "Cadre photo multiple au design coloré pour présenter plusieurs souvenirs dans une seule composition décorative.",
+  "price": 75.0,
+  "promo": true,
+  "discount": 50,
+  "image": "/assets/products/dec-frm-002-cadre-photo-multiple-multicolore.png",
+  "featured": true,
+  "active": true
+}

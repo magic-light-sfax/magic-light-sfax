@@ -1,0 +1,12 @@
+{
+  "name": "Horloge murale mécanique dorée",
+  "reference": "DEC-CLK-004",
+  "category": "Décoration intérieure",
+  "description": "Horloge murale décorative avec engrenages apparents et finition dorée, pour un intérieur élégant et original.",
+  "price": 320.0,
+  "promo": true,
+  "discount": 50,
+  "image": "/assets/products/dec-clk-004-horloge-mecanique-doree.png",
+  "featured": true,
+  "active": true
+}

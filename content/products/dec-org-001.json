@@ -1,0 +1,12 @@
+{
+  "name": "Petit meuble décoratif à tiroirs fleuris",
+  "reference": "DEC-ORG-001",
+  "category": "Décoration intérieure",
+  "description": "Petit meuble de rangement décoratif avec plusieurs tiroirs et motifs fleuris, pratique pour accessoires et petits objets.",
+  "price": 45.0,
+  "promo": true,
+  "discount": 50,
+  "image": "/assets/products/dec-org-001-meuble-tiroirs-fleuris.png",
+  "featured": true,
+  "active": true
+}

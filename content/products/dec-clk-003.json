@@ -1,0 +1,12 @@
+{
+  "name": "Horloge murale Route 66 vintage",
+  "reference": "DEC-CLK-003",
+  "category": "Décoration intérieure",
+  "description": "Horloge murale décorative Route 66 au look rétro américain, parfaite pour une décoration industrielle ou vintage.",
+  "price": 55.0,
+  "promo": true,
+  "discount": 50,
+  "image": "/assets/products/dec-clk-003-horloge-route-66.png",
+  "featured": true,
+  "active": true
+}
