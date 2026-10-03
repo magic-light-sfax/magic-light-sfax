@@ -1,10 +1,12 @@
 {
+  "discount": 20,
+  "active": true,
+  "price": 35,
   "name": "Détecteur de mouvement",
   "reference": "DET-001",
-  "category": "Accessoires électriques",
-  "description": "Détecteur de mouvement pour automatiser l'éclairage dans les couloirs, escaliers, garages et autres espaces.",
-  "price": 35.0,
-  "image": "/assets/products/06-detecteur-de-mouvement.png",
   "featured": true,
-  "active": true
+  "promo": true,
+  "image": "/assets/products/06-detecteur-de-mouvement.png",
+  "description": "Détecteur de mouvement pour automatiser l'éclairage dans les couloirs, escaliers, garages et autres espaces.",
+  "category": "Accessoires électriques"
 }
