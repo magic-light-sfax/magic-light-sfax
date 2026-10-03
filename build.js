@@ -42,6 +42,8 @@ if(fs.existsSync(productDir)){
           category:obj.category||"Autres",
           description:obj.description||"",
           price:obj.price ?? null,
+          promo:obj.promo===true,
+          discount:Number.isFinite(Number(obj.discount)) ? Math.max(0,Math.min(90,Number(obj.discount))) : 0,
           image:obj.image||"",
           featured:obj.featured!==false
         });

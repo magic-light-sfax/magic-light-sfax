@@ -191,6 +191,17 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
 <style>
 .admin-products-note{margin:0 0 18px;padding:12px 15px;border:1px solid #ead9b5;background:#fff9eb;border-radius:14px;color:#76571f;font-size:.88rem}
 .admin-price{font-weight:900;color:#a87925;margin-top:8px}
+.promo-price{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px}
+.promo-price .old-price{color:#8b919a;text-decoration:line-through;font-weight:700;font-size:.86rem}
+.promo-price .new-price{color:#b42318;font-weight:950;font-size:1.05rem}
+.promo-badge{display:inline-flex;align-items:center;justify-content:center;background:#b42318;color:#fff;border-radius:999px;padding:4px 8px;font-size:.72rem;font-weight:950;line-height:1}
+.delivery-strip{background:#111215;color:#fff;text-align:center;padding:10px 16px;font-size:.9rem;font-weight:800}
+.delivery-strip strong{color:#f0cf83}
+.cart-summary-lines{margin-top:14px;border-top:1px solid #eceef1;padding-top:12px}
+.cart-summary-line{display:flex;justify-content:space-between;gap:12px;padding:4px 0;font-size:.95rem}
+.cart-summary-line.total{font-size:1.2rem;font-weight:950;padding-top:8px}
+.cart-free-hint{margin-top:8px;padding:9px 11px;border-radius:10px;background:#fff8e8;color:#76571f;font-size:.82rem;font-weight:800}
+.cart-free-hint.free{background:#edf9f0;color:#147a32}
 .admin-empty{padding:24px;border:1px dashed #d5d9df;border-radius:16px;color:#777;text-align:center;background:#fff}
  #admin-catalogue{
   padding:0 !important;
@@ -1161,6 +1172,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
         </div>
         <div class="drawer-categories-panel" aria-label="Catégories produits">
           <a class="drawer-cat-all" href="produits.html#products" data-drawer-filter="all"><span>Tous les produits</span><span>›</span></a>
+          <a class="drawer-cat-all" href="produits.html?cat=__promo__#products" data-drawer-filter="__promo__"><span>🔥 Promotions</span><span>›</span></a>
           <div class="drawer-cat-group">
             <button class="drawer-cat-head" type="button" aria-expanded="false"><span>Éclairage</span><span class="cat-sign">+</span></button>
             <div class="drawer-cat-children">
@@ -1216,13 +1228,13 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
   </div>
   <div class="menu-overlay" aria-hidden="true"></div>
 </header>
-
+<div class="delivery-strip">🚚 Livraison disponible dans toute la Tunisie — <strong>8,500 TND</strong> • Livraison gratuite à partir de <strong>350 TND</strong></div>
 
 <main>
 <section class="pagehero"><div class="container"><div class="kicker">PRODUITS</div><h1>Catalogue produits</h1><p>20 produits et familles présentés avec filtres, recherche et contact direct.</p></div></section>
 <section class="section soft" id="products"><div class="container">
   <button class="mobile-category-trigger" type="button">☰ Catégories <span>›</span></button>
-  <div class="filterbar"><button class="filter active" data-filter="all">Tous</button><button class="filter" data-filter="Accessoires électriques">Accessoires électriques</button><button class="filter" data-filter="Ampoules &amp; lampes">Ampoules &amp; lampes</button><button class="filter" data-filter="Décoration lumineuse">Décoration lumineuse</button><button class="filter" data-filter="Lustres &amp; suspensions">Lustres &amp; suspensions</button><button class="filter" data-filter="Plafonniers &amp; panneaux LED">Plafonniers &amp; panneaux LED</button><button class="filter" data-filter="Profilés LED">Profilés LED</button><button class="filter" data-filter="Rubans &amp; RGB">Rubans &amp; RGB</button><button class="filter" data-filter="Style industriel">Style industriel</button><button class="filter" data-filter="Sécurité &amp; surveillance">Sécurité &amp; surveillance</button><button class="filter" data-filter="Éclairage décoratif">Éclairage décoratif</button><button class="filter" data-filter="Éclairage extérieur">Éclairage extérieur</button><button class="filter" data-filter="Éclairage intelligent">Éclairage intelligent</button><button class="filter" data-filter="Éclairage professionnel">Éclairage professionnel</button><button class="filter" data-filter="Éclairage résidentiel">Éclairage résidentiel</button><button class="filter" data-filter="Éclairage solaire">Éclairage solaire</button><button class="filter" data-filter="Éclairage événementiel">Éclairage événementiel</button></div>
+  <div class="filterbar"><button class="filter active" data-filter="all">Tous</button><button class="filter" data-filter="__promo__">PROMOTIONS</button><button class="filter" data-filter="Accessoires électriques">Accessoires électriques</button><button class="filter" data-filter="Ampoules &amp; lampes">Ampoules &amp; lampes</button><button class="filter" data-filter="Décoration lumineuse">Décoration lumineuse</button><button class="filter" data-filter="Lustres &amp; suspensions">Lustres &amp; suspensions</button><button class="filter" data-filter="Plafonniers &amp; panneaux LED">Plafonniers &amp; panneaux LED</button><button class="filter" data-filter="Profilés LED">Profilés LED</button><button class="filter" data-filter="Rubans &amp; RGB">Rubans &amp; RGB</button><button class="filter" data-filter="Style industriel">Style industriel</button><button class="filter" data-filter="Sécurité &amp; surveillance">Sécurité &amp; surveillance</button><button class="filter" data-filter="Éclairage décoratif">Éclairage décoratif</button><button class="filter" data-filter="Éclairage extérieur">Éclairage extérieur</button><button class="filter" data-filter="Éclairage intelligent">Éclairage intelligent</button><button class="filter" data-filter="Éclairage professionnel">Éclairage professionnel</button><button class="filter" data-filter="Éclairage résidentiel">Éclairage résidentiel</button><button class="filter" data-filter="Éclairage solaire">Éclairage solaire</button><button class="filter" data-filter="Éclairage événementiel">Éclairage événementiel</button></div>
   <div class="grid">
 <article class="card" data-cat="Éclairage décoratif" data-search="suspension design moderne ml-sus-001 éclairage décoratif suspension élégante en plusieurs finitions pour maison, bureau et commerces.">
   <img src="assets/suspension-moderne.png" alt="Suspension Design Moderne" decoding="async" loading="lazy">
@@ -1655,8 +1667,11 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
     <div class="cart-scroll">
       <div id="cartItems"></div>
 
-      <div class="cart-total-box" style="border-top:2px solid #eee;margin-top:20px;padding-top:18px;font-size:22px;font-weight:800">
-        <span>TOTAL</span><span id="cartTotal">0.000 TND</span>
+      <div class="cart-summary-lines">
+        <div class="cart-summary-line"><span>Sous-total produits</span><strong id="cartSubtotal">0.000 TND</strong></div>
+        <div class="cart-summary-line"><span>Livraison</span><strong id="cartShipping">8.500 TND</strong></div>
+        <div class="cart-summary-line total"><span>TOTAL</span><strong id="cartTotal">0.000 TND</strong></div>
+        <div class="cart-free-hint" id="cartFreeHint">Livraison gratuite à partir de 350 TND.</div>
       </div>
 <div class="cart-client" style="margin-top:22px;padding:18px;background:#f7f7f7;border-radius:14px">
   <h3 style="margin-top:0">Informations client</h3>
@@ -1822,14 +1837,29 @@ showSlide(0);autoplay();
 
 // Filters
 const filters=[...document.querySelectorAll('.filter')];
-const cards=[...document.querySelectorAll('.card[data-cat]')];
 function applyCategoryFilter(cat){
   const wanted=cat||'all';
+  window.magicActiveCategoryFilter=wanted;
   filters.forEach(x=>x.classList.toggle('active',x.dataset.filter===wanted || (wanted==='all'&&x.dataset.filter==='all')));
-  cards.forEach(c=>c.style.display=(wanted==='all'||c.dataset.cat===wanted)?'':'none');
+  const cards=[...document.querySelectorAll('.card[data-cat]')];
+  cards.forEach(c=>{
+    const visible = wanted==='all'
+      ? true
+      : wanted==='__promo__'
+        ? c.dataset.promo==='true'
+        : c.dataset.cat===wanted;
+    c.style.display=visible?'':'none';
+  });
+  const adminGridNow=document.getElementById('adminProductsGrid');
+  const adminSectionNow=document.getElementById('admin-catalogue');
+  if(adminGridNow && adminSectionNow){
+    const hasVisible=[...adminGridNow.querySelectorAll('.card')].some(c=>c.style.display!=='none');
+    adminSectionNow.style.display=hasVisible?'':'none';
+  }
   const products=document.getElementById('products');
   if(products) products.scrollIntoView({behavior:'smooth',block:'start'});
 }
+window.applyMagicCategoryFilter=applyCategoryFilter;
 filters.forEach(f=>f.addEventListener('click',()=>applyCategoryFilter(f.dataset.filter)));
 const mobileCategoryTrigger=document.querySelector('.mobile-category-trigger');
 mobileCategoryTrigger?.addEventListener('click',()=>{setMobileMenu(true);setDrawerTab('categories')});
@@ -1924,6 +1954,10 @@ window.openMagicProduct=function(btn){
   const desc=btn.dataset.desc || '';
   const priceRaw=btn.dataset.price || (card?.querySelector('.admin-price')?.textContent || '').replace(/[^\d.]/g,'') || '';
   const price=priceRaw ? Number(priceRaw) : 0;
+  const originalPriceRaw=btn.dataset.originalPrice || priceRaw;
+  const originalPrice=originalPriceRaw ? Number(originalPriceRaw) : price;
+  const discount=Math.max(0,Math.min(90,Number(btn.dataset.discount||0)||0));
+  const hasPromo=discount>0 && originalPrice>0 && price>0 && price<originalPrice;
   const power=magicExtractPower(btn);
   const dimensions=(btn.dataset.dimensions || '').trim();
   const stock=(btn.dataset.stock || '').trim() || 'Nous contacter';
@@ -1931,7 +1965,16 @@ window.openMagicProduct=function(btn){
   modalTitle.textContent=name;
   modalRef.textContent=ref;
   modalDesc.textContent=desc;
-  modalPrice.textContent=priceRaw ? Number(priceRaw).toFixed(3)+' TND' : '';
+  if(modalPrice){
+    if(hasPromo){
+      modalPrice.innerHTML=`<div class="promo-price"><span class="old-price">${originalPrice.toFixed(3)} TND</span><span class="new-price">${price.toFixed(3)} TND</span><span class="promo-badge">-${discount}%</span></div>`;
+    }else{
+      modalPrice.textContent=priceRaw ? price.toFixed(3)+' TND' : '';
+    }
+    modalPrice.style.setProperty('display',priceRaw?'block':'none','important');
+  }
+  const modalCartControls=document.getElementById('modalCartControls');
+  if(modalCartControls) modalCartControls.style.setProperty('display',priceRaw?'grid':'none','important');
   modalImages=magicProductImages(btn);
   magicRenderGallery(0);
 
@@ -1950,6 +1993,8 @@ window.openMagicProduct=function(btn){
   if(modalAddCart){
     modalAddCart.dataset.name=name;
     modalAddCart.dataset.price=priceRaw || '0';
+    modalAddCart.dataset.originalPrice=originalPriceRaw || priceRaw || '0';
+    modalAddCart.dataset.discount=discount ? String(discount) : '0';
   }
   const resetQty=document.getElementById('modalQty');
   if(resetQty) resetQty.textContent='1';
@@ -1960,7 +2005,7 @@ window.openMagicProduct=function(btn){
     modalWhatsApp.href='https://wa.me/21622181224?text='+encodeURIComponent(wa);
   }
 
-  window.magicCurrentProduct={name,ref,desc,price,power,dimensions,stock,images:[...modalImages]};
+  window.magicCurrentProduct={name,ref,desc,price,originalPrice,discount,power,dimensions,stock,images:[...modalImages]};
   modal.classList.add('open');
 };
 
@@ -2006,7 +2051,17 @@ document.getElementById('productPdf')?.addEventListener('click',()=>{
   if(p.power){doc.text('Puissance : '+p.power,20,y);y+=7;}
   if(p.dimensions){doc.text('Dimensions : '+p.dimensions,20,y);y+=7;}
   doc.text('Disponibilite : '+(p.stock||'Nous contacter'),20,y);y+=9;
-  if(p.price){doc.setFontSize(14);doc.text('Prix : '+Number(p.price).toFixed(3)+' TND',20,y);y+=11;doc.setFontSize(11);}
+  if(p.price){
+    doc.setFontSize(14);
+    if(p.discount>0 && p.originalPrice>p.price){
+      doc.text('Prix initial : '+Number(p.originalPrice).toFixed(3)+' TND',20,y);y+=7;
+      doc.text('Remise : -'+Number(p.discount).toFixed(0)+'%',20,y);y+=7;
+      doc.text('Prix promo : '+Number(p.price).toFixed(3)+' TND',20,y);y+=11;
+    }else{
+      doc.text('Prix : '+Number(p.price).toFixed(3)+' TND',20,y);y+=11;
+    }
+    doc.setFontSize(11);
+  }
   if(p.desc){
     doc.setFontSize(12);doc.text('Description',20,y);y+=7;doc.setFontSize(10);
     const lines=doc.splitTextToSize(String(p.desc),170);doc.text(lines,20,y);y+=lines.length*5+8;
@@ -2027,14 +2082,25 @@ if(year)year.textContent=new Date().getFullYear();
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
     }[m]));
   }
-  function money(v){
-    if(v===null||v===undefined||v==="") return "";
-    const n=Number(v);
-    if(Number.isNaN(n)) return "";
-    return `<div class="admin-price">${n.toFixed(3)} TND</div>`;
+  function promoInfo(p){
+    const original=Number(p?.price);
+    const discount=Math.max(0,Math.min(90,Number(p?.discount||0)||0));
+    const active=p?.promo===true && Number.isFinite(original) && original>0 && discount>0;
+    const finalPrice=active ? original*(1-discount/100) : original;
+    return {original,discount,active,finalPrice};
+  }
+  function money(p){
+    if(p?.price===null||p?.price===undefined||p?.price==="") return "";
+    const info=promoInfo(p);
+    if(!Number.isFinite(info.original)) return "";
+    if(info.active){
+      return `<div class="promo-price"><span class="old-price">${info.original.toFixed(3)} TND</span><span class="new-price admin-price">${info.finalPrice.toFixed(3)} TND</span><span class="promo-badge">-${info.discount}%</span></div>`;
+    }
+    return `<div class="admin-price">${info.original.toFixed(3)} TND</div>`;
   }
   function card(p){
     const search=`${p.name||""} ${p.reference||""} ${p.category||""} ${p.description||""}`.toLowerCase();
+    const promo=promoInfo(p);
     const gallery=[];
     const addImage=v=>{ if(v && !gallery.includes(v)) gallery.push(v); };
     addImage(p.image);
@@ -2046,26 +2112,28 @@ if(year)year.textContent=new Date().getFullYear();
     const dimensions=p.dimensions ?? p.dimension ?? p.size ?? "";
     const stock=p.stock ?? p.availability ?? p.disponibilite ?? "";
     return `
-      <article class="card admin-product-card" data-cat="${esc(p.category||"Autres")}" data-search="${esc(search)}">
+      <article class="card admin-product-card" data-cat="${esc(p.category||"Autres")}" data-promo="${promo.active?'true':'false'}" data-search="${esc(search)}">
         <img src="${esc(p.image||"")}" alt="${esc(p.name||"Produit")}" decoding="async" loading="lazy">
         <div class="body">
           <span class="badge">${esc(p.category||"Autres")}</span>
           <h3>${esc(p.name||"Produit")}</h3>
           <div class="ref">${esc(p.reference||"")}</div>
           <p>${esc(p.description||"")}</p>
-          ${money(p.price)}
+          ${money(p)}
           <div class="actions">
             <button class="smallbtn primary view-product"
               data-img="${esc(p.image||"")}"
               data-images="${esc(gallery.join('|'))}"
               data-name="${esc(p.name||"Produit")}"
               data-ref="${esc(p.reference||"")}"
-              data-price="${p.price===null||p.price===undefined||p.price===""?"":Number(p.price).toFixed(3)}"
+              data-price="${p.price===null||p.price===undefined||p.price===""?"":promo.finalPrice.toFixed(3)}"
+              data-original-price="${p.price===null||p.price===undefined||p.price===""?"":promo.original.toFixed(3)}"
+              data-discount="${promo.active?promo.discount:0}"
               data-watt="${esc(watt)}"
               data-dimensions="${esc(dimensions)}"
               data-stock="${esc(stock)}"
               data-desc="${esc(p.description||"")}">Voir détails</button>
-              <button class="smallbtn add-cart" data-name="${esc(p.name||'Produit')}" data-price="${p.price??''}">🛒 Ajouter</button>
+              <button class="smallbtn add-cart" data-name="${esc(p.name||'Produit')}" data-price="${p.price===null||p.price===undefined||p.price===""?"":promo.finalPrice.toFixed(3)}" data-original-price="${p.price===null||p.price===undefined||p.price===""?"":promo.original.toFixed(3)}" data-discount="${promo.active?promo.discount:0}">🛒 Ajouter</button>
             <a class="smallbtn" target="_blank" href="https://wa.me/21622181224">WhatsApp</a>
           </div>
         </div>
@@ -2088,6 +2156,7 @@ if(year)year.textContent=new Date().getFullYear();
       }
       host.innerHTML=products.map(card).join("");
       window.applyMagicSearch?.(document.querySelector('.search input')?.value||'');
+      window.applyMagicCategoryFilter?.(window.magicActiveCategoryFilter||new URLSearchParams(location.search).get('cat')||'all');
     }catch(err){
       host.innerHTML='<div class="admin-empty">Catalogue Admin en attente de configuration.</div>';
     }
@@ -2155,15 +2224,19 @@ const qty = (addBtn.id === "modalAddCart" && modalQty)
 const name = addBtn.dataset.name 
   || "Produit";
 const price = Number(addBtn.dataset.price || 0);
- 
+const originalPrice = Number(addBtn.dataset.originalPrice || price || 0);
+const discount = Math.max(0,Math.min(90,Number(addBtn.dataset.discount||0)||0));
 
   let cart = JSON.parse(localStorage.getItem("magicLightCart") || "[]");
   const existing = cart.find(item => item.name === name);
 
   if(existing){
     existing.qty += qty;
+    existing.price = price;
+    existing.originalPrice = originalPrice;
+    existing.discount = discount;
   } else {
-    cart.push({ name: name, price: price, qty: qty });
+    cart.push({ name: name, price: price, originalPrice: originalPrice, discount: discount, qty: qty });
   }
 
   localStorage.setItem("magicLightCart", JSON.stringify(cart));
@@ -2192,7 +2265,14 @@ if(headerCartBtn){
 
     const cartModal = document.getElementById("cartModal");
     const cartItems = document.getElementById("cartItems");
+    const cartSubtotal = document.getElementById("cartSubtotal");
+    const cartShipping = document.getElementById("cartShipping");
     const cartTotal = document.getElementById("cartTotal");
+    const cartFreeHint = document.getElementById("cartFreeHint");
+    const SHIPPING_FEE = 8.5;
+    const FREE_SHIPPING_THRESHOLD = 350;
+    let subtotalProducts = 0;
+    let shipping = 0;
     let total = 0;
 
     const escapeHtml = (value) => String(value ?? "")
@@ -2211,10 +2291,12 @@ if(headerCartBtn){
 
     const renderCart = () => {
       cart = JSON.parse(localStorage.getItem("magicLightCart") || "[]");
-      total = cart.reduce(
+      subtotalProducts = cart.reduce(
         (sum,item) => sum + Number(item.price || 0) * (item.qty || 1),
         0
       );
+      shipping = subtotalProducts > 0 && subtotalProducts < FREE_SHIPPING_THRESHOLD ? SHIPPING_FEE : 0;
+      total = subtotalProducts + shipping;
 
       if(cartItems){
         if(!cart.length){
@@ -2231,7 +2313,11 @@ if(headerCartBtn){
                   <div class="cart-item-name">${index + 1}. ${escapeHtml(item.name)}</div>
                   <button class="cart-remove" type="button" data-cart-action="remove" data-index="${index}">Supprimer</button>
                 </div>
-                <div class="cart-item-meta">Prix unitaire : ${unitPrice.toFixed(3)} TND</div>
+                <div class="cart-item-meta">${
+                  Number(item.discount||0)>0 && Number(item.originalPrice||0)>unitPrice
+                    ? `Prix initial : <s>${Number(item.originalPrice).toFixed(3)} TND</s> • Remise -${Number(item.discount).toFixed(0)}% • Prix promo : ${unitPrice.toFixed(3)} TND`
+                    : `Prix unitaire : ${unitPrice.toFixed(3)} TND`
+                }</div>
                 <div class="cart-item-bottom">
                   <div class="cart-qty" aria-label="Quantité">
                     <button type="button" data-cart-action="minus" data-index="${index}" aria-label="Diminuer">−</button>
@@ -2246,7 +2332,19 @@ if(headerCartBtn){
         }
       }
 
+      if(cartSubtotal) cartSubtotal.textContent = subtotalProducts.toFixed(3) + " TND";
+      if(cartShipping) cartShipping.textContent = shipping===0 ? "GRATUITE" : shipping.toFixed(3) + " TND";
       if(cartTotal) cartTotal.textContent = total.toFixed(3) + " TND";
+      if(cartFreeHint){
+        if(subtotalProducts>=FREE_SHIPPING_THRESHOLD){
+          cartFreeHint.textContent="✓ Livraison gratuite appliquée";
+          cartFreeHint.classList.add("free");
+        }else{
+          const remaining=Math.max(0,FREE_SHIPPING_THRESHOLD-subtotalProducts);
+          cartFreeHint.textContent="Plus que "+remaining.toFixed(3)+" TND pour profiter de la livraison gratuite.";
+          cartFreeHint.classList.remove("free");
+        }
+      }
       updateCartCount();
     };
 
@@ -2338,6 +2436,8 @@ if(headerCartBtn){
           <div><strong>Adresse :</strong> ${escapeHtml(c.address)}</div>
           <div><strong>Ville :</strong> ${escapeHtml(c.city || "-")}</div></div>
           <h2>PANIER</h2>${rows}
+          <div style="margin-top:18px"><strong>Sous-total produits :</strong> ${subtotalProducts.toFixed(3)} TND</div>
+          <div><strong>Livraison :</strong> ${shipping===0?'GRATUITE':shipping.toFixed(3)+' TND'}</div>
           <div class="total">TOTAL : ${total.toFixed(3)} TND</div>
 </body></html>
         `);
@@ -2382,7 +2482,9 @@ if(headerCartBtn){
           doc.text("Sous-total : " + subtotal.toFixed(3) + " TND",25,y); y += 11;
         });
 
-        if(y > 260){ doc.addPage(); y = 20; }
+        if(y > 250){ doc.addPage(); y = 20; }
+        doc.setFontSize(11); doc.text("Sous-total produits : " + subtotalProducts.toFixed(3) + " TND",20,y); y += 7;
+        doc.text("Livraison : " + (shipping===0 ? "GRATUITE" : shipping.toFixed(3) + " TND"),20,y); y += 9;
         doc.setFontSize(16); doc.text("TOTAL : " + total.toFixed(3) + " TND",20,y);
         doc.save("Commande-MAGIC-LIGHT.pdf");
       };
@@ -2414,7 +2516,9 @@ if(headerCartBtn){
           "📍 Adresse : " + c.address + "\n" +
           "🏙️ Ville : " + (c.city || "-") + "\n\n" +
           "📦 PRODUITS\n\n" + productsText +
-          "\n\n💰 TOTAL : " + total.toFixed(3) + " TND";
+          "\n\n🧾 Sous-total produits : " + subtotalProducts.toFixed(3) + " TND" +
+          "\n🚚 Livraison : " + (shipping===0 ? "GRATUITE" : shipping.toFixed(3) + " TND") +
+          "\n💰 TOTAL : " + total.toFixed(3) + " TND";
 
         window.open("https://wa.me/21622181224?text=" + encodeURIComponent(message),"_blank");
       };
