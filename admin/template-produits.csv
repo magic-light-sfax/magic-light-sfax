@@ -1,0 +1,3 @@
+reference,name,category,description,price,promo,discount,image,featured,active
+ML-001,Exemple produit,Lustres & suspensions,Description exemple,100,true,20,/assets/products/exemple.jpg,true,true
+ML-002,Deuxième exemple,Spots LED,Autre description,55,false,0,/assets/products/exemple-2.jpg,true,true
