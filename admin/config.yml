@@ -53,7 +53,7 @@ collections:
             widget: "file"
             required: false
             allow_multiple: false
-            media_folder: "/assets/imports"
+            media_folder: "assets/imports"
             public_folder: "/assets/imports"
             hint: "Formats acceptés : .xlsx, .xls ou .csv. Utilisez la première feuille du classeur. Modèle : /admin/template-produits.csv"
           - {label: "Note interne", name: "note", widget: "text", required: false, hint: "Facultatif. Cette note n’apparaît pas sur le site."}
