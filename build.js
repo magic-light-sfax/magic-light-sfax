@@ -126,9 +126,9 @@ function parseCsv(text){
 function resolveRepoFile(publicPath){
   const clean=String(publicPath||"").trim().replace(/^\/+/,"");
   const abs=path.resolve(ROOT,clean);
-  const rootResolved=path.resolve(ROOT)+path.sep;
-  if(!(abs+path.sep).startsWith(rootResolved) && abs!==path.resolve(ROOT)) {
-    throw new Error("Chemin import invalide");
+  const importsRoot=path.resolve(ROOT,"assets","imports");
+  if(abs!==importsRoot && !abs.startsWith(importsRoot+path.sep)){
+    throw new Error("Le fichier d’import doit être dans /assets/imports");
   }
   return abs;
 }
