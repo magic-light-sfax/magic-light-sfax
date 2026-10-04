@@ -77,7 +77,7 @@ function rowToProduct(row){
     reference,
     category:String(pick(row,["category","catégorie","categorie","famille"]) || "Autres").trim() || "Autres",
     description:String(pick(row,["description","desc"])).trim(),
-    price:parseNumber(pick(row,["price","prix","prix normal","normal price"])),
+    price:(()=>{ const n=parseNumber(pick(row,["price","prix","prix normal","normal price"])); return n!==null && n>0 ? n : null; })(),
     promo:promoFlag && discount>0,
     discount,
     image:normalizeImage(pick(row,["image","photo","photo produit","image path","image url"])),
