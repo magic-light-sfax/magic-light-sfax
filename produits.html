@@ -1888,7 +1888,9 @@ function applyMagicSearch(raw){
 window.applyMagicSearch=applyMagicSearch;
 searchForm?.addEventListener('submit',e=>{
   e.preventDefault();
-  applyMagicSearch(searchInput?.value||'');
+  const term=searchInput?.value||'';
+  applyMagicSearch(term);
+  if(term.trim()) window.magicTrack?.('search',{search_term:term.trim()});
 });
 const initialSearch=new URLSearchParams(location.search).get('q');
 if(initialSearch && searchInput){
@@ -2007,6 +2009,14 @@ window.openMagicProduct=function(btn){
   }
 
   window.magicCurrentProduct={name,ref,desc,price,originalPrice,discount,power,dimensions,stock,images:[...modalImages]};
+  window.magicTrack?.('view_item',{
+    currency:'TND',
+    value:Number(price||0),
+    item_id:ref,
+    item_name:name,
+    discount:Number(discount||0),
+    items:[{item_id:ref,item_name:name,price:Number(price||0),discount:Number(discount||0)}]
+  });
   modal.classList.add('open');
 };
 
@@ -2241,6 +2251,13 @@ const discount = Math.max(0,Math.min(90,Number(addBtn.dataset.discount||0)||0));
   }
 
   localStorage.setItem("magicLightCart", JSON.stringify(cart));
+  window.magicTrack?.('add_to_cart',{
+    currency:'TND',
+    value:Number(price||0)*Number(qty||1),
+    item_name:name,
+    quantity:Number(qty||1),
+    items:[{item_name:name,price:Number(price||0),quantity:Number(qty||1)}]
+  });
   window.syncMagicLightCartCount?.();
   const cartCount = document.getElementById("cartCount");
 if(cartCount) cartCount.textContent = cart.reduce((t,item)=>t+(item.qty||1),0);
@@ -2350,6 +2367,11 @@ if(headerCartBtn){
     };
 
     renderCart();
+    window.magicTrack?.('view_cart',{
+      currency:'TND',
+      value:Number(subtotalProducts||0),
+      quantity:cart.reduce((sum,item)=>sum+(Number(item.qty)||1),0)
+    });
 
     if(cartModal) cartModal.style.display = "flex";
 
@@ -2522,6 +2544,11 @@ if(headerCartBtn){
         if(!c) return;
         if(!cart.length){ alert("Votre panier est vide"); return; }
 
+        window.magicTrack?.('begin_checkout',{
+          currency:'TND',
+          value:Number(total||0),
+          quantity:cart.reduce((sum,item)=>sum+(Number(item.qty)||1),0)
+        });
         const popup = window.open("about:blank","_blank");
         const originalLabel = cartWhatsApp.textContent;
         cartWhatsApp.disabled = true;
@@ -2531,6 +2558,11 @@ if(headerCartBtn){
           const saved = await saveOrder(c);
           const orderNumber = saved.orderNumber;
           localStorage.setItem("magicLightLastOrderNumber", orderNumber);
+          window.magicTrack?.('generate_lead',{
+            currency:'TND',
+            value:Number(saved.total||0),
+            order_id:String(orderNumber||'')
+          });
 
           const notice = document.getElementById("cartOrderNotice");
           if(notice){
@@ -2575,6 +2607,18 @@ if(headerCartBtn){
     }
   });
 }
+  // magic-wa-direct-tracking
+  document.addEventListener('click',function(e){
+    const a=e.target.closest('a[href*="wa.me/21622181224"]');
+    if(!a) return;
+    const product=window.magicCurrentProduct;
+    window.magicTrack?.('contact',{
+      method:'whatsapp',
+      item_id:product?.ref||'',
+      item_name:product?.name||''
+    });
+  });
+
   loadProducts();
  const adminSection = document.getElementById("admin-catalogue");
 const adminGrid = document.getElementById("adminProductsGrid");
