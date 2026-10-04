@@ -36,3 +36,24 @@ collections:
       - {label: "Photo", name: "image", widget: "image"}
       - {label: "Nouveauté", name: "featured", widget: "boolean", default: true}
       - {label: "Afficher sur le site", name: "active", widget: "boolean", default: true}
+
+  - name: "bulk_import"
+    label: "Import Excel / CSV"
+    format: "json"
+    editor:
+      preview: false
+    files:
+      - label: "Importer des produits en masse"
+        name: "products_import"
+        file: "content/imports/products-import.json"
+        fields:
+          - {label: "Activer cet import", name: "enabled", widget: "boolean", default: false, required: false, hint: "Activez après avoir choisi le fichier. Désactivez pour revenir uniquement aux fiches Produits individuelles."}
+          - label: "Fichier Excel / CSV"
+            name: "file"
+            widget: "file"
+            required: false
+            allow_multiple: false
+            media_folder: "/assets/imports"
+            public_folder: "/assets/imports"
+            hint: "Formats acceptés : .xlsx, .xls ou .csv. Utilisez la première feuille du classeur. Modèle : /admin/template-produits.csv"
+          - {label: "Note interne", name: "note", widget: "text", required: false, hint: "Facultatif. Cette note n’apparaît pas sur le site."}
