@@ -29,7 +29,7 @@ function loadAnalyticsConfig(){
     return {
       ga4Enabled:raw.ga4Enabled===true && /^G-[A-Z0-9]+$/i.test(ga4MeasurementId),
       ga4MeasurementId,
-      metaEnabled:raw.metaEnabled===true && /^\\d{5,25}$/.test(metaPixelId),
+      metaEnabled:raw.metaEnabled===true && /^\d{5,25}$/.test(metaPixelId),
       metaPixelId
     };
   }catch(e){
@@ -71,11 +71,11 @@ function analyticsSnippet(cfg){
     +'    delete p.email;delete p.phone;delete p.name;delete p.address;\n'
     +"    if(window.magicAnalyticsConfig.ga4Enabled && typeof window.gtag==='function'){window.gtag('event',eventName,p);}\n"
     +"    if(window.magicAnalyticsConfig.metaEnabled && typeof window.fbq==='function'){\n"
-    +"      var map={view_item:'ViewContent',add_to_cart:'AddToCart',begin_checkout:'InitiateCheckout',generate_lead:'Lead',search:'Search'};\n"
+    +"      var map={view_item:'ViewContent',add_to_cart:'AddToCart',begin_checkout:'InitiateCheckout',generate_lead:'Lead',search:'Search',contact:'Contact'};\n"
     +"      var metaName=map[eventName];var mp={};\n"
     +"      if(p.currency)mp.currency=p.currency;if(Number.isFinite(Number(p.value)))mp.value=Number(p.value);\n"
     +"      if(p.item_name)mp.content_name=p.item_name;if(p.item_id)mp.content_ids=[String(p.item_id)];\n"
-    +"      if(p.quantity)mp.num_items=Number(p.quantity);\n"
+    +"      if(p.quantity)mp.num_items=Number(p.quantity);if(p.search_term)mp.search_string=String(p.search_term);\n"
     +"      if(metaName)window.fbq('track',metaName,mp);else window.fbq('trackCustom',eventName,mp);\n"
     +'    }\n'
     +'  }catch(e){}\n'
@@ -87,7 +87,7 @@ function injectAnalytics(filePath,snippet){
   if(!snippet || !fs.existsSync(filePath)) return;
   let html=fs.readFileSync(filePath,"utf8");
   if(html.includes("<!-- MAGIC LIGHT analytics -->")) return;
-  html=html.replace(/<\\/head>/i,snippet+"\\n</head>");
+  html=html.replace(/<\/head>/i,snippet+"\n</head>");
   fs.writeFileSync(filePath,html,"utf8");
 }
 
