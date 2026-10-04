@@ -1,0 +1,46 @@
+name: Import Excel CSV vers Produits Admin
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "assets/imports/**"
+      - "content/imports/products-import.json"
+      - "scripts/import-products.js"
+      - ".github/workflows/import-products.yml"
+      - "package.json"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import-products:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Convert Excel CSV to editable product files
+        run: node scripts/import-products.js
+
+      - name: Commit new product files
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add content/products
+          if git diff --cached --quiet; then
+            echo "No new products to commit."
+            exit 0
+          fi
+          git commit -m "Import products from Excel CSV"
+          git push
