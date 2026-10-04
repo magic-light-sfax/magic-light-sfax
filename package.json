@@ -6,6 +6,7 @@
     "build": "node build.js"
   },
   "dependencies": {
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "@netlify/blobs": "^10.0.0"
   }
 }

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>MAGIC LIGHT — Commandes</title>
+<style>
+:root{--gold:#c99a3c;--ink:#20242b;--line:#e5e7eb;--soft:#f6f7f9;--danger:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Tahoma,sans-serif;background:var(--soft);color:var(--ink)}
+.wrap{width:min(1180px,calc(100% - 24px));margin:24px auto 60px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{margin:0}.back{padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;text-decoration:none;color:#222;font-weight:800}
+.auth,.toolbar,.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:16px}
+.auth{display:grid;grid-template-columns:1fr auto;gap:10px}.auth input,.toolbar input,.status{height:44px;border:1px solid #d8dce2;border-radius:10px;padding:0 12px;font:inherit}
+button{height:44px;border:0;border-radius:10px;padding:0 16px;font-weight:900;cursor:pointer}.gold{background:var(--gold);color:#111}.dark{background:#111;color:#fff}.muted{color:#737a84;font-size:.9rem}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.toolbar input{flex:1;min-width:230px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}.stat strong{display:block;font-size:1.45rem}
+.list{display:grid;gap:12px;margin-top:16px}.order{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}.order-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}.num{font-size:1.05rem;font-weight:950}.pill{display:inline-flex;padding:5px 9px;border-radius:999px;background:#f1f3f5;font-size:.78rem;font-weight:900}
+.grid{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:14px;margin-top:12px}.box{background:#fafbfc;border-radius:12px;padding:12px;min-width:0}.box h3{font-size:.9rem;margin:0 0 8px}.line{display:flex;justify-content:space-between;gap:12px;padding:3px 0;font-size:.87rem}.products{margin:8px 0 0;padding-left:18px;font-size:.87rem}.products li{margin:4px 0}.error{color:var(--danger);font-weight:800}
+@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.auth{grid-template-columns:1fr}.wrap{margin-top:12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>📦 Commandes MAGIC LIGHT</h1><div class="muted">Suivi des commandes enregistrées depuis le site.</div></div>
+    <a class="back" href="/admin/">← Produits / Admin</a>
+  </div>
+
+  <div class="auth">
+    <input id="adminKey" type="password" autocomplete="current-password" placeholder="Clé Admin commandes">
+    <button class="dark" id="connectBtn">Ouvrir les commandes</button>
+    <div id="authMsg" class="muted" style="grid-column:1/-1"></div>
+  </div>
+
+  <div id="app" hidden>
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Rechercher numéro, client, téléphone, ville...">
+      <button class="gold" id="refreshBtn">Actualiser</button>
+      <button id="logoutBtn">Déconnexion</button>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="list" id="orders"></div>
+  </div>
+</div>
+<script>
+const API="/.netlify/functions/admin-orders";
+const keyInput=document.getElementById("adminKey");
+const authMsg=document.getElementById("authMsg");
+const app=document.getElementById("app");
+const ordersEl=document.getElementById("orders");
+const statsEl=document.getElementById("stats");
+const searchEl=document.getElementById("search");
+let orders=[], statuses=[];
+keyInput.value=localStorage.getItem("magicLightOrdersKey")||"";
+
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money=n=>(Number(n)||0).toFixed(3)+" TND";
+const fmtDate=v=>{try{return new Date(v).toLocaleString("fr-TN")}catch{return v||"-"}};
+
+async function api(method="GET",body){
+  const key=keyInput.value.trim();
+  const res=await fetch(API,{method,headers:{"x-admin-key":key,"content-type":"application/json"},body:body?JSON.stringify(body):undefined,cache:"no-store"});
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok) throw Object.assign(new Error(data.error||"Erreur"),{status:res.status,data});
+  return data;
+}
+function renderStats(){
+  const delivered=orders.filter(o=>o.status==="Livrée").length;
+  const newCount=orders.filter(o=>o.status==="Nouvelle").length;
+  const revenue=orders.filter(o=>o.status!=="Annulée").reduce((s,o)=>s+(Number(o.total)||0),0);
+  statsEl.innerHTML=`
+    <div class="stat"><span class="muted">Total commandes</span><strong>${orders.length}</strong></div>
+    <div class="stat"><span class="muted">Nouvelles</span><strong>${newCount}</strong></div>
+    <div class="stat"><span class="muted">Livrées</span><strong>${delivered}</strong></div>
+    <div class="stat"><span class="muted">Montant commandes</span><strong>${money(revenue)}</strong></div>`;
+}
+function render(){
+  renderStats();
+  const q=searchEl.value.trim().toLowerCase();
+  const filtered=orders.filter(o=>JSON.stringify([o.orderNumber,o.client?.name,o.client?.phone,o.client?.city,o.status]).toLowerCase().includes(q));
+  ordersEl.innerHTML=filtered.length?filtered.map(o=>{
+    const opts=statuses.map(s=>`<option ${s===o.status?"selected":""}>${esc(s)}</option>`).join("");
+    const items=(o.items||[]).map(i=>`<li>${esc(i.name)} — ${i.qty||1} × ${money(i.unitPrice)}</li>`).join("");
+    return `<article class="order">
+      <div class="order-head">
+        <div><div class="num">${esc(o.orderNumber)}</div><div class="muted">${fmtDate(o.createdAt)} · ${esc(o.channel||"Site")}</div></div>
+        <div><select class="status" data-order="${esc(o.orderNumber)}">${opts}</select></div>
+      </div>
+      <div class="grid">
+        <div class="box"><h3>Client</h3>
+          <div><strong>${esc(o.client?.name||"-")}</strong></div>
+          <div class="muted">${esc(o.client?.phone||"-")} · ${esc(o.client?.email||"-")}</div>
+          <div class="muted">${esc(o.client?.address||"-")} ${o.client?.city?"— "+esc(o.client.city):""}</div>
+        </div>
+        <div class="box"><h3>Produits</h3><ul class="products">${items}</ul></div>
+        <div class="box"><h3>Total</h3>
+          <div class="line"><span>Sous-total</span><strong>${money(o.subtotal)}</strong></div>
+          <div class="line"><span>Livraison</span><strong>${Number(o.shipping)===0?"GRATUITE":money(o.shipping)}</strong></div>
+          <div class="line"><span>Total</span><strong>${money(o.total)}</strong></div>
+          <div class="muted" style="margin-top:8px">${esc(o.geo?.city||"")} ${o.geo?.country?"· "+esc(o.geo.country):""}</div>
+        </div>
+      </div>
+    </article>`;
+  }).join(""):'<div class="card muted">Aucune commande trouvée.</div>';
+}
+async function load(){
+  authMsg.textContent="Chargement...";
+  try{
+    const data=await api();
+    orders=data.orders||[];statuses=data.statuses||[];
+    localStorage.setItem("magicLightOrdersKey",keyInput.value.trim());
+    app.hidden=false;authMsg.textContent="Connecté.";
+    render();
+  }catch(e){
+    app.hidden=true;
+    authMsg.innerHTML=e.data?.setupRequired?'<span class="error">ORDER_ADMIN_KEY doit être configurée dans Netlify avant d’ouvrir cette page.</span>':'<span class="error">'+esc(e.message)+'</span>';
+  }
+}
+document.getElementById("connectBtn").onclick=load;
+document.getElementById("refreshBtn").onclick=load;
+document.getElementById("logoutBtn").onclick=()=>{localStorage.removeItem("magicLightOrdersKey");keyInput.value="";app.hidden=true;authMsg.textContent="Déconnecté.";};
+searchEl.addEventListener("input",render);
+ordersEl.addEventListener("change",async e=>{
+  const sel=e.target.closest("select[data-order]");if(!sel)return;
+  sel.disabled=true;
+  try{
+    const data=await api("PATCH",{orderNumber:sel.dataset.order,status:sel.value});
+    const idx=orders.findIndex(o=>o.orderNumber===data.order.orderNumber);if(idx>=0)orders[idx]=data.order;
+    render();
+  }catch(err){alert(err.message);sel.disabled=false;load();}
+});
+if(keyInput.value) load();
+</script>
+</body>
+</html>
