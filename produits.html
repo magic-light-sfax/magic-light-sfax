@@ -1672,6 +1672,7 @@ display:grid;place-items:center;text-align:center;padding:24px;border:1px solid 
         <div class="cart-summary-line"><span>Livraison</span><strong id="cartShipping">8.500 TND</strong></div>
         <div class="cart-summary-line total"><span>TOTAL</span><strong id="cartTotal">0.000 TND</strong></div>
         <div class="cart-free-hint" id="cartFreeHint">Livraison gratuite à partir de 350 TND.</div>
+        <div id="cartOrderNotice" style="display:none;margin-top:10px;padding:10px 12px;border-radius:10px;background:#edf9f0;color:#147a32;font-weight:900"></div>
       </div>
 <div class="cart-client" style="margin-top:22px;padding:18px;background:#f7f7f7;border-radius:14px">
   <h3 style="margin-top:0">Informations client</h3>
@@ -2403,6 +2404,29 @@ if(headerCartBtn){
       return c;
     };
 
+    const saveOrder = async (client) => {
+      const payload = {
+        client,
+        items: cart.map(item => ({
+          name: item.name,
+          qty: item.qty || 1,
+          unitPrice: Number(item.price || 0)
+        })),
+        source: "produits",
+        page: location.href
+      };
+      const response = await fetch("/.netlify/functions/create-order", {
+        method: "POST",
+        headers: {"content-type":"application/json"},
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json().catch(() => ({}));
+      if(!response.ok || !data.orderNumber){
+        throw new Error(data.error || "Impossible d’enregistrer la commande.");
+      }
+      return data;
+    };
+
     const cartPrint = document.getElementById("cartPrint");
     if(cartPrint){
       cartPrint.onclick = function(){
@@ -2492,35 +2516,61 @@ if(headerCartBtn){
 
     const cartWhatsApp = document.getElementById("cartWhatsApp");
     if(cartWhatsApp){
-      cartWhatsApp.onclick = function(){
+      cartWhatsApp.onclick = async function(){
         renderCart();
         const c = validateClient("Veuillez remplir Nom, Téléphone, E-mail et Adresse avant de commander.");
         if(!c) return;
         if(!cart.length){ alert("Votre panier est vide"); return; }
 
-        const productsText = cart.map((item,index) => {
-          const qty = item.qty || 1;
-          const unitPrice = Number(item.price || 0);
-          const subtotal = unitPrice * qty;
-          return (index + 1) + ". " + item.name +
-            "\nQuantité : " + qty +
-            "\nPrix unitaire : " + unitPrice.toFixed(3) + " TND" +
-            "\nSous-total : " + subtotal.toFixed(3) + " TND";
-        }).join("\n\n");
+        const popup = window.open("about:blank","_blank");
+        const originalLabel = cartWhatsApp.textContent;
+        cartWhatsApp.disabled = true;
+        cartWhatsApp.textContent = "Enregistrement...";
 
-        const message =
-          "🛒 COMMANDE MAGIC LIGHT\n\n" +
-          "👤 Nom : " + c.name + "\n" +
-          "📞 Téléphone : " + c.phone + "\n" +
-          "📧 E-mail : " + c.email + "\n" +
-          "📍 Adresse : " + c.address + "\n" +
-          "🏙️ Ville : " + (c.city || "-") + "\n\n" +
-          "📦 PRODUITS\n\n" + productsText +
-          "\n\n🧾 Sous-total produits : " + subtotalProducts.toFixed(3) + " TND" +
-          "\n🚚 Livraison : " + (shipping===0 ? "GRATUITE" : shipping.toFixed(3) + " TND") +
-          "\n💰 TOTAL : " + total.toFixed(3) + " TND";
+        try{
+          const saved = await saveOrder(c);
+          const orderNumber = saved.orderNumber;
+          localStorage.setItem("magicLightLastOrderNumber", orderNumber);
 
-        window.open("https://wa.me/21622181224?text=" + encodeURIComponent(message),"_blank");
+          const notice = document.getElementById("cartOrderNotice");
+          if(notice){
+            notice.style.display = "block";
+            notice.textContent = "✓ Commande enregistrée : " + orderNumber;
+          }
+
+          const productsText = cart.map((item,index) => {
+            const qty = item.qty || 1;
+            const unitPrice = Number(item.price || 0);
+            const subtotal = unitPrice * qty;
+            return (index + 1) + ". " + item.name +
+              "\nQuantité : " + qty +
+              "\nPrix unitaire : " + unitPrice.toFixed(3) + " TND" +
+              "\nSous-total : " + subtotal.toFixed(3) + " TND";
+          }).join("\n\n");
+
+          const message =
+            "🛒 COMMANDE MAGIC LIGHT\n" +
+            "🔢 N° commande : " + orderNumber + "\n\n" +
+            "👤 Nom : " + c.name + "\n" +
+            "📞 Téléphone : " + c.phone + "\n" +
+            "📧 E-mail : " + c.email + "\n" +
+            "📍 Adresse : " + c.address + "\n" +
+            "🏙️ Ville : " + (c.city || "-") + "\n\n" +
+            "📦 PRODUITS\n\n" + productsText +
+            "\n\n🧾 Sous-total produits : " + Number(saved.subtotal).toFixed(3) + " TND" +
+            "\n🚚 Livraison : " + (Number(saved.shipping)===0 ? "GRATUITE" : Number(saved.shipping).toFixed(3) + " TND") +
+            "\n💰 TOTAL : " + Number(saved.total).toFixed(3) + " TND";
+
+          const waUrl = "https://wa.me/21622181224?text=" + encodeURIComponent(message);
+          if(popup && !popup.closed) popup.location.href = waUrl;
+          else window.location.href = waUrl;
+        }catch(err){
+          if(popup && !popup.closed) popup.close();
+          alert("La commande n’a pas été enregistrée. " + (err?.message || "Veuillez réessayer."));
+        }finally{
+          cartWhatsApp.disabled = false;
+          cartWhatsApp.textContent = originalLabel;
+        }
       };
     }
   });
