@@ -4,5 +4,8 @@
   "version": "9.0.0",
   "scripts": {
     "build": "node build.js"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
   }
 }
