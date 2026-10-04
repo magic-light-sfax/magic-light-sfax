@@ -57,3 +57,19 @@ collections:
             public_folder: "/assets/imports"
             hint: "Formats acceptés : .xlsx, .xls ou .csv. Utilisez la première feuille du classeur. Modèle : /admin/template-produits.csv"
           - {label: "Note interne", name: "note", widget: "text", required: false, hint: "Facultatif. Cette note n’apparaît pas sur le site."}
+
+  - name: "analytics_settings"
+    label: "Analytics & Meta Pixel"
+    format: "json"
+    editor:
+      preview: false
+    files:
+      - label: "Suivi des visiteurs et conversions"
+        name: "analytics"
+        file: "content/settings/analytics.json"
+        fields:
+          - {label: "Activer Google Analytics 4", name: "ga4Enabled", widget: "boolean", default: false, required: false}
+          - {label: "GA4 Measurement ID", name: "ga4MeasurementId", widget: "string", required: false, hint: "Exemple : G-XXXXXXXXXX"}
+          - {label: "Activer Meta Pixel", name: "metaEnabled", widget: "boolean", default: false, required: false}
+          - {label: "Meta Pixel ID", name: "metaPixelId", widget: "string", required: false, hint: "Suite de chiffres fournie par Meta Events Manager"}
+          - {label: "Note", name: "note", widget: "text", required: false, hint: "Optionnel. Aucun nom, téléphone, e-mail ou adresse client n’est envoyé aux outils Analytics."}
