@@ -1,0 +1,28 @@
+/* MAGIC LIGHT — Recherche Produits PRO */
+.header .search.magic-search-ready{position:relative;overflow:visible;z-index:1200}
+.magic-search-dropdown{position:absolute;left:0;right:0;top:calc(100% + 8px);z-index:2200;display:none;background:#fff;border:1px solid #e3e6eb;border-radius:16px;box-shadow:0 18px 45px rgba(0,0,0,.16);max-height:min(62vh,520px);overflow:auto;padding:7px;grid-column:1/-1}
+.search.magic-search-open .magic-search-dropdown{display:block}
+.magic-search-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 10px 6px;color:#777;font-size:.75rem;font-weight:800}
+.magic-search-head b{color:#20242b}
+.magic-search-item{width:100%;display:grid;grid-template-columns:54px minmax(0,1fr) auto;align-items:center;gap:10px;padding:9px;border:0;border-radius:12px;background:#fff;text-align:left;cursor:pointer;color:#20242b}
+.magic-search-item:hover,.magic-search-item.active{background:#f5f6f8}
+.magic-search-thumb{width:54px;height:54px;border-radius:10px;object-fit:cover;background:#f1f2f4;border:1px solid #eceef1}
+.magic-search-copy{min-width:0}
+.magic-search-name{display:block;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.magic-search-meta{display:block;margin-top:2px;color:#7b818a;font-size:.73rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.magic-search-price{font-weight:950;color:#a87925;font-size:.82rem;white-space:nowrap}
+.magic-search-empty{padding:18px 12px;text-align:center;color:#777;font-size:.88rem}
+.magic-search-status{display:none;margin:0 0 18px;padding:11px 14px;border:1px solid #e3e6eb;border-radius:14px;background:#fff;align-items:center;justify-content:space-between;gap:12px;font-size:.86rem}
+.magic-search-status.show{display:flex}
+.magic-search-status strong{color:#20242b}
+.magic-search-clear{border:0;background:#111;color:#fff;border-radius:999px;padding:7px 11px;font-weight:900;cursor:pointer;font-size:.75rem;white-space:nowrap}
+.magic-search-highlight{outline:3px solid rgba(201,154,60,.32);outline-offset:2px;transition:outline .2s}
+@media(max-width:900px){
+  .magic-search-dropdown{top:calc(100% + 6px);border-radius:14px;max-height:54vh}
+}
+@media(max-width:620px){
+  .magic-search-item{grid-template-columns:46px minmax(0,1fr);padding:8px}
+  .magic-search-thumb{width:46px;height:46px}
+  .magic-search-price{grid-column:2;font-size:.78rem;margin-top:-6px}
+  .magic-search-status{align-items:flex-start}
+}
