@@ -1,7 +1,7 @@
 {
   "ga4Enabled": false,
   "ga4MeasurementId": "",
-  "metaEnabled": false,
-  "metaPixelId": "",
-  "note": ""
+  "metaEnabled": true,
+  "metaPixelId": "643716202899582",
+  "note": "Meta Pixel activé le 05/10/2026. GA4 en attente du Measurement ID."
 }
