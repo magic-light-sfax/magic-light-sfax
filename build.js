@@ -40,13 +40,13 @@ function parseBool(v, fallback=true){
   if(v===true || v===false) return v;
   if(v===null || v===undefined || String(v).trim()==="") return fallback;
   const s=String(v).trim().toLowerCase();
-  if(["1","true","yes","oui","o","y","نعم"].includes(s)) return true;
-  if(["0","false","no","non","n","لا"].includes(s)) return false;
+  if(["1","true","yes","oui","o","y","vrai","نعم"].includes(s)) return true;
+  if(["0","false","no","non","n","faux","لا"].includes(s)) return false;
   return fallback;
 }
 function parseNumber(v){
   if(v===null || v===undefined || String(v).trim()==="") return null;
-  const s=String(v).replace(/\s/g,"").replace(/tnd/ig,"").replace(/dt/ig,"").replace(",",".");
+  const s=String(v).replace(/\s/g,"").replace(/tnd/ig,"").replace(/dt/ig,"").replace(/%/g,"").replace(",",".");
   const n=Number(s);
   return Number.isFinite(n) ? n : null;
 }
@@ -172,8 +172,9 @@ function loadBulkImport(){
 }
 
 const productsByRef=new Map();
+const refKey=v=>String(v||"").trim().toUpperCase();
 for(const obj of loadBulkImport()){
-  productsByRef.set(obj.reference,obj);
+  productsByRef.set(refKey(obj.reference),obj);
 }
 
 let manualCount=0;
@@ -196,7 +197,7 @@ if(fs.existsSync(productDir)){
           active:true
         };
         if(product.reference){
-          productsByRef.set(product.reference,product);
+          productsByRef.set(refKey(product.reference),product);
           manualCount++;
         }
       }
