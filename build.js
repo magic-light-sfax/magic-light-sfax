@@ -4,6 +4,7 @@ const path = require("path");
 
 const ROOT = process.cwd();
 const DIST = path.join(ROOT, "dist");
+const analyticsConfigPath = path.join(ROOT,"content","settings","analytics.json");
 
 function rm(p){ if(fs.existsSync(p)) fs.rmSync(p,{recursive:true,force:true}); }
 function ensure(p){ fs.mkdirSync(p,{recursive:true}); }
@@ -17,6 +18,79 @@ function copyDir(src,dest){
   }
 }
 
+
+function loadAnalyticsConfig(){
+  const defaults={ga4Enabled:false,ga4MeasurementId:"",metaEnabled:false,metaPixelId:""};
+  if(!fs.existsSync(analyticsConfigPath)) return defaults;
+  try{
+    const raw=JSON.parse(fs.readFileSync(analyticsConfigPath,"utf8"));
+    const ga4MeasurementId=String(raw.ga4MeasurementId||"").trim();
+    const metaPixelId=String(raw.metaPixelId||"").trim();
+    return {
+      ga4Enabled:raw.ga4Enabled===true && /^G-[A-Z0-9]+$/i.test(ga4MeasurementId),
+      ga4MeasurementId,
+      metaEnabled:raw.metaEnabled===true && /^\d{5,25}$/.test(metaPixelId),
+      metaPixelId
+    };
+  }catch(e){
+    console.warn("Analytics config ignorée:",e.message);
+    return defaults;
+  }
+}
+function analyticsSnippet(cfg){
+  const safeCfg=JSON.stringify(cfg).replace(/</g,"\\u003c");
+  let ga="";
+  if(cfg.ga4Enabled){
+    ga='\n<script async src="https://www.googletagmanager.com/gtag/js?id='+cfg.ga4MeasurementId+'"></script>\n'
+      +'<script>\n'
+      +'window.dataLayer=window.dataLayer||[];\n'
+      +'function gtag(){dataLayer.push(arguments);}\n'
+      +"gtag('js',new Date());\n"
+      +"gtag('config','"+cfg.ga4MeasurementId+"',{anonymize_ip:true});\n"
+      +'</script>';
+  }
+  let meta="";
+  if(cfg.metaEnabled){
+    meta='\n<script>\n'
+      +"!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?\n"
+      +"n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;\n"
+      +"n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;\n"
+      +"t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}\n"
+      +"(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');\n"
+      +"fbq('init','"+cfg.metaPixelId+"');\n"
+      +"fbq('track','PageView');\n"
+      +'</script>\n'
+      +'<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id='+cfg.metaPixelId+'&ev=PageView&noscript=1"></noscript>';
+  }
+  const tracker='\n<!-- MAGIC LIGHT analytics -->\n'
+    +'<script>\n'
+    +'window.magicAnalyticsConfig='+safeCfg+';\n'
+    +'window.magicTrack=function(eventName,params){\n'
+    +'  try{\n'
+    +'    var p=Object.assign({},params||{});\n'
+    +'    delete p.email;delete p.phone;delete p.name;delete p.address;\n'
+    +"    if(window.magicAnalyticsConfig.ga4Enabled && typeof window.gtag==='function'){window.gtag('event',eventName,p);}\n"
+    +"    if(window.magicAnalyticsConfig.metaEnabled && typeof window.fbq==='function'){\n"
+    +"      var map={view_item:'ViewContent',add_to_cart:'AddToCart',begin_checkout:'InitiateCheckout',generate_lead:'Lead',search:'Search',contact:'Contact'};\n"
+    +"      var metaName=map[eventName];var mp={};\n"
+    +"      if(p.currency)mp.currency=p.currency;if(Number.isFinite(Number(p.value)))mp.value=Number(p.value);\n"
+    +"      if(p.item_name)mp.content_name=p.item_name;if(p.item_id)mp.content_ids=[String(p.item_id)];\n"
+    +"      if(p.quantity)mp.num_items=Number(p.quantity);if(p.search_term)mp.search_string=String(p.search_term);\n"
+    +"      if(metaName)window.fbq('track',metaName,mp);else window.fbq('trackCustom',eventName,mp);\n"
+    +'    }\n'
+    +'  }catch(e){}\n'
+    +'};\n'
+    +'</script>';
+  return tracker+ga+meta+'\n';
+}
+function injectAnalytics(filePath,snippet){
+  if(!snippet || !fs.existsSync(filePath)) return;
+  let html=fs.readFileSync(filePath,"utf8");
+  if(html.includes("<!-- MAGIC LIGHT analytics -->")) return;
+  html=html.replace(/<\/head>/i,snippet+"\n</head>");
+  fs.writeFileSync(filePath,html,"utf8");
+}
+
 rm(DIST); ensure(DIST);
 
 for(const f of ["index.html","produits.html","nouveautes.html","references.html","catalogue.html","contact.html"]){
@@ -27,6 +101,13 @@ for(const f of ["index.html","produits.html","nouveautes.html","references.html"
 copyFile(path.join(ROOT,"produits.html"),path.join(DIST,"products.html"));
 copyDir(path.join(ROOT,"assets"),path.join(DIST,"assets"));
 copyDir(path.join(ROOT,"admin"),path.join(DIST,"admin"));
+
+const analyticsConfig=loadAnalyticsConfig();
+const analyticsHtml=analyticsSnippet(analyticsConfig);
+for(const f of ["index.html","produits.html","products.html","nouveautes.html","references.html","catalogue.html","contact.html"]){
+  injectAnalytics(path.join(DIST,f),analyticsHtml);
+}
+console.log("MAGIC LIGHT analytics: GA4 "+(analyticsConfig.ga4Enabled?"ON":"OFF")+" | Meta Pixel "+(analyticsConfig.metaEnabled?"ON":"OFF"));
 
 const productDir=path.join(ROOT,"content","products");
 const importConfigPath=path.join(ROOT,"content","imports","products-import.json");
