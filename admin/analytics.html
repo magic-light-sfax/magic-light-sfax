@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>MAGIC LIGHT — Statistiques</title>
+<style>
+:root{--gold:#c99a3c;--ink:#20242b;--line:#e5e7eb;--soft:#f6f7f9;--muted:#737a84;--danger:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Tahoma,sans-serif;background:var(--soft);color:var(--ink)}
+.wrap{width:min(1180px,calc(100% - 24px));margin:24px auto 60px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}h1{margin:0}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.back{padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;text-decoration:none;color:#222;font-weight:800}
+.auth,.toolbar,.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:16px}.auth{display:grid;grid-template-columns:1fr auto;gap:10px}.auth input,.toolbar select{height:44px;border:1px solid #d8dce2;border-radius:10px;padding:0 12px;font:inherit}
+button{height:44px;border:0;border-radius:10px;padding:0 16px;font-weight:900;cursor:pointer}.gold{background:var(--gold);color:#111}.dark{background:#111;color:#fff}.muted{color:var(--muted);font-size:.9rem}.error{color:var(--danger);font-weight:800}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.toolbar strong{margin-right:auto}.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:16px}.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}.stat span{display:block;color:var(--muted);font-size:.78rem}.stat strong{display:block;font-size:1.35rem;margin-top:4px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.panel h2{font-size:1rem;margin:0 0 12px}.row{display:grid;grid-template-columns:minmax(110px,1fr) 3fr 60px;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid #f0f1f3}.row:last-child{border-bottom:0}.bar{height:9px;background:#eef0f3;border-radius:999px;overflow:hidden}.bar i{display:block;height:100%;background:var(--gold);border-radius:999px}.count{text-align:right;font-weight:900}.name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.88rem}
+.table{width:100%;border-collapse:collapse;font-size:.86rem}.table th,.table td{text-align:left;padding:9px 8px;border-bottom:1px solid #eee}.table th{color:var(--muted);font-size:.75rem;text-transform:uppercase}.empty{color:var(--muted);padding:8px 0}
+@media(max-width:1000px){.stats{grid-template-columns:repeat(3,1fr)}}@media(max-width:760px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.auth{grid-template-columns:1fr}.wrap{margin-top:12px}.row{grid-template-columns:105px 1fr 48px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>📊 Statistiques MAGIC LIGHT</h1><div class="muted">Visiteurs, sources, villes, produits et conversions — sans données personnelles client.</div></div>
+    <div class="actions"><a class="back" href="/admin/">← Admin</a><a class="back" href="/admin/orders.html">📦 Commandes</a></div>
+  </div>
+
+  <div class="auth">
+    <input id="adminKey" type="password" autocomplete="current-password" placeholder="Clé Admin commandes">
+    <button class="dark" id="connectBtn">Ouvrir les statistiques</button>
+    <div id="authMsg" class="muted" style="grid-column:1/-1"></div>
+  </div>
+
+  <div id="app" hidden>
+    <div class="toolbar">
+      <strong>Période</strong>
+      <select id="days"><option value="7">7 jours</option><option value="14">14 jours</option><option value="30">30 jours</option></select>
+      <button class="gold" id="refreshBtn">Actualiser</button>
+      <span id="updated" class="muted"></span>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="grid">
+      <section class="panel"><h2>Sources des visiteurs</h2><div id="sources"></div></section>
+      <section class="panel"><h2>Villes</h2><div id="cities"></div></section>
+      <section class="panel"><h2>Produits les plus consultés</h2><div id="products"></div></section>
+      <section class="panel"><h2>Produits ajoutés au panier</h2><div id="adds"></div></section>
+      <section class="panel"><h2>Pages les plus vues</h2><div id="pages"></div></section>
+      <section class="panel"><h2>Appareils</h2><div id="devices"></div></section>
+    </div>
+    <section class="panel"><h2>Évolution journalière</h2><div style="overflow:auto"><table class="table"><thead><tr><th>Date</th><th>Visiteurs</th><th>Pages</th><th>Produits</th><th>Panier</th><th>Leads</th></tr></thead><tbody id="daily"></tbody></table></div></section>
+  </div>
+</div>
+<script>
+const API='/.netlify/functions/admin-analytics';
+const keyInput=document.getElementById('adminKey');
+const authMsg=document.getElementById('authMsg');
+const app=document.getElementById('app');
+const daysEl=document.getElementById('days');
+keyInput.value=localStorage.getItem('magicLightOrdersKey')||'';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>(Number(n)||0).toFixed(3)+' TND';
+
+async function api(){
+  const key=keyInput.value.trim();
+  const res=await fetch(API+'?days='+encodeURIComponent(daysEl.value),{headers:{'x-admin-key':key},cache:'no-store'});
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok) throw Object.assign(new Error(data.error||'Erreur'),{status:res.status,data});
+  return data;
+}
+function stat(label,value){return `<div class="stat"><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`;}
+function bars(elId,rows){
+  const el=document.getElementById(elId);const max=Math.max(1,...(rows||[]).map(x=>Number(x.count)||0));
+  el.innerHTML=(rows&&rows.length)?rows.map(x=>`<div class="row"><div class="name" title="${esc(x.name)}">${esc(x.name)}</div><div class="bar"><i style="width:${Math.max(3,(Number(x.count)||0)/max*100)}%"></i></div><div class="count">${Number(x.count)||0}</div></div>`).join(''):'<div class="empty">Pas encore de données.</div>';
+}
+function render(data){
+  const s=data.summary||{};
+  document.getElementById('stats').innerHTML=[
+    stat("Aujourd'hui",s.todayVisitors||0),stat('Visiteurs',s.visitors||0),stat('Pages vues',s.pageViews||0),stat('Ajouts panier',s.addToCart||0),stat('Commandes',s.orders||0),stat('Conversion',(Number(s.conversion)||0).toFixed(2)+'%'),stat('Montant commandes',money(s.revenue||0))
+  ].join('');
+  bars('sources',data.sources);bars('cities',data.cities);bars('products',data.products);bars('adds',data.productAdds);bars('pages',data.pages);bars('devices',data.devices);
+  document.getElementById('daily').innerHTML=(data.daily||[]).map(d=>`<tr><td>${esc(d.date)}</td><td>${d.visitors||0}</td><td>${d.pageViews||0}</td><td>${d.productViews||0}</td><td>${d.addToCart||0}</td><td>${d.leads||0}</td></tr>`).join('');
+  document.getElementById('updated').textContent='Mis à jour '+new Date(data.generatedAt).toLocaleString('fr-TN');
+}
+async function load(){
+  authMsg.textContent='Chargement...';
+  try{
+    const data=await api();
+    localStorage.setItem('magicLightOrdersKey',keyInput.value.trim());
+    app.hidden=false;authMsg.textContent='Connecté.';render(data);
+  }catch(e){
+    app.hidden=true;
+    authMsg.innerHTML=e.data?.setupRequired?'<span class="error">ORDER_ADMIN_KEY doit être configurée dans Netlify.</span>':'<span class="error">'+esc(e.message)+'</span>';
+  }
+}
+document.getElementById('connectBtn').onclick=load;document.getElementById('refreshBtn').onclick=load;daysEl.onchange=load;if(keyInput.value)load();
+</script>
+</body>
+</html>
