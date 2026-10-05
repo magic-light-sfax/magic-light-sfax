@@ -40,19 +40,23 @@
     const img=card.querySelector('img')?.src || b?.dataset.img || '';
     return {card,key:key(card),name,ref,category,price,original,discount,power,dimensions,stock,img};
   }
-  function all(){return [...document.querySelectorAll('.card[data-cat],.card[data-search]')].map(data).filter(x=>x.key)};
-
-  function ensureButtons(root=document){
-    root.querySelectorAll('.card[data-cat],.card[data-search]').forEach(card=>{
-      const k=key(card); if(!k || card.querySelector('.ml-compare-btn')) return;
-      const b=document.createElement('button');
-      b.type='button';b.className='ml-compare-btn';b.dataset.compareKey=k;
-      b.innerHTML='<span>⇄</span><span class="txt">Comparer</span>';
-      b.setAttribute('aria-label','Ajouter à la comparaison');
-      card.appendChild(b);
-    });
-    sync();
+  function cardList(root=document){
+    const out=[];
+    if(root instanceof Element && root.matches('.card[data-cat],.card[data-search]')) out.push(root);
+    root.querySelectorAll?.('.card[data-cat],.card[data-search]').forEach(card=>out.push(card));
+    return out;
   }
+  function all(){return cardList(document).map(data).filter(x=>x.key)};
+  function addButton(card){
+    const k=key(card); if(!k || card.querySelector('.ml-compare-btn')) return false;
+    const b=document.createElement('button');
+    b.type='button';b.className='ml-compare-btn';b.dataset.compareKey=k;
+    b.innerHTML='<span>⇄</span><span class="txt">Comparer</span>';
+    b.setAttribute('aria-label','Ajouter à la comparaison');
+    card.appendChild(b);
+    return true;
+  }
+  function ensureButtons(root=document){cardList(root).forEach(addButton);sync();}
 
   function sync(){
     const existingKeys=new Set(all().map(x=>x.key));
@@ -114,5 +118,21 @@
 
   ensureButtons();
   const host=document.getElementById('adminProductsGrid');
-  if(host) new MutationObserver(()=>ensureButtons(host)).observe(host,{childList:true,subtree:true});
+  if(host){
+    const known=new WeakSet(cardList(document));
+    new MutationObserver(records=>{
+      let changed=false;
+      for(const record of records){
+        for(const node of record.addedNodes){
+          if(!(node instanceof Element)) continue;
+          for(const card of cardList(node)){
+            if(known.has(card)) continue;
+            known.add(card);
+            if(addButton(card)) changed=true;
+          }
+        }
+      }
+      if(changed) sync();
+    }).observe(host,{childList:true,subtree:true});
+  }
 })();
