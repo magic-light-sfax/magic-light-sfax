@@ -6,14 +6,16 @@ const styles = [
   'assets/catalogue-filters-pro.css',
   'assets/catalogue-favorites.css',
   'assets/catalogue-compare.css',
-  'assets/catalogue-360.css'
+  'assets/catalogue-360.css',
+  'assets/catalogue-stock.css'
 ];
 const scripts = [
   'assets/catalogue-search-pro.js',
   'assets/catalogue-filters-pro.js',
   'assets/catalogue-favorites.js',
   'assets/catalogue-compare.js',
-  'assets/catalogue-360.js'
+  'assets/catalogue-360.js',
+  'assets/catalogue-stock.js'
 ];
 
 function insertBeforeFirstClosingTag(html, tag, content){
@@ -45,9 +47,8 @@ function enhance(file){
     }
   }
 
-  // Important: produits.html contains literal </body></html> text inside the
-  // print-window template string. Always inject before the LAST real </body>
-  // or the browser will terminate the page script early and print JS as text.
+  // produits.html contains literal </body></html> text inside the print template.
+  // Always inject before the LAST real </body>.
   for (const src of scripts) {
     if (!html.includes(src)) {
       html = insertBeforeLastClosingTag(
@@ -70,4 +71,4 @@ if(!count){
   console.error('Catalogue enhancement failed: no product page found in dist');
   process.exit(1);
 }
-console.log(`MAGIC LIGHT catalogue: enhanced ${count} product page(s) — search + filters + favorites + comparison + 360 ON`);
+console.log(`MAGIC LIGHT catalogue: enhanced ${count} product page(s) — search + filters + favorites + comparison + 360 + stock ON`);
