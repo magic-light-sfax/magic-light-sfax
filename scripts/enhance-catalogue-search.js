@@ -11,11 +11,17 @@ let html = fs.readFileSync(file, 'utf8');
 
 const styles = [
   'assets/catalogue-search-pro.css',
-  'assets/catalogue-filters-pro.css'
+  'assets/catalogue-filters-pro.css',
+  'assets/catalogue-favorites.css',
+  'assets/catalogue-compare.css',
+  'assets/catalogue-360.css'
 ];
 const scripts = [
   'assets/catalogue-search-pro.js',
-  'assets/catalogue-filters-pro.js'
+  'assets/catalogue-filters-pro.js',
+  'assets/catalogue-favorites.js',
+  'assets/catalogue-compare.js',
+  'assets/catalogue-360.js'
 ];
 
 for (const href of styles) {
@@ -30,4 +36,4 @@ for (const src of scripts) {
 }
 
 fs.writeFileSync(file, html, 'utf8');
-console.log('MAGIC LIGHT catalogue: professional search + advanced filters ON');
+console.log('MAGIC LIGHT catalogue: search + filters + favorites + comparison + 360 ON');
