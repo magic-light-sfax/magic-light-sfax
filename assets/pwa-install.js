@@ -11,20 +11,35 @@
   let deferredPrompt=null;
   const isStandalone=()=>window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
   const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isMobile=()=>window.matchMedia('(max-width:700px)').matches;
 
   function makeButton(){
     if(isAdmin||isStandalone()||document.getElementById('magicPwaInstall')) return null;
     const btn=document.createElement('button');
     btn.id='magicPwaInstall';
     btn.type='button';
-    btn.textContent='📲 Installer MAGIC LIGHT';
+    btn.textContent='📲 Installer l’application MAGIC LIGHT';
     btn.setAttribute('aria-label','Installer MAGIC LIGHT comme application');
-    Object.assign(btn.style,{
-      position:'fixed',right:'16px',bottom:'16px',zIndex:'9999',border:'0',borderRadius:'999px',
-      background:'#111215',color:'#fff',padding:'12px 16px',font:'800 14px Arial,Tahoma,sans-serif',
-      boxShadow:'0 10px 28px rgba(0,0,0,.22)',cursor:'pointer',display:'none'
-    });
-    document.body.appendChild(btn);
+
+    if(isMobile()){
+      Object.assign(btn.style,{
+        width:'calc(100% - 24px)',maxWidth:'520px',minHeight:'58px',margin:'12px auto',
+        border:'0',borderRadius:'16px',background:'#111215',color:'#fff',padding:'15px 20px',
+        font:'900 16px Arial,Tahoma,sans-serif',letterSpacing:'.01em',
+        boxShadow:'0 10px 28px rgba(0,0,0,.20)',cursor:'pointer',display:'none',zIndex:'9999'
+      });
+      const header=document.querySelector('.header');
+      if(header&&header.parentNode) header.insertAdjacentElement('afterend',btn);
+      else document.body.insertBefore(btn,document.body.firstChild);
+    }else{
+      Object.assign(btn.style,{
+        position:'fixed',right:'18px',bottom:'18px',zIndex:'9999',border:'0',borderRadius:'999px',
+        background:'#111215',color:'#fff',padding:'15px 20px',minHeight:'52px',
+        font:'900 15px Arial,Tahoma,sans-serif',boxShadow:'0 10px 28px rgba(0,0,0,.22)',
+        cursor:'pointer',display:'none'
+      });
+      document.body.appendChild(btn);
+    }
     return btn;
   }
 
@@ -39,7 +54,13 @@
     box.setAttribute('role','dialog');
     box.setAttribute('aria-label','Installer MAGIC LIGHT');
     box.innerHTML='<div style="font-weight:900;font-size:16px;margin-bottom:7px">Installer MAGIC LIGHT</div><div style="font-size:14px;line-height:1.5">Sur iPhone/iPad : ouvrez le menu de partage <b>Partager</b>, puis choisissez <b>Sur l’écran d’accueil</b>.</div><button type="button" style="margin-top:12px;border:0;border-radius:10px;background:#c99a3c;color:#111;padding:9px 14px;font-weight:900;cursor:pointer">Compris</button>';
-    Object.assign(box.style,{position:'fixed',right:'16px',bottom:'70px',zIndex:'10000',width:'min(340px,calc(100vw - 32px))',background:'#fff',color:'#20242b',border:'1px solid #e5e7eb',borderRadius:'16px',padding:'16px',boxShadow:'0 18px 50px rgba(0,0,0,.22)',fontFamily:'Arial,Tahoma,sans-serif'});
+    Object.assign(box.style,isMobile()?{
+      position:'fixed',left:'12px',right:'12px',top:'16px',zIndex:'10000',background:'#fff',color:'#20242b',
+      border:'1px solid #e5e7eb',borderRadius:'16px',padding:'16px',boxShadow:'0 18px 50px rgba(0,0,0,.22)',fontFamily:'Arial,Tahoma,sans-serif'
+    }:{
+      position:'fixed',right:'16px',bottom:'82px',zIndex:'10000',width:'min(340px,calc(100vw - 32px))',background:'#fff',color:'#20242b',
+      border:'1px solid #e5e7eb',borderRadius:'16px',padding:'16px',boxShadow:'0 18px 50px rgba(0,0,0,.22)',fontFamily:'Arial,Tahoma,sans-serif'
+    });
     document.body.appendChild(box);
     box.querySelector('button').onclick=()=>box.remove();
   }
