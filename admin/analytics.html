@@ -36,6 +36,7 @@ button{height:44px;border:0;border-radius:10px;padding:0 16px;font-weight:900;cu
       <strong>Période</strong>
       <select id="days"><option value="7">7 jours</option><option value="14">14 jours</option><option value="30">30 jours</option></select>
       <button class="gold" id="refreshBtn">Actualiser</button>
+      <button id="logoutBtn">Déconnexion</button>
       <span id="updated" class="muted"></span>
     </div>
     <div class="stats" id="stats"></div>
@@ -52,17 +53,18 @@ button{height:44px;border:0;border-radius:10px;padding:0 16px;font-weight:900;cu
 </div>
 <script>
 const API='/.netlify/functions/admin-analytics';
+const ADMIN_SESSION_KEY='magicLightAdminSessionKey';
 const keyInput=document.getElementById('adminKey');
 const authMsg=document.getElementById('authMsg');
 const app=document.getElementById('app');
 const daysEl=document.getElementById('days');
-keyInput.value=localStorage.getItem('magicLightOrdersKey')||'';
+try{keyInput.value=sessionStorage.getItem(ADMIN_SESSION_KEY)||localStorage.getItem('magicLightOrdersKey')||'';localStorage.removeItem('magicLightOrdersKey')}catch{}
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=n=>(Number(n)||0).toFixed(3)+' TND';
 
 async function api(){
   const key=keyInput.value.trim();
-  const res=await fetch(API+'?days='+encodeURIComponent(daysEl.value),{headers:{'x-admin-key':key},cache:'no-store'});
+  const res=await fetch(API+'?days='+encodeURIComponent(daysEl.value),{headers:{'x-admin-key':key},cache:'no-store',credentials:'same-origin'});
   const data=await res.json().catch(()=>({}));
   if(!res.ok) throw Object.assign(new Error(data.error||'Erreur'),{status:res.status,data});
   return data;
@@ -85,14 +87,14 @@ async function load(){
   authMsg.textContent='Chargement...';
   try{
     const data=await api();
-    localStorage.setItem('magicLightOrdersKey',keyInput.value.trim());
+    try{sessionStorage.setItem(ADMIN_SESSION_KEY,keyInput.value.trim());localStorage.removeItem('magicLightOrdersKey')}catch{}
     app.hidden=false;authMsg.textContent='Connecté.';render(data);
   }catch(e){
     app.hidden=true;
-    authMsg.innerHTML=e.data?.setupRequired?'<span class="error">ORDER_ADMIN_KEY doit être configurée dans Netlify.</span>':'<span class="error">'+esc(e.message)+'</span>';
+    authMsg.innerHTML='<span class="error">'+esc(e.message)+'</span>';
   }
 }
-document.getElementById('connectBtn').onclick=load;document.getElementById('refreshBtn').onclick=load;daysEl.onchange=load;if(keyInput.value)load();
+document.getElementById('connectBtn').onclick=load;document.getElementById('refreshBtn').onclick=load;document.getElementById('logoutBtn').onclick=()=>{try{sessionStorage.removeItem(ADMIN_SESSION_KEY);localStorage.removeItem('magicLightOrdersKey')}catch{}keyInput.value='';app.hidden=true;authMsg.textContent='Déconnecté.'};daysEl.onchange=load;if(keyInput.value)load();
 </script>
 </body>
 </html>
