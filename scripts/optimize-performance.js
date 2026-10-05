@@ -52,10 +52,23 @@ function injectHeadHints(html) {
   return html;
 }
 
+function insertBeforeLastClosingTag(html, tagName, content) {
+  const needle = `</${String(tagName).toLowerCase()}>`;
+  const index = html.toLowerCase().lastIndexOf(needle);
+  if (index < 0) throw new Error(`Missing ${needle}`);
+  return html.slice(0, index) + content + html.slice(index);
+}
+
 function injectRuntime(html) {
-  if (html.includes('/assets/performance.js')) return html;
-  const tag = '<script src="/assets/performance.js" defer></script>';
-  return html.replace(/<\/body>/i, `${tag}\n</body>`);
+  if (html.includes('<script src="/assets/performance.js" defer></script>')) return html;
+  const tag = '<script src="/assets/performance.js" defer></script>\n';
+
+  // produits.html contains a literal </body></html> inside the JavaScript used
+  // to build the printable/PDF order document. Injecting before the FIRST
+  // </body> puts a real </script> token inside that JS string; the browser then
+  // closes the page script early and prints the remaining JavaScript as text.
+  // The final </body> is the real document close.
+  return insertBeforeLastClosingTag(html, 'body', tag);
 }
 
 let changed = 0;
