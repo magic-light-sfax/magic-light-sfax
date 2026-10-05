@@ -48,14 +48,24 @@ self.addEventListener('fetch',event=>{
   }
 });`;
 
+function insertBeforeLastClosingTag(html,tag,content){
+  const needle='</'+tag+'>';
+  const lower=html.toLowerCase();
+  const idx=lower.lastIndexOf(needle);
+  if(idx===-1) return html+content;
+  return html.slice(0,idx)+content+html.slice(idx);
+}
+
 function inject(file){
   const p=path.join(DIST,file);if(!fs.existsSync(p))return;
   let html=fs.readFileSync(p,'utf8');
   if(!html.includes('rel="manifest"')){
     const head='\n<link rel="manifest" href="/manifest.webmanifest">\n<meta name="theme-color" content="#111215">\n<meta name="application-name" content="MAGIC LIGHT">\n<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n<meta name="apple-mobile-web-app-title" content="MAGIC LIGHT">\n<link rel="apple-touch-icon" href="/assets/logo.jpg">\n';
-    html=html.replace(/<\/head>/i,head+'</head>');
+    html=insertBeforeLastClosingTag(html,'head',head);
   }
-  if(!html.includes('/assets/pwa-install.js')) html=html.replace(/<\/body>/i,'<script defer src="/assets/pwa-install.js"></script>\n</body>');
+  if(!html.includes('/assets/pwa-install.js')){
+    html=insertBeforeLastClosingTag(html,'body','\n<script defer src="/assets/pwa-install.js"></script>\n');
+  }
   fs.writeFileSync(p,html,'utf8');
 }
 
