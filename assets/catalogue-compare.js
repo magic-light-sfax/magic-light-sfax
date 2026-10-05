@@ -2,8 +2,6 @@
   'use strict';
   const STORAGE='magicLightCompareV1';
   const MAX=4;
-  const products=document.getElementById('products');
-  if(!products) return;
 
   const load=()=>{try{return JSON.parse(localStorage.getItem(STORAGE)||'[]').map(String).slice(0,MAX)}catch{return []}};
   let selected=load();
