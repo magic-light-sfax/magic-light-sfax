@@ -1,14 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 
-const file = path.join(process.cwd(), 'dist', 'produits.html');
-if (!fs.existsSync(file)) {
-  console.error('Catalogue enhancement failed: dist/produits.html not found');
-  process.exit(1);
-}
-
-let html = fs.readFileSync(file, 'utf8');
-
 const styles = [
   'assets/catalogue-search-pro.css',
   'assets/catalogue-filters-pro.css',
@@ -24,16 +16,29 @@ const scripts = [
   'assets/catalogue-360.js'
 ];
 
-for (const href of styles) {
-  if (!html.includes(href)) {
-    html = html.replace(/<\/head>/i, `  <link rel="stylesheet" href="${href}">\n</head>`);
+function enhance(file){
+  if (!fs.existsSync(file)) return false;
+  let html = fs.readFileSync(file, 'utf8');
+  for (const href of styles) {
+    if (!html.includes(href)) {
+      html = html.replace(/<\/head>/i, `  <link rel="stylesheet" href="${href}">\n</head>`);
+    }
   }
-}
-for (const src of scripts) {
-  if (!html.includes(src)) {
-    html = html.replace(/<\/body>/i, `  <script src="${src}" defer></script>\n</body>`);
+  for (const src of scripts) {
+    if (!html.includes(src)) {
+      html = html.replace(/<\/body>/i, `  <script src="${src}" defer></script>\n</body>`);
+    }
   }
+  fs.writeFileSync(file, html, 'utf8');
+  return true;
 }
 
-fs.writeFileSync(file, html, 'utf8');
-console.log('MAGIC LIGHT catalogue: search + filters + favorites + comparison + 360 ON');
+const dist=path.join(process.cwd(),'dist');
+const targets=['produits.html','products.html'].map(name=>path.join(dist,name));
+let count=0;
+for(const file of targets) if(enhance(file)) count++;
+if(!count){
+  console.error('Catalogue enhancement failed: no product page found in dist');
+  process.exit(1);
+}
+console.log(`MAGIC LIGHT catalogue: enhanced ${count} product page(s) — search + filters + favorites + comparison + 360 ON`);
