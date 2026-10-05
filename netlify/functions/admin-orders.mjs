@@ -1,33 +1,9 @@
 import { getStore } from "@netlify/blobs";
-import { createHash, timingSafeEqual } from "node:crypto";
-
-const json = (data, status = 200) => new Response(JSON.stringify(data), {
-  status,
-  headers: {
-    "content-type": "application/json; charset=utf-8",
-    "cache-control": "no-store"
-  }
-});
+import { json, requireAdmin } from "./_security.mjs";
 
 const STATUSES = ["Nouvelle", "Confirmée", "Préparée", "Expédiée", "Livrée", "Annulée"];
-const FALLBACK_ADMIN_KEY_SHA256 = "6ae381554ea20498d91a714df974c2d8bee2133f0b23fe6316307ac0c38cd0a7";
-const sha256 = (value) => createHash("sha256").update(String(value ?? ""), "utf8").digest();
 const cleanRef = (value) => String(value ?? "").trim().toUpperCase().slice(0, 120);
 const stockKey = (ref) => `stock/${encodeURIComponent(cleanRef(ref))}.json`;
-
-function safeEqual(a, b) {
-  try { return a.length === b.length && timingSafeEqual(a, b); }
-  catch { return false; }
-}
-function authorized(req) {
-  const provided = String(req.headers.get("x-admin-key") || "").trim();
-  if (!provided) return { ok: false, setup: false };
-  const providedHash = sha256(provided);
-  const expected = String(process.env.ORDER_ADMIN_KEY || "").trim();
-  const envKeyMatches = expected ? safeEqual(providedHash, sha256(expected)) : false;
-  const fallbackKeyMatches = safeEqual(providedHash, Buffer.from(FALLBACK_ADMIN_KEY_SHA256, "hex"));
-  return { ok: envKeyMatches || fallbackKeyMatches, setup: false };
-}
 
 async function adjustCancelledStock(order, direction) {
   // direction +1 = restore stock on cancellation, -1 = reserve again when reopening.
@@ -60,10 +36,9 @@ async function adjustCancelledStock(order, direction) {
   return { ok: true, changed: changes.length };
 }
 
-export default async (req) => {
-  const auth = authorized(req);
-  if (auth.setup) return json({ error: "Configuration Admin requise", setupRequired: true }, 503);
-  if (!auth.ok) return json({ error: "Accès refusé" }, 401);
+export default async (req, context = {}) => {
+  const admin = await requireAdmin(req, context, { scope: "admin-orders", limit: 180, windowSeconds: 900 });
+  if (!admin.ok) return admin.response;
 
   const store = getStore("magic-light-orders");
 
@@ -77,15 +52,18 @@ export default async (req) => {
       } catch {}
     }
     orders.sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
-    return json({ ok: true, orders, statuses: STATUSES });
+    return json({ ok: true, orders, statuses: STATUSES, securityMode: admin.mode });
   }
 
   if (req.method === "PATCH") {
+    const len = Number(req.headers.get("content-length") || 0);
+    if (len > 8000) return json({ error: "Payload trop volumineux" }, 413);
+
     let body;
     try { body = await req.json(); }
     catch { return json({ error: "JSON invalide" }, 400); }
 
-    const orderNumber = String(body?.orderNumber || "").trim();
+    const orderNumber = String(body?.orderNumber || "").trim().slice(0, 80);
     const status = String(body?.status || "").trim();
     if (!orderNumber || !STATUSES.includes(status)) return json({ error: "Données invalides" }, 400);
 
@@ -105,5 +83,5 @@ export default async (req) => {
     return json({ ok: true, order: updated });
   }
 
-  return json({ error: "Method not allowed" }, 405);
+  return json({ error: "Method not allowed" }, 405, { allow: "GET, PATCH" });
 };
