@@ -1,0 +1,121 @@
+const fs = require('fs');
+const path = require('path');
+
+const DIST = path.join(process.cwd(), 'dist');
+const PAGES = [
+  'index.html',
+  'produits.html',
+  'products.html',
+  'nouveautes.html',
+  'references.html',
+  'catalogue.html',
+  'contact.html'
+];
+
+function escAttr(v = '') {
+  return String(v)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function humanizeImage(src = '') {
+  const clean = String(src).split('?')[0].split('#')[0];
+  const name = clean.split('/').pop().replace(/\.[a-z0-9]+$/i, '');
+  if (!name) return 'MAGIC LIGHT';
+  return name
+    .replace(/[-_]+/g, ' ')
+    .replace(/\b\w/g, (m) => m.toUpperCase())
+    .trim();
+}
+
+function ensureImageAlt(html) {
+  // Use nearby card/reference heading whenever possible.
+  html = html.replace(
+    /(<a\b[^>]*class=["'][^"']*refitem[^"']*["'][^>]*>\s*)(<img\b[^>]*>)(\s*<div\b[^>]*class=["'][^"']*label[^"']*["'][^>]*>\s*<strong>([^<]+)<\/strong>)/gi,
+    (all, before, img, after, label) => {
+      if (/\salt\s*=/i.test(img)) return all;
+      return before + img.replace(/>$/, ` alt="${escAttr(label.trim())}">`) + after;
+    }
+  );
+
+  // No image should be exposed without an accessible name/explicit decorative alt.
+  return html.replace(/<img\b[^>]*>/gi, (tag) => {
+    if (/\salt\s*=/i.test(tag)) return tag;
+    const src = (tag.match(/\ssrc=["']([^"']+)["']/i) || [])[1] || '';
+    let alt = humanizeImage(src);
+    if (/logo/i.test(src)) alt = 'MAGIC LIGHT';
+    return tag.replace(/>$/, ` alt="${escAttr(alt)}">`);
+  });
+}
+
+function improveControls(html) {
+  let dotIndex = 0;
+  html = html.replace(/<button\b([^>]*)class=["']([^"']*\bdot\b[^"']*)["']([^>]*)>(\s*)<\/button>/gi,
+    (all, a, cls, b, inner) => {
+      dotIndex += 1;
+      if (/aria-label\s*=/i.test(all)) return all;
+      return `<button${a}class="${cls}"${b} aria-label="Afficher la diapositive ${dotIndex}" type="button">${inner}</button>`;
+    });
+
+  html = html.replace(/<button\b([^>]*)class=["']([^"']*\bclose\b[^"']*)["']([^>]*)>([\s\S]*?)<\/button>/gi,
+    (all, a, cls, b, inner) => {
+      if (/aria-label\s*=/i.test(all)) return all;
+      return `<button${a}class="${cls}"${b} aria-label="Fermer" type="button">${inner}</button>`;
+    });
+
+  return html;
+}
+
+function improveSocialLinks(html) {
+  html = html.replace(/<a([^>]*href=["'][^"']*facebook\.com[^"']*["'][^>]*)>\s*f\s*<\/a>/gi,
+    '<a$1 aria-label="Facebook MAGIC LIGHT"><span aria-hidden="true">f</span><span class="sr-only">Facebook MAGIC LIGHT</span></a>');
+  html = html.replace(/<a([^>]*href=["'][^"']*instagram\.com[^"']*["'][^>]*)>\s*ig\s*<\/a>/gi,
+    '<a$1 aria-label="Instagram MAGIC LIGHT"><span aria-hidden="true">ig</span><span class="sr-only">Instagram MAGIC LIGHT</span></a>');
+  return html;
+}
+
+function improveBlankTargets(html) {
+  return html.replace(/<a\b[^>]*target=["']_blank["'][^>]*>/gi, (tag) => {
+    if (/\srel\s*=/i.test(tag)) return tag;
+    return tag.replace(/>$/, ' rel="noopener noreferrer">');
+  });
+}
+
+function injectA11yStyles(html) {
+  if (html.includes('data-magic-quality-styles')) return html;
+  const css = `\n<style data-magic-quality-styles>\n` +
+    `.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}\n` +
+    `.kicker,.see,.admin-price{color:#76551a!important}\n` +
+    `.ref{color:#5f6670!important}\n` +
+    `.lang small{color:#5f6670!important}\n` +
+    `.social-mini a:focus-visible,.btn:focus-visible,.smallbtn:focus-visible,.menu:focus-visible,.dot:focus-visible,.close:focus-visible{outline:3px solid #76551a!important;outline-offset:3px!important}\n` +
+    `</style>\n`;
+  return html.replace(/<\/head>/i, css + '</head>');
+}
+
+function improveHomeSemantics(html) {
+  // Descriptive labels for the homepage social shortcuts and carousel.
+  html = improveSocialLinks(html);
+  html = improveControls(html);
+  return html;
+}
+
+let changed = 0;
+for (const rel of PAGES) {
+  const file = path.join(DIST, rel);
+  if (!fs.existsSync(file)) continue;
+  let html = fs.readFileSync(file, 'utf8');
+  const before = html;
+  html = ensureImageAlt(html);
+  html = improveBlankTargets(html);
+  html = injectA11yStyles(html);
+  if (rel === 'index.html') html = improveHomeSemantics(html);
+  if (html !== before) {
+    fs.writeFileSync(file, html, 'utf8');
+    changed += 1;
+  }
+}
+
+console.log(`MAGIC LIGHT quality: ${changed} public page(s) improved for accessibility/SEO.`);
