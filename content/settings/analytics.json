@@ -1,7 +1,7 @@
 {
-  "ga4Enabled": false,
-  "ga4MeasurementId": "",
+  "ga4Enabled": true,
+  "ga4MeasurementId": "G-0S0DWH279E",
   "metaEnabled": true,
   "metaPixelId": "643716202899582",
-  "note": "Meta Pixel activé le 05/10/2026. GA4 en attente du Measurement ID."
+  "note": "GA4 et Meta Pixel activés le 05/10/2026."
 }
