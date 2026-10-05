@@ -37,18 +37,6 @@ function productUnitPrice(product) {
   return money(promo ? base * (1 - discount / 100) : base);
 }
 
-async function loadCatalogue(req) {
-  try {
-    const url = new URL("/data/products.json", req.url);
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) return { byRef: new Map(), byName: new Map() };
-    const products = Array.isArray(await res.json()) ? await (async()=>[])() : [];
-    return products;
-  } catch {
-    return { byRef: new Map(), byName: new Map() };
-  }
-}
-
 async function catalogueMaps(req) {
   try {
     const url = new URL("/data/products.json", req.url);
