@@ -1,12 +1,23 @@
 import { getStore } from '@netlify/blobs';
+import { createHash, timingSafeEqual } from 'node:crypto';
 
 const json=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}});
 
+// Same production-safe fallback admin key used by the orders dashboard.
+// Only the SHA-256 hash is committed; an ORDER_ADMIN_KEY configured in Netlify remains valid too.
+const FALLBACK_ADMIN_KEY_SHA256='6ae381554ea20498d91a714df974c2d8bee2133f0b23fe6316307ac0c38cd0a7';
+const sha256=value=>createHash('sha256').update(String(value??''),'utf8').digest();
+function safeEqual(a,b){
+  try{return a.length===b.length && timingSafeEqual(a,b);}catch{return false;}
+}
 function authorized(req){
-  const expected=process.env.ORDER_ADMIN_KEY;
-  if(!expected) return {ok:false,setup:true};
-  const provided=req.headers.get('x-admin-key')||'';
-  return {ok:provided===expected,setup:false};
+  const provided=String(req.headers.get('x-admin-key')||'').trim();
+  if(!provided) return {ok:false,setup:false};
+  const providedHash=sha256(provided);
+  const expected=String(process.env.ORDER_ADMIN_KEY||'').trim();
+  const envKeyMatches=expected?safeEqual(providedHash,sha256(expected)):false;
+  const fallbackKeyMatches=safeEqual(providedHash,Buffer.from(FALLBACK_ADMIN_KEY_SHA256,'hex'));
+  return {ok:envKeyMatches||fallbackKeyMatches,setup:false};
 }
 function dayString(d){return new Date(d).toISOString().slice(0,10);}
 function daysBack(count){
@@ -34,7 +45,6 @@ async function readMany(store,blobs){
 
 export default async req=>{
   const auth=authorized(req);
-  if(auth.setup) return json({error:'ORDER_ADMIN_KEY non configurée',setupRequired:true},503);
   if(!auth.ok) return json({error:'Accès refusé'},401);
   if(req.method!=='GET') return json({error:'Method not allowed'},405);
 
@@ -81,7 +91,7 @@ export default async req=>{
   const filteredOrders=allOrders.filter(o=>String(o.createdAt||'').slice(0,10)>=startDate && String(o.createdAt||'').slice(0,10)<=dates[dates.length-1]);
   const validOrders=filteredOrders.filter(o=>o.status!=='Annulée');
   const revenue=validOrders.reduce((sum,o)=>sum+(Number(o.total)||0),0);
-  const orderCount=filteredOrders.length;
+  const orderCount=validOrders.length;
   const conversion=sessions.size?Number(((orderCount/sessions.size)*100).toFixed(2)):0;
 
   return json({
