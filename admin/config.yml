@@ -48,7 +48,9 @@ collections:
         field: {label: "Image 360", name: "image", widget: "image"}
       - {label: "Puissance / Watt", name: "watt", widget: "string", required: false, hint: "Ex: 18W, 200W, 2x20W"}
       - {label: "Dimensions", name: "dimensions", widget: "string", required: false, hint: "Ex: 40 x 40 cm"}
-      - {label: "Disponibilité", name: "stock", widget: "string", required: false, hint: "Ex: En stock, Rupture, Sur commande"}
+      - {label: "Quantité en stock", name: "stockQty", widget: "number", value_type: "int", min: 0, required: false, hint: "Quantité physique disponible. Laissez vide si le stock n'est pas suivi pour cet article."}
+      - {label: "Alerte stock faible", name: "stockAlert", widget: "number", value_type: "int", min: 0, default: 3, required: false, hint: "Ex: 3 = afficher Stock faible à partir de 3 pièces restantes."}
+      - {label: "Texte disponibilité", name: "stock", widget: "string", required: false, hint: "Optionnel si aucune quantité n'est saisie. Ex: Sur commande, Nous contacter."}
       - {label: "Nouveauté", name: "featured", widget: "boolean", default: true}
       - {label: "Afficher sur le site", name: "active", widget: "boolean", default: true}
 
