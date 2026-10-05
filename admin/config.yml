@@ -33,7 +33,22 @@ collections:
       - {label: "Prix", name: "price", widget: "number", value_type: "float", min: 0, required: false, hint: "Prix normal de l’article. Laissez vide si vous ne voulez pas afficher le prix."}
       - {label: "En promotion", name: "promo", widget: "boolean", default: false, required: false, hint: "Activez uniquement pour les articles en remise."}
       - {label: "Remise (%)", name: "discount", widget: "number", value_type: "float", min: 0, max: 90, default: 0, required: false, hint: "Exemple : 25 ou 40. Le site calcule automatiquement le prix promo."}
-      - {label: "Photo", name: "image", widget: "image"}
+      - {label: "Photo principale", name: "image", widget: "image"}
+      - label: "Galerie photos"
+        name: "images"
+        widget: "list"
+        required: false
+        hint: "Ajoutez 2, 3 images ou plus. Elles apparaissent en miniatures dans la fiche produit."
+        field: {label: "Photo", name: "image", widget: "image"}
+      - label: "Images 360°"
+        name: "spin360"
+        widget: "list"
+        required: false
+        hint: "Séquence de photos prises autour du produit dans le même ordre. 12 à 36 images donnent un meilleur résultat."
+        field: {label: "Image 360", name: "image", widget: "image"}
+      - {label: "Puissance / Watt", name: "watt", widget: "string", required: false, hint: "Ex: 18W, 200W, 2x20W"}
+      - {label: "Dimensions", name: "dimensions", widget: "string", required: false, hint: "Ex: 40 x 40 cm"}
+      - {label: "Disponibilité", name: "stock", widget: "string", required: false, hint: "Ex: En stock, Rupture, Sur commande"}
       - {label: "Nouveauté", name: "featured", widget: "boolean", default: true}
       - {label: "Afficher sur le site", name: "active", widget: "boolean", default: true}
 
