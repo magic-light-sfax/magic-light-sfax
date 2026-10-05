@@ -7,6 +7,7 @@ const dist = path.join(root, 'dist');
 const requiredPages = [
   ['admin/orders.html', 'admin/orders.html'],
   ['admin/analytics.html', 'admin/analytics.html'],
+  ['admin/stock.html', 'admin/stock.html'],
   ['admin/index.html', 'admin/index.html']
 ];
 
@@ -26,10 +27,10 @@ function copyRequired(srcRel, destRel) {
 
 for (const [src, dest] of requiredPages) copyRequired(src, dest);
 
-// Convenience aliases so both clean and .html URLs work.
 const redirects = [
   '/admin/orders /admin/orders.html 200',
-  '/admin/analytics /admin/analytics.html 200'
+  '/admin/analytics /admin/analytics.html 200',
+  '/admin/stock /admin/stock.html 200'
 ].join('\n') + '\n';
 fs.writeFileSync(path.join(dist, '_redirects'), redirects, 'utf8');
 
