@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>MAGIC LIGHT — Stock</title>
+<style>
+:root{--gold:#c99a3c;--ink:#20242b;--line:#e5e7eb;--soft:#f6f7f9;--danger:#b42318;--ok:#067647;--warn:#b54708}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Tahoma,sans-serif;background:var(--soft);color:var(--ink)}
+.wrap{width:min(1250px,calc(100% - 24px));margin:24px auto 60px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}h1{margin:0}.nav{display:flex;gap:8px;flex-wrap:wrap}.back{padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;text-decoration:none;color:#222;font-weight:800}
+.auth,.toolbar,.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:16px}.auth{display:grid;grid-template-columns:1fr auto;gap:10px}.auth input,.toolbar input,.qty,.alert{height:44px;border:1px solid #d8dce2;border-radius:10px;padding:0 12px;font:inherit}button{height:44px;border:0;border-radius:10px;padding:0 16px;font-weight:900;cursor:pointer}.dark{background:#111;color:#fff}.gold{background:var(--gold);color:#111}.muted{color:#737a84;font-size:.9rem}.error{color:var(--danger);font-weight:800}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.toolbar input{flex:1;min-width:230px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}.stat strong{display:block;font-size:1.45rem}
+.table-wrap{overflow:auto;margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:16px}table{width:100%;border-collapse:collapse;min-width:900px}th,td{padding:12px;border-bottom:1px solid #edf0f3;text-align:left;vertical-align:middle}th{position:sticky;top:0;background:#fafafa;font-size:.8rem;text-transform:uppercase;color:#68707b;z-index:2}.product{font-weight:900}.ref{font-size:.78rem;color:#777;margin-top:3px}.qty,.alert{width:105px}.save{height:38px;background:var(--gold)}.pill{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:.75rem;font-weight:900}.in{background:#ecfdf3;color:var(--ok)}.low{background:#fffaeb;color:var(--warn)}.out{background:#fef3f2;color:var(--danger)}.unmanaged{background:#f1f3f5;color:#667085}.updated{font-size:.72rem;color:#8a919b}.flash{margin-left:8px;font-size:.8rem;font-weight:800;color:var(--ok)}
+@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}.auth{grid-template-columns:1fr}.wrap{margin-top:12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>📦 Stock MAGIC LIGHT</h1><div class="muted">Quantité disponible, alerte stock faible et rupture.</div></div>
+    <div class="nav"><a class="back" href="/admin/orders.html">Commandes</a><a class="back" href="/admin/">← Produits / Admin</a></div>
+  </div>
+  <div class="auth">
+    <input id="adminKey" type="password" autocomplete="current-password" placeholder="Clé Admin">
+    <button class="dark" id="connectBtn">Ouvrir le stock</button>
+    <div id="authMsg" class="muted" style="grid-column:1/-1"></div>
+  </div>
+  <div id="app" hidden>
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Rechercher produit, référence, catégorie...">
+      <button class="gold" id="refreshBtn">Actualiser</button>
+      <button id="logoutBtn">Déconnexion</button>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="table-wrap"><table><thead><tr><th>Produit</th><th>Catégorie</th><th>État</th><th>Quantité</th><th>Alerte faible</th><th>Dernière MAJ</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+  </div>
+</div>
+<script>
+const API='/.netlify/functions/stock';
+const keyInput=document.getElementById('adminKey');
+const authMsg=document.getElementById('authMsg');
+const app=document.getElementById('app');
+const rows=document.getElementById('rows');
+const stats=document.getElementById('stats');
+const search=document.getElementById('search');
+let products=[];let overrides={};
+keyInput.value=localStorage.getItem('magicLightOrdersKey')||'';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=v=>String(v||'').trim().toUpperCase();
+const asInt=(v,fallback=null)=>{if(v===null||v===undefined||v==='')return fallback;const n=Number(v);return Number.isFinite(n)?Math.max(0,Math.floor(n)):fallback};
+function stateFor(p){const ref=norm(p.reference);const live=overrides[ref];const qty=live?asInt(live.qty,null):asInt(p.stockQty,null);const alert=live?asInt(live.alert,3):asInt(p.stockAlert,3);const status=qty===null?'unmanaged':qty<=0?'out':qty<=alert?'low':'in';return{ref,qty,alert,status,updatedAt:live?.updatedAt||''}}
+function statusLabel(s){return s==='out'?'Rupture':s==='low'?'Stock faible':s==='in'?'En stock':'Non suivi'}
+function fmtDate(v){if(!v)return'—';try{return new Date(v).toLocaleString('fr-TN')}catch{return v}}
+function renderStats(){const states=products.map(stateFor);const managed=states.filter(s=>s.qty!==null);stats.innerHTML=`<div class="stat"><span class="muted">Produits</span><strong>${products.length}</strong></div><div class="stat"><span class="muted">Stock suivi</span><strong>${managed.length}</strong></div><div class="stat"><span class="muted">Stock faible</span><strong>${managed.filter(s=>s.status==='low').length}</strong></div><div class="stat"><span class="muted">Ruptures</span><strong>${managed.filter(s=>s.status==='out').length}</strong></div>`}
+function render(){renderStats();const q=search.value.trim().toLowerCase();const list=products.filter(p=>`${p.name||''} ${p.reference||''} ${p.category||''}`.toLowerCase().includes(q));rows.innerHTML=list.map(p=>{const s=stateFor(p);return`<tr data-ref="${esc(s.ref)}"><td><div class="product">${esc(p.name||'Produit')}</div><div class="ref">${esc(p.reference||'')}</div></td><td>${esc(p.category||'—')}</td><td><span class="pill ${s.status}">${statusLabel(s.status)}</span></td><td><input class="qty" type="number" min="0" step="1" value="${s.qty===null?'':s.qty}" placeholder="Non suivi"></td><td><input class="alert" type="number" min="0" step="1" value="${s.alert}"></td><td><span class="updated">${esc(fmtDate(s.updatedAt))}</span></td><td><button class="save" type="button">Enregistrer</button><span class="flash"></span></td></tr>`}).join('')||'<tr><td colspan="7" class="muted">Aucun produit trouvé.</td></tr>'}
+async function getPublic(){const r=await fetch(API,{cache:'no-store'});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Erreur stock');overrides=d.overrides||{}}
+async function saveStock(reference,qty,alert){const r=await fetch(API,{method:'PATCH',headers:{'x-admin-key':keyInput.value.trim(),'content-type':'application/json'},body:JSON.stringify({reference,qty,alert})});const d=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(d.error||'Erreur'),{status:r.status});const item=d.items?.[0];if(item)overrides[norm(item.reference)]=item;return item}
+async function load(){authMsg.textContent='Chargement...';try{const [pRes]=await Promise.all([fetch('/data/products.json?ts='+Date.now(),{cache:'no-store'}),getPublic()]);if(!pRes.ok)throw new Error('Catalogue indisponible');products=await pRes.json();localStorage.setItem('magicLightOrdersKey',keyInput.value.trim());app.hidden=false;authMsg.textContent='Connecté.';render()}catch(e){app.hidden=true;authMsg.innerHTML='<span class="error">'+esc(e.message)+'</span>'}}
+document.getElementById('connectBtn').onclick=load;document.getElementById('refreshBtn').onclick=load;document.getElementById('logoutBtn').onclick=()=>{localStorage.removeItem('magicLightOrdersKey');keyInput.value='';app.hidden=true;authMsg.textContent='Déconnecté.'};search.addEventListener('input',render);
+rows.addEventListener('click',async e=>{const btn=e.target.closest('.save');if(!btn)return;const tr=btn.closest('tr');const ref=tr.dataset.ref;const qtyRaw=tr.querySelector('.qty').value;const alertRaw=tr.querySelector('.alert').value;const flash=tr.querySelector('.flash');if(qtyRaw===''){flash.textContent='Saisir une quantité';return}btn.disabled=true;flash.textContent='...';try{await saveStock(ref,Number(qtyRaw),Number(alertRaw||3));flash.textContent='✓ Enregistré';render();setTimeout(()=>{const row=[...rows.querySelectorAll('tr')].find(r=>r.dataset.ref===ref);if(row)row.querySelector('.flash').textContent=''},1800)}catch(err){flash.textContent=err.status===401?'Clé refusée':err.message}finally{btn.disabled=false}});
+if(keyInput.value)load();
+</script>
+</body>
+</html>
