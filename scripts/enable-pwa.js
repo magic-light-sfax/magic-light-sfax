@@ -4,7 +4,7 @@ const path=require('path');
 const ROOT=process.cwd();
 const DIST=path.join(ROOT,'dist');
 const PUBLIC_PAGES=['index.html','produits.html','products.html','nouveautes.html','references.html','catalogue.html','contact.html'];
-const PWA_INSTALL_VERSION='20261005-2';
+const PWA_INSTALL_VERSION='20261005-3';
 
 const manifest={
   id:'/',
@@ -21,21 +21,23 @@ const manifest={
   theme_color:'#111215',
   categories:['shopping','business','lifestyle'],
   icons:[
+    {src:'/assets/pwa-icon-512.png',sizes:'512x512',type:'image/png',purpose:'any'},
+    {src:'/assets/pwa-icon-512.png',sizes:'512x512',type:'image/png',purpose:'maskable'},
     {src:'/assets/pwa-icon.svg',sizes:'any',type:'image/svg+xml',purpose:'any'},
     {src:'/assets/pwa-icon.svg',sizes:'any',type:'image/svg+xml',purpose:'maskable'}
   ],
   shortcuts:[
-    {name:'Produits',short_name:'Produits',url:'/produits',icons:[{src:'/assets/pwa-icon.svg',sizes:'any',type:'image/svg+xml'}]},
-    {name:'Contact',short_name:'Contact',url:'/contact.html',icons:[{src:'/assets/pwa-icon.svg',sizes:'any',type:'image/svg+xml'}]}
+    {name:'Produits',short_name:'Produits',url:'/produits',icons:[{src:'/assets/pwa-icon-512.png',sizes:'512x512',type:'image/png'}]},
+    {name:'Contact',short_name:'Contact',url:'/contact.html',icons:[{src:'/assets/pwa-icon-512.png',sizes:'512x512',type:'image/png'}]}
   ]
 };
 
 const offline=`<!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#111215"><title>MAGIC LIGHT — Hors connexion</title><style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#111215;color:#fff;font-family:Arial,Tahoma,sans-serif;padding:24px}.card{width:min(520px,100%);background:#fff;color:#20242b;border-radius:24px;padding:30px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)}img{width:104px;height:104px;object-fit:contain;margin:0 auto 16px}.gold{color:#a87925}button,a{display:inline-flex;align-items:center;justify-content:center;margin-top:16px;border:0;border-radius:999px;background:#c99a3c;color:#111;padding:12px 18px;font-weight:900;text-decoration:none;cursor:pointer}</style></head><body><main class="card"><img src="/assets/pwa-icon.svg" alt="MAGIC LIGHT"><h1>MAGIC <span class="gold">LIGHT</span></h1><p>Vous êtes hors connexion. Les pages déjà consultées peuvent rester disponibles.</p><button onclick="location.reload()">Réessayer</button></main></body></html>`;
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#111215"><title>MAGIC LIGHT — Hors connexion</title><style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#111215;color:#fff;font-family:Arial,Tahoma,sans-serif;padding:24px}.card{width:min(520px,100%);background:#fff;color:#20242b;border-radius:24px;padding:30px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)}img{width:104px;height:104px;object-fit:contain;margin:0 auto 16px}.gold{color:#a87925}button,a{display:inline-flex;align-items:center;justify-content:center;margin-top:16px;border:0;border-radius:999px;background:#c99a3c;color:#111;padding:12px 18px;font-weight:900;text-decoration:none;cursor:pointer}</style></head><body><main class="card"><img src="/assets/pwa-icon-512.png" alt="MAGIC LIGHT"><h1>MAGIC <span class="gold">LIGHT</span></h1><p>Vous êtes hors connexion. Les pages déjà consultées peuvent rester disponibles.</p><button onclick="location.reload()">Réessayer</button></main></body></html>`;
 
 const installAsset='/assets/pwa-install.js?v='+PWA_INSTALL_VERSION;
-const sw=`const CACHE='magic-light-pwa-v2';
-const CORE=['/','/index.html','/produits','/produits.html','/offline.html','/assets/pwa-icon.svg','/assets/logo.jpg','${installAsset}'];
+const sw=`const CACHE='magic-light-pwa-v3';
+const CORE=['/','/index.html','/produits','/produits.html','/offline.html','/assets/pwa-icon.svg','/assets/pwa-icon-512.png','/assets/logo.jpg','${installAsset}'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('magic-light-pwa-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',event=>{
@@ -65,8 +67,10 @@ function inject(file){
   const p=path.join(DIST,file);if(!fs.existsSync(p))return;
   let html=fs.readFileSync(p,'utf8');
   if(!html.includes('rel="manifest"')){
-    const head='\n<link rel="manifest" href="/manifest.webmanifest">\n<meta name="theme-color" content="#111215">\n<meta name="application-name" content="MAGIC LIGHT">\n<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n<meta name="apple-mobile-web-app-title" content="MAGIC LIGHT">\n<link rel="apple-touch-icon" href="/assets/logo.jpg">\n';
+    const head='\n<link rel="manifest" href="/manifest.webmanifest">\n<meta name="theme-color" content="#111215">\n<meta name="application-name" content="MAGIC LIGHT">\n<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n<meta name="apple-mobile-web-app-title" content="MAGIC LIGHT">\n<link rel="apple-touch-icon" href="/assets/pwa-icon-512.png">\n';
     html=insertBeforeLastClosingTag(html,'head',head);
+  }else{
+    html=html.replace(/<link\s+rel=["']apple-touch-icon["'][^>]*>/i,'<link rel="apple-touch-icon" href="/assets/pwa-icon-512.png">');
   }
   if(!html.includes('/assets/pwa-install.js')){
     html=insertBeforeLastClosingTag(html,'body','\n<script defer src="'+installAsset+'"></script>\n');
@@ -77,8 +81,10 @@ function inject(file){
 }
 
 if(!fs.existsSync(DIST)) throw new Error('dist introuvable: exécutez build.js avant enable-pwa.js');
+const pngIcon=path.join(DIST,'assets','pwa-icon-512.png');
+if(!fs.existsSync(pngIcon)) throw new Error('PWA PNG 512 introuvable: exécutez generate-pwa-png.js avant enable-pwa.js');
 fs.writeFileSync(path.join(DIST,'manifest.webmanifest'),JSON.stringify(manifest,null,2),'utf8');
 fs.writeFileSync(path.join(DIST,'offline.html'),offline,'utf8');
 fs.writeFileSync(path.join(DIST,'service-worker.js'),sw,'utf8');
 PUBLIC_PAGES.forEach(inject);
-console.log('MAGIC LIGHT PWA: manifest + service worker + install UI activés.');
+console.log('MAGIC LIGHT PWA: manifest + PNG 512 + service worker + install UI activés.');
