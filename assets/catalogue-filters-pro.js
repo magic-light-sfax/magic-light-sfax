@@ -1,9 +1,6 @@
 (() => {
   'use strict';
-  const products = document.getElementById('products');
-  if (!products) return;
-
-  const anchor = products.querySelector('.filterbar') || products.querySelector('.mobile-category-trigger') || products.querySelector('.section-head');
+  const anchor = document.querySelector('.filterbar') || document.querySelector('.mobile-category-trigger') || document.querySelector('.section-head');
   if (!anchor) return;
 
   const panel = document.createElement('div');
@@ -89,7 +86,6 @@
     const hi = max.value === '' ? null : Number(max.value);
     const promoOnly = promo.checked;
     const availableOnly = available.checked;
-    let advancedVisible=0;
     cards().forEach(card=>{
       const p=info(card);
       let ok=true;
@@ -99,7 +95,6 @@
       if(promoOnly && !p.isPromo) ok=false;
       if(availableOnly && !p.available) ok=false;
       card.classList.toggle('ml-advanced-hidden',!ok);
-      if(ok) advancedVisible++;
     });
     applySort();
     const combined=cards().filter(c=>!c.classList.contains('ml-advanced-hidden') && c.style.display!=='none').length;
@@ -117,8 +112,6 @@
   [category,min,max,promo,available,sort].forEach(el=>el.addEventListener(el.tagName==='INPUT' && el.type==='number'?'input':'change',apply));
 
   populateCategories(); ensureOrder(); apply();
-
-  // Keep advanced filters working when Admin products are injected after page load.
   const host=document.getElementById('adminProductsGrid');
   if(host){
     let pending=0;
@@ -127,8 +120,6 @@
       pending=setTimeout(()=>{populateCategories();ensureOrder();apply();},80);
     }).observe(host,{childList:true,subtree:true});
   }
-
-  // Existing category/search controls alter inline visibility; refresh the combined result counter afterwards.
   document.addEventListener('click',e=>{
     if(e.target.closest('.filter,[data-drawer-filter]')) setTimeout(apply,20);
   });
