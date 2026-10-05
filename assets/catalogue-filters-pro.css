@@ -1,0 +1,25 @@
+/* MAGIC LIGHT — Advanced catalogue filters */
+.ml-filter-panel{margin:0 0 18px;border:1px solid #e6e8ec;border-radius:16px;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.04);overflow:hidden}
+.ml-filter-toggle{width:100%;min-height:48px;border:0;background:#fff;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:900;cursor:pointer;color:#25282d}
+.ml-filter-toggle span:last-child{color:#a87925;font-size:.82rem}
+.ml-filter-body{display:grid;grid-template-columns:1.25fr repeat(2,.8fr) 1fr 1fr;gap:10px;padding:0 14px 14px}
+.ml-filter-field{min-width:0}
+.ml-filter-field label{display:block;font-size:.69rem;font-weight:900;color:#7d838c;text-transform:uppercase;letter-spacing:.04em;margin:0 0 5px}
+.ml-filter-field input,.ml-filter-field select{width:100%;height:42px;border:1px solid #dfe2e6;border-radius:10px;padding:0 10px;background:#fff;color:#25282d;outline:none}
+.ml-filter-field input:focus,.ml-filter-field select:focus{border-color:#c99a3c;box-shadow:0 0 0 3px rgba(201,154,60,.12)}
+.ml-filter-checks{display:flex;align-items:end;gap:8px;flex-wrap:wrap}
+.ml-filter-check{min-height:42px;display:flex;align-items:center;gap:7px;padding:0 10px;border:1px solid #dfe2e6;border-radius:10px;background:#fafafa;font-size:.8rem;font-weight:800;cursor:pointer}
+.ml-filter-check input{accent-color:#c99a3c}
+.ml-filter-actions{display:flex;gap:8px;align-items:end}
+.ml-filter-reset{height:42px;padding:0 13px;border:1px solid #dfe2e6;border-radius:10px;background:#fff;font-weight:900;cursor:pointer}
+.ml-filter-result{padding:0 14px 12px;color:#6f7681;font-size:.78rem;font-weight:800}
+.ml-advanced-hidden{display:none!important}
+@media(max-width:980px){.ml-filter-body{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:780px){
+ .ml-filter-panel{margin-bottom:14px}
+ .ml-filter-body{grid-template-columns:1fr 1fr;display:none}
+ .ml-filter-panel.open .ml-filter-body{display:grid}
+ .ml-filter-body .ml-filter-field:first-child,.ml-filter-checks,.ml-filter-actions{grid-column:1/-1}
+ .ml-filter-actions .ml-filter-reset{width:100%}
+}
+@media(max-width:420px){.ml-filter-body{grid-template-columns:1fr}.ml-filter-body>*{grid-column:1!important}}
