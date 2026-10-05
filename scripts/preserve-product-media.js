@@ -8,7 +8,7 @@ if(!fs.existsSync(distFile)||!fs.existsSync(productDir)) process.exit(0);
 
 const products=JSON.parse(fs.readFileSync(distFile,'utf8'));
 const byRef=new Map(products.map(p=>[String(p.reference||'').trim().toUpperCase(),p]));
-const extraFields=['images','gallery','spin360','watt','dimensions','stock','brand'];
+const extraFields=['images','gallery','spin360','watt','dimensions','stock','brand','stockQty','stockAlert'];
 let merged=0;
 for(const file of fs.readdirSync(productDir)){
   if(!file.toLowerCase().endsWith('.json')) continue;
@@ -24,7 +24,7 @@ for(const file of fs.readdirSync(productDir)){
       }
     }
     if(changed) merged++;
-  }catch(e){ console.warn('Media produit ignoré:',file,e.message); }
+  }catch(e){ console.warn('Media/stock produit ignoré:',file,e.message); }
 }
 fs.writeFileSync(distFile,JSON.stringify(products,null,2),'utf8');
-console.log(`MAGIC LIGHT media: ${merged} fiche(s) enrichie(s) — galerie/360/specs préservés.`);
+console.log(`MAGIC LIGHT media/stock: ${merged} fiche(s) enrichie(s) — galerie/360/specs/stock préservés.`);
