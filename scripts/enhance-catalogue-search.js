@@ -7,7 +7,8 @@ const styles = [
   'assets/catalogue-favorites.css',
   'assets/catalogue-compare.css',
   'assets/catalogue-360.css',
-  'assets/catalogue-stock.css'
+  'assets/catalogue-stock.css',
+  'assets/catalogue-reviews.css'
 ];
 const scripts = [
   'assets/catalogue-search-pro.js',
@@ -15,7 +16,8 @@ const scripts = [
   'assets/catalogue-favorites.js',
   'assets/catalogue-compare.js',
   'assets/catalogue-360.js',
-  'assets/catalogue-stock.js'
+  'assets/catalogue-stock.js',
+  'assets/catalogue-reviews.js'
 ];
 
 function insertBeforeFirstClosingTag(html, tag, content){
@@ -71,4 +73,4 @@ if(!count){
   console.error('Catalogue enhancement failed: no product page found in dist');
   process.exit(1);
 }
-console.log(`MAGIC LIGHT catalogue: enhanced ${count} product page(s) — search + filters + favorites + comparison + 360 + stock ON`);
+console.log(`MAGIC LIGHT catalogue: enhanced ${count} product page(s) — search + filters + favorites + comparison + 360 + stock + reviews ON`);
