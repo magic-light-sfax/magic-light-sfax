@@ -1,8 +1,6 @@
 import { getStore } from "@netlify/blobs";
 import { createHash, timingSafeEqual } from "node:crypto";
 
-const FALLBACK_ADMIN_KEY_SHA256 = "6ae381554ea20498d91a714df974c2d8bee2133f0b23fe6316307ac0c38cd0a7";
-
 const sha256Buffer = (value) => createHash("sha256").update(String(value ?? ""), "utf8").digest();
 const sha256Hex = (value) => createHash("sha256").update(String(value ?? ""), "utf8").digest("hex");
 
@@ -40,19 +38,14 @@ export function sameOriginOrNoOrigin(req) {
 }
 
 export function adminAuth(req) {
+  const envKey = String(process.env.ORDER_ADMIN_KEY || "").trim();
+  if (!envKey) return { ok: false, mode: "unconfigured" };
+
   const provided = String(req.headers.get("x-admin-key") || "").trim();
   if (!provided) return { ok: false, mode: "none" };
 
-  const providedHash = sha256Buffer(provided);
-  const envKey = String(process.env.ORDER_ADMIN_KEY || "").trim();
-  if (envKey && safeEqual(providedHash, sha256Buffer(envKey))) {
-    return { ok: true, mode: "environment" };
-  }
-
-  // Temporary compatibility path while the existing Admin key is migrated
-  // to Netlify Environment Variables. Remove after ORDER_ADMIN_KEY is set.
-  const legacyMatch = safeEqual(providedHash, Buffer.from(FALLBACK_ADMIN_KEY_SHA256, "hex"));
-  return { ok: legacyMatch, mode: legacyMatch ? "legacy" : "invalid" };
+  const ok = safeEqual(sha256Buffer(provided), sha256Buffer(envKey));
+  return { ok, mode: ok ? "environment" : "invalid" };
 }
 
 function fingerprint(req, context = {}) {
@@ -112,6 +105,12 @@ export async function requireAdmin(req, context, options = {}) {
   }
 
   const auth = adminAuth(req);
+  if (auth.mode === "unconfigured") {
+    return {
+      ok: false,
+      response: json({ error: "ORDER_ADMIN_KEY non configurée", setupRequired: true }, 503)
+    };
+  }
   if (!auth.ok) return { ok: false, response: json({ error: "Accès refusé" }, 401) };
   return { ok: true, mode: auth.mode };
 }
