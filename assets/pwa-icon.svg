@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="MAGIC LIGHT">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#17191d"/>
+      <stop offset="1" stop-color="#050506"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f2d58e"/>
+      <stop offset="0.52" stop-color="#c99a3c"/>
+      <stop offset="1" stop-color="#9b6e1d"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#g)"/>
+  <circle cx="256" cy="256" r="190" fill="none" stroke="url(#gold)" stroke-width="12"/>
+  <path d="M256 108c-74 0-134 57-134 128 0 49 28 91 69 113v28h130v-28c41-22 69-64 69-113 0-71-60-128-134-128Z" fill="none" stroke="url(#gold)" stroke-width="18" stroke-linejoin="round"/>
+  <path d="M199 397h114M211 425h90" stroke="url(#gold)" stroke-width="16" stroke-linecap="round"/>
+  <path d="M190 254v-61l66 94 66-94v122" fill="none" stroke="#fff" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="256" cy="94" r="10" fill="#f2d58e"/>
+  <path d="M256 58V24M170 89l-22-28M342 89l22-28M126 166l-34-12M386 166l34-12" stroke="#f2d58e" stroke-width="12" stroke-linecap="round"/>
+</svg>
