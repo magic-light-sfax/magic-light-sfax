@@ -1,0 +1,14 @@
+/* MAGIC LIGHT — 360 product viewer */
+.ml-360-launch{position:absolute;left:12px;bottom:12px;z-index:7;min-height:42px;padding:0 13px;border:0;border-radius:12px;background:#c99a3c;color:#111;font-weight:950;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.2);display:none;align-items:center;gap:7px}
+.ml-360-launch.show{display:flex}
+.ml-360-modal{position:fixed;inset:0;z-index:13000;background:rgba(0,0,0,.94);display:none;align-items:center;justify-content:center;padding:18px;user-select:none}
+.ml-360-modal.open{display:flex}
+.ml-360-box{width:min(920px,100%);height:min(82vh,760px);position:relative;display:grid;grid-template-rows:auto 1fr auto;background:#111;border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.15)}
+.ml-360-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;color:#fff;background:#17191d}.ml-360-title{font-weight:900}.ml-360-head small{display:block;color:#aeb4bd;margin-top:2px}
+.ml-360-close{width:40px;height:40px;border:0;border-radius:50%;background:#fff;color:#111;font-size:24px;cursor:pointer}
+.ml-360-stage{position:relative;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 40%,#292c31,#111 68%);cursor:ew-resize;touch-action:none}
+.ml-360-stage img{width:100%;height:100%;object-fit:contain;pointer-events:none;-webkit-user-drag:none}
+.ml-360-badge{position:absolute;left:50%;top:12px;transform:translateX(-50%);padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-size:.75rem;font-weight:900;pointer-events:none}
+.ml-360-controls{display:flex;align-items:center;justify-content:center;gap:10px;padding:12px;background:#17191d;color:#fff}
+.ml-360-controls button{height:40px;min-width:44px;border:0;border-radius:999px;background:#fff;color:#111;font-weight:900;cursor:pointer;padding:0 14px}.ml-360-frame{min-width:86px;text-align:center;font-size:.8rem;color:#cfd3da}
+@media(max-width:620px){.ml-360-launch{left:8px;bottom:8px;height:38px;min-height:38px;font-size:.75rem}.ml-360-modal{padding:8px}.ml-360-box{height:88dvh;border-radius:14px}.ml-360-controls{padding:10px}}
