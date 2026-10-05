@@ -62,6 +62,8 @@ export default async (req) => {
   try { body = await req.json(); }
   catch { return json({ error: "JSON invalide" }, 400); }
 
+  if (body?.ping === true) return json({ ok: true, authenticated: true });
+
   const inputItems = Array.isArray(body?.items) ? body.items.slice(0, 500) : [body];
   const saved = [];
   for (const input of inputItems) {
