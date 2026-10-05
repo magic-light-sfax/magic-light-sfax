@@ -23,20 +23,23 @@
     const b=card.querySelector('.view-product');
     return b?.dataset.name || card.querySelector('h3')?.textContent?.trim() || 'Produit';
   }
-
-  function ensureButtons(root=document){
-    root.querySelectorAll('.card[data-cat],.card[data-search]').forEach(card=>{
-      const key=productKey(card);
-      if(!key || card.querySelector('.ml-fav-btn')) return;
-      const btn=document.createElement('button');
-      btn.type='button';btn.className='ml-fav-btn';btn.dataset.favKey=key;
-      btn.setAttribute('aria-label','Ajouter aux favoris');
-      btn.innerHTML='<span aria-hidden="true">♡</span>';
-      card.appendChild(btn);
-    });
-    sync();
+  function cardList(root=document){
+    const out=[];
+    if(root instanceof Element && root.matches('.card[data-cat],.card[data-search]')) out.push(root);
+    root.querySelectorAll?.('.card[data-cat],.card[data-search]').forEach(card=>out.push(card));
+    return out;
   }
-
+  function addButton(card){
+    const key=productKey(card);
+    if(!key || card.querySelector('.ml-fav-btn')) return false;
+    const btn=document.createElement('button');
+    btn.type='button';btn.className='ml-fav-btn';btn.dataset.favKey=key;
+    btn.setAttribute('aria-label','Ajouter aux favoris');
+    btn.innerHTML='<span aria-hidden="true">♡</span>';
+    card.appendChild(btn);
+    return true;
+  }
+  function ensureButtons(root=document){cardList(root).forEach(addButton);sync();}
   function sync(){
     document.querySelectorAll('.ml-fav-btn').forEach(btn=>{
       const active=favorites.has(btn.dataset.favKey);
@@ -46,8 +49,7 @@
     });
     if(countEl) countEl.textContent=String(favorites.size);
     document.querySelectorAll('.card[data-cat],.card[data-search]').forEach(card=>{
-      const hide=favoritesOnly && !favorites.has(productKey(card));
-      card.classList.toggle('ml-favorite-hidden',hide);
+      card.classList.toggle('ml-favorite-hidden',favoritesOnly && !favorites.has(productKey(card)));
     });
     showBtn?.classList.toggle('active',favoritesOnly);
     if(showBtn) showBtn.textContent=favoritesOnly?'Afficher tous les produits':'Afficher mes favoris';
@@ -66,10 +68,26 @@
     }
     save(favorites);sync();
   });
-
   showBtn?.addEventListener('click',()=>{favoritesOnly=!favoritesOnly;sync();});
   window.addEventListener('storage',e=>{if(e.key===STORAGE){favorites=load();sync();}});
+
   ensureButtons();
   const host=document.getElementById('adminProductsGrid');
-  if(host) new MutationObserver(()=>ensureButtons(host)).observe(host,{childList:true,subtree:true});
+  if(host){
+    const known=new WeakSet(cardList(document));
+    new MutationObserver(records=>{
+      let changed=false;
+      for(const record of records){
+        for(const node of record.addedNodes){
+          if(!(node instanceof Element)) continue;
+          for(const card of cardList(node)){
+            if(known.has(card)) continue;
+            known.add(card);
+            if(addButton(card)) changed=true;
+          }
+        }
+      }
+      if(changed) sync();
+    }).observe(host,{childList:true,subtree:true});
+  }
 })();
