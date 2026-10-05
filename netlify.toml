@@ -1,5 +1,5 @@
 [build]
-  command = "node build.js && node scripts/preserve-product-media.js && node scripts/enhance-catalogue-search.js && node scripts/ensure-admin-pages.js && node scripts/inject-first-party-analytics.js && node scripts/optimize-performance.js && node scripts/enable-pwa.js"
+  command = "node build.js && node scripts/preserve-product-media.js && node scripts/enhance-catalogue-search.js && node scripts/ensure-admin-pages.js && node scripts/inject-first-party-analytics.js && node scripts/optimize-performance.js && node scripts/enable-pwa.js && node scripts/enable-product-sharing.js"
   publish = "dist"
   functions = "netlify/functions"
 
