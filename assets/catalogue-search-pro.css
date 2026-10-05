@@ -1,0 +1,23 @@
+/* MAGIC LIGHT — Professional catalogue search */
+.ml-search-wrap{position:relative;min-width:0}
+.ml-search-suggest{position:absolute;left:0;right:0;top:calc(100% + 8px);z-index:1200;background:#fff;border:1px solid #e4e7eb;border-radius:16px;box-shadow:0 20px 55px rgba(0,0,0,.16);overflow:hidden;display:none;max-height:min(62vh,520px);overflow-y:auto}
+.ml-search-suggest.open{display:block}
+.ml-search-status{padding:10px 14px;border-bottom:1px solid #eef0f2;color:#747b85;font-size:.78rem;font-weight:800;background:#fafbfc}
+.ml-search-hit{width:100%;display:grid;grid-template-columns:54px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border:0;border-bottom:1px solid #f0f1f3;background:#fff;text-align:left;cursor:pointer;color:#20242b}
+.ml-search-hit:last-child{border-bottom:0}
+.ml-search-hit:hover,.ml-search-hit.active{background:#fff8e9}
+.ml-search-hit img{width:54px;height:54px;border-radius:10px;object-fit:cover;background:#f3f4f6}
+.ml-search-hit strong{display:block;font-size:.88rem;line-height:1.25}
+.ml-search-hit small{display:block;color:#8b919a;margin-top:3px;font-size:.72rem}
+.ml-search-hit .price{font-weight:900;color:#9a6f20;font-size:.8rem;white-space:nowrap}
+.ml-search-empty{padding:18px;text-align:center;color:#7a8089;font-size:.86rem}
+.ml-search-clear{position:absolute;right:58px;top:50%;transform:translateY(-50%);width:32px;height:32px;border:0;border-radius:50%;background:transparent;color:#8a9098;cursor:pointer;display:none;z-index:3;font-size:18px;line-height:1}
+.ml-search-clear.show{display:grid;place-items:center}
+.ml-search-count{margin:0 0 14px;padding:10px 13px;border:1px solid #eee1c8;background:#fffaf0;border-radius:12px;color:#76571f;font-size:.84rem;font-weight:800;display:none}
+.ml-search-count.show{display:block}
+@media(max-width:900px){
+  .ml-search-suggest{position:fixed;left:12px;right:12px;top:132px;max-height:55vh;border-radius:14px}
+  .ml-search-hit{grid-template-columns:48px 1fr;}
+  .ml-search-hit img{width:48px;height:48px}
+  .ml-search-hit .price{grid-column:2;justify-self:start;margin-top:-3px}
+}
