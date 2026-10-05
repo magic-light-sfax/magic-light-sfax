@@ -1,4 +1,4 @@
 [build]
-  command = "node build.js && node scripts/enhance-catalogue-search.js && node scripts/ensure-admin-pages.js && node scripts/inject-first-party-analytics.js"
+  command = "node build.js && node scripts/preserve-product-media.js && node scripts/enhance-catalogue-search.js && node scripts/ensure-admin-pages.js && node scripts/inject-first-party-analytics.js"
   publish = "dist"
   functions = "netlify/functions"
