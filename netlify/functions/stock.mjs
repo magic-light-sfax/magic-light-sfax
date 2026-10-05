@@ -1,29 +1,5 @@
 import { getStore } from "@netlify/blobs";
-import { createHash, timingSafeEqual } from "node:crypto";
-
-const json = (data, status = 200) => new Response(JSON.stringify(data), {
-  status,
-  headers: {
-    "content-type": "application/json; charset=utf-8",
-    "cache-control": "no-store"
-  }
-});
-
-const FALLBACK_ADMIN_KEY_SHA256 = "6ae381554ea20498d91a714df974c2d8bee2133f0b23fe6316307ac0c38cd0a7";
-const sha256 = (value) => createHash("sha256").update(String(value ?? ""), "utf8").digest();
-function safeEqual(a, b) {
-  try { return a.length === b.length && timingSafeEqual(a, b); }
-  catch { return false; }
-}
-function authorized(req) {
-  const provided = String(req.headers.get("x-admin-key") || "").trim();
-  if (!provided) return false;
-  const providedHash = sha256(provided);
-  const envKey = String(process.env.ORDER_ADMIN_KEY || "").trim();
-  const envMatch = envKey ? safeEqual(providedHash, sha256(envKey)) : false;
-  const fallbackMatch = safeEqual(providedHash, Buffer.from(FALLBACK_ADMIN_KEY_SHA256, "hex"));
-  return envMatch || fallbackMatch;
-}
+import { json, requireAdmin } from "./_security.mjs";
 
 const cleanRef = (value) => String(value ?? "").trim().toUpperCase().slice(0, 120);
 const keyFor = (ref) => `stock/${encodeURIComponent(cleanRef(ref))}.json`;
@@ -40,7 +16,7 @@ function state(ref, qty, alert, updatedAt = "") {
   return { reference: cleanRef(ref), qty: q, alert: a, status, updatedAt };
 }
 
-export default async (req) => {
+export default async (req, context = {}) => {
   const store = getStore("magic-light-stock");
 
   if (req.method === "GET") {
@@ -55,14 +31,21 @@ export default async (req) => {
     return json({ ok: true, overrides });
   }
 
-  if (req.method !== "PATCH" && req.method !== "POST") return json({ error: "Method not allowed" }, 405);
-  if (!authorized(req)) return json({ error: "Accès refusé" }, 401);
+  if (req.method !== "PATCH" && req.method !== "POST") {
+    return json({ error: "Method not allowed" }, 405, { allow: "GET, POST, PATCH" });
+  }
+
+  const admin = await requireAdmin(req, context, { scope: "admin-stock", limit: 180, windowSeconds: 900 });
+  if (!admin.ok) return admin.response;
+
+  const len = Number(req.headers.get("content-length") || 0);
+  if (len > 120000) return json({ error: "Payload trop volumineux" }, 413);
 
   let body;
   try { body = await req.json(); }
   catch { return json({ error: "JSON invalide" }, 400); }
 
-  if (body?.ping === true) return json({ ok: true, authenticated: true });
+  if (body?.ping === true) return json({ ok: true, authenticated: true, securityMode: admin.mode });
 
   const inputItems = Array.isArray(body?.items) ? body.items.slice(0, 500) : [body];
   const saved = [];
