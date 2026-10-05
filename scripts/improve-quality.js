@@ -31,16 +31,14 @@ function humanizeImage(src = '') {
 }
 
 function ensureImageAlt(html) {
-  // Use nearby card/reference heading whenever possible.
   html = html.replace(
-    /(<a\b[^>]*class=["'][^"']*refitem[^"']*["'][^>]*>\s*)(<img\b[^>]*>)(\s*<div\b[^>]*class=["'][^"']*label[^"']*["'][^>]*>\s*<strong>([^<]+)<\/strong>)/gi,
+    /(<a\b[^>]*class=["'][^"']*\brefitem[^"']*["'][^>]*>\s*)(<img\b[^>]*>)(\s*<div\b[^>]*class=["'][^"']*label[^"']*["'][^>]*>\s*<strong>([^<]+)<\/strong>)/gi,
     (all, before, img, after, label) => {
       if (/\salt\s*=/i.test(img)) return all;
       return before + img.replace(/>$/, ` alt="${escAttr(label.trim())}">`) + after;
     }
   );
 
-  // No image should be exposed without an accessible name/explicit decorative alt.
   return html.replace(/<img\b[^>]*>/gi, (tag) => {
     if (/\salt\s*=/i.test(tag)) return tag;
     const src = (tag.match(/\ssrc=["']([^"']+)["']/i) || [])[1] || '';
@@ -90,13 +88,19 @@ function injectA11yStyles(html) {
     `.kicker,.see,.admin-price{color:#76551a!important}\n` +
     `.ref{color:#5f6670!important}\n` +
     `.lang small{color:#5f6670!important}\n` +
+    `.social-mini a{min-width:44px!important;min-height:44px!important}\n` +
+    `.smallbtn{min-height:44px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important}\n` +
+    `.dot{position:relative!important;width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;padding:0!important;border:0!important;border-radius:50%!important;background:transparent!important;transform:none!important;display:grid!important;place-items:center!important}\n` +
+    `.dot::after{content:"";display:block;width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.42);transition:transform .2s ease,background .2s ease}\n` +
+    `.dot.active::after{background:var(--gold2)!important;transform:scale(1.2)}\n` +
+    `.dots{gap:0!important;bottom:8px!important}\n` +
     `.social-mini a:focus-visible,.btn:focus-visible,.smallbtn:focus-visible,.menu:focus-visible,.dot:focus-visible,.close:focus-visible{outline:3px solid #76551a!important;outline-offset:3px!important}\n` +
+    `@media(max-width:900px){.hero-copy{bottom:88px!important}.hero-buttons{gap:12px!important}.hero-buttons .btn{min-height:48px!important;padding:0 20px!important}.dots{bottom:8px!important}}\n` +
     `</style>\n`;
   return html.replace(/<\/head>/i, css + '</head>');
 }
 
 function improveHomeSemantics(html) {
-  // Descriptive labels for the homepage social shortcuts and carousel.
   html = improveSocialLinks(html);
   html = improveControls(html);
   return html;
@@ -118,4 +122,4 @@ for (const rel of PAGES) {
   }
 }
 
-console.log(`MAGIC LIGHT quality: ${changed} public page(s) improved for accessibility/SEO.`);
+console.log(`MAGIC LIGHT quality: ${changed} public page(s) improved for accessibility/SEO and mobile tap targets.`);
