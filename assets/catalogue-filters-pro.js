@@ -47,37 +47,44 @@
     return {card,b,name,cat,price,isPromo,available:!unavailable};
   }
 
+  function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+
   function populateCategories(){
     const current = category.value;
     const cats = [...new Set(cards().map(c=>info(c).cat).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr'));
     category.innerHTML = '<option value="">Toutes les catégories</option>' + cats.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
     if(cats.includes(current)) category.value = current;
   }
-  function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 
   function ensureOrder(){
     document.querySelectorAll('.grid').forEach(grid=>{
       [...grid.children].filter(el=>el.classList?.contains('card')).forEach((card,i)=>{
-        if(!card.dataset.mlOriginalOrder) card.dataset.mlOriginalOrder=String(i);
+        if(card.dataset.mlOriginalOrder === undefined || card.dataset.mlOriginalOrder === '') card.dataset.mlOriginalOrder=String(i);
       });
     });
   }
 
+  let internalReorder=false;
   function applySort(){
     ensureOrder();
     const mode = sort.value;
+    if(mode==='default') return;
+
+    internalReorder=true;
     document.querySelectorAll('.grid').forEach(grid=>{
-      const list=[...grid.children].filter(el=>el.classList?.contains('card'));
-      list.sort((a,b)=>{
+      const current=[...grid.children].filter(el=>el.classList?.contains('card'));
+      const desired=[...current].sort((a,b)=>{
         const A=info(a), B=info(b);
         if(mode==='price-asc') return (Number.isFinite(A.price)?A.price:Infinity)-(Number.isFinite(B.price)?B.price:Infinity);
         if(mode==='price-desc') return (Number.isFinite(B.price)?B.price:-Infinity)-(Number.isFinite(A.price)?A.price:-Infinity);
         if(mode==='name-asc') return A.name.localeCompare(B.name,'fr');
         if(mode==='name-desc') return B.name.localeCompare(A.name,'fr');
-        return Number(a.dataset.mlOriginalOrder||0)-Number(b.dataset.mlOriginalOrder||0);
+        return 0;
       });
-      list.forEach(card=>grid.appendChild(card));
+      const changed=desired.some((card,i)=>card!==current[i]);
+      if(changed) desired.forEach(card=>grid.appendChild(card));
     });
+    queueMicrotask(()=>{ internalReorder=false; });
   }
 
   function apply(){
@@ -112,14 +119,33 @@
   [category,min,max,promo,available,sort].forEach(el=>el.addEventListener(el.tagName==='INPUT' && el.type==='number'?'input':'change',apply));
 
   populateCategories(); ensureOrder(); apply();
+
   const host=document.getElementById('adminProductsGrid');
   if(host){
+    const known=new WeakSet();
+    cards().forEach(card=>known.add(card));
     let pending=0;
-    new MutationObserver(()=>{
+    const observer=new MutationObserver(records=>{
+      if(internalReorder) return;
+      let hasNewProduct=false;
+      for(const record of records){
+        for(const node of record.addedNodes){
+          if(!(node instanceof Element)) continue;
+          const candidates=[];
+          if(node.matches?.('.card[data-cat],.card[data-search]')) candidates.push(node);
+          node.querySelectorAll?.('.card[data-cat],.card[data-search]').forEach(c=>candidates.push(c));
+          for(const card of candidates){
+            if(!known.has(card)){ known.add(card); hasNewProduct=true; }
+          }
+        }
+      }
+      if(!hasNewProduct) return;
       clearTimeout(pending);
       pending=setTimeout(()=>{populateCategories();ensureOrder();apply();},80);
-    }).observe(host,{childList:true,subtree:true});
+    });
+    observer.observe(host,{childList:true,subtree:true});
   }
+
   document.addEventListener('click',e=>{
     if(e.target.closest('.filter,[data-drawer-filter]')) setTimeout(apply,20);
   });
