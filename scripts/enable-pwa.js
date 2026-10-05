@@ -4,6 +4,7 @@ const path=require('path');
 const ROOT=process.cwd();
 const DIST=path.join(ROOT,'dist');
 const PUBLIC_PAGES=['index.html','produits.html','products.html','nouveautes.html','references.html','catalogue.html','contact.html'];
+const PWA_INSTALL_VERSION='20261005-2';
 
 const manifest={
   id:'/',
@@ -32,8 +33,9 @@ const manifest={
 const offline=`<!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#111215"><title>MAGIC LIGHT — Hors connexion</title><style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#111215;color:#fff;font-family:Arial,Tahoma,sans-serif;padding:24px}.card{width:min(520px,100%);background:#fff;color:#20242b;border-radius:24px;padding:30px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)}img{width:104px;height:104px;object-fit:contain;margin:0 auto 16px}.gold{color:#a87925}button,a{display:inline-flex;align-items:center;justify-content:center;margin-top:16px;border:0;border-radius:999px;background:#c99a3c;color:#111;padding:12px 18px;font-weight:900;text-decoration:none;cursor:pointer}</style></head><body><main class="card"><img src="/assets/pwa-icon.svg" alt="MAGIC LIGHT"><h1>MAGIC <span class="gold">LIGHT</span></h1><p>Vous êtes hors connexion. Les pages déjà consultées peuvent rester disponibles.</p><button onclick="location.reload()">Réessayer</button></main></body></html>`;
 
-const sw=`const CACHE='magic-light-pwa-v1';
-const CORE=['/','/index.html','/produits','/produits.html','/offline.html','/assets/pwa-icon.svg','/assets/logo.jpg','/assets/pwa-install.js'];
+const installAsset='/assets/pwa-install.js?v='+PWA_INSTALL_VERSION;
+const sw=`const CACHE='magic-light-pwa-v2';
+const CORE=['/','/index.html','/produits','/produits.html','/offline.html','/assets/pwa-icon.svg','/assets/logo.jpg','${installAsset}'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('magic-light-pwa-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',event=>{
@@ -42,6 +44,9 @@ self.addEventListener('fetch',event=>{
   if(url.pathname.startsWith('/admin/')||url.pathname.startsWith('/.netlify/functions/'))return;
   if(req.mode==='navigate'){
     event.respondWith(fetch(req).then(res=>{const copy=res.clone();caches.open(CACHE).then(c=>c.put(req,copy));return res}).catch(async()=>await caches.match(req)||await caches.match('/offline.html')));return;
+  }
+  if(url.pathname==='/assets/pwa-install.js'){
+    event.respondWith(fetch(req).then(res=>{if(res&&res.ok){const copy=res.clone();caches.open(CACHE).then(c=>c.put(req,copy))}return res}).catch(()=>caches.match(req)));return;
   }
   if(url.pathname.startsWith('/assets/')){
     event.respondWith(caches.match(req).then(cached=>cached||fetch(req).then(res=>{if(res&&res.ok){const copy=res.clone();caches.open(CACHE).then(c=>c.put(req,copy))}return res})));return;
@@ -64,7 +69,9 @@ function inject(file){
     html=insertBeforeLastClosingTag(html,'head',head);
   }
   if(!html.includes('/assets/pwa-install.js')){
-    html=insertBeforeLastClosingTag(html,'body','\n<script defer src="/assets/pwa-install.js"></script>\n');
+    html=insertBeforeLastClosingTag(html,'body','\n<script defer src="'+installAsset+'"></script>\n');
+  }else{
+    html=html.replace(/\/assets\/pwa-install\.js(?:\?v=[^"']*)?/g,installAsset);
   }
   fs.writeFileSync(p,html,'utf8');
 }
