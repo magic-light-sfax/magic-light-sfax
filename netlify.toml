@@ -1,4 +1,24 @@
 [build]
-  command = "node build.js && node scripts/preserve-product-media.js && node scripts/enhance-catalogue-search.js && node scripts/ensure-admin-pages.js && node scripts/inject-first-party-analytics.js"
+  command = "node build.js && node scripts/preserve-product-media.js && node scripts/enhance-catalogue-search.js && node scripts/ensure-admin-pages.js && node scripts/inject-first-party-analytics.js && node scripts/optimize-performance.js"
   publish = "dist"
   functions = "netlify/functions"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=60, stale-while-revalidate=300"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
