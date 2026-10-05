@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>MAGIC LIGHT — Paniers abandonnés</title>
+<style>
+:root{--gold:#c99a3c;--ink:#20242b;--line:#e5e7eb;--soft:#f6f7f9;--danger:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Tahoma,sans-serif;background:var(--soft);color:var(--ink)}
+.wrap{width:min(1180px,calc(100% - 24px));margin:24px auto 60px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{margin:0}.back{padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;text-decoration:none;color:#222;font-weight:800}
+.auth,.toolbar,.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:16px}.auth{display:grid;grid-template-columns:1fr auto;gap:10px}
+.auth input,.toolbar input,.toolbar select,.status,.note{height:44px;border:1px solid #d8dce2;border-radius:10px;padding:0 12px;font:inherit}.note{height:auto;min-height:78px;padding:10px;resize:vertical;width:100%}
+button{height:44px;border:0;border-radius:10px;padding:0 16px;font-weight:900;cursor:pointer}.gold{background:var(--gold);color:#111}.dark{background:#111;color:#fff}.muted{color:#737a84;font-size:.9rem}.error{color:var(--danger);font-weight:800}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.toolbar input{flex:1;min-width:230px}.toolbar select{min-width:180px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}.stat strong{display:block;font-size:1.45rem}
+.list{display:grid;gap:12px;margin-top:16px}.cart{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}.cart-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}.num{font-size:1rem;font-weight:950;word-break:break-all}.pill{display:inline-flex;padding:5px 9px;border-radius:999px;background:#f1f3f5;font-size:.78rem;font-weight:900}.pill.warn{background:#fff3cd;color:#7a5a00}.pill.ok{background:#eaf8ee;color:#147a32}.pill.dim{background:#eceff3;color:#59616c}
+.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin-top:12px}.box{background:#fafbfc;border-radius:12px;padding:12px;min-width:0}.box h3{font-size:.9rem;margin:0 0 8px}.products{margin:8px 0 0;padding-left:18px;font-size:.88rem}.products li{margin:4px 0}.sum{font-size:1.1rem;font-weight:950;margin-top:10px}.actions{display:grid;grid-template-columns:180px 1fr auto;gap:8px;margin-top:12px;align-items:start}
+@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.auth{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.wrap{margin-top:12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>🛒 Paniers abandonnés</h1><div class="muted">Suivi des paniers actifs, abandonnés, convertis ou ignorés.</div></div>
+    <a class="back" href="/admin/">← Produits / Admin</a>
+  </div>
+
+  <div class="auth">
+    <input id="adminKey" type="password" autocomplete="current-password" placeholder="Clé Admin">
+    <button class="dark" id="connectBtn">Ouvrir les paniers</button>
+    <div id="authMsg" class="muted" style="grid-column:1/-1"></div>
+  </div>
+
+  <div id="app" hidden>
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Rechercher référence, produit, session...">
+      <select id="filter">
+        <option value="all">Tous les paniers</option>
+        <option value="abandoned">Abandonnés (+30 min)</option>
+        <option value="recent">Actifs récents</option>
+        <option value="converted">Convertis</option>
+        <option value="cleared">Vidés</option>
+      </select>
+      <button class="gold" id="refreshBtn">Actualiser</button>
+      <button id="logoutBtn">Déconnexion</button>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="list" id="carts"></div>
+  </div>
+</div>
+<script>
+const API="/.netlify/functions/admin-abandoned-carts";
+const ADMIN_SESSION_KEY="magicLightAdminSessionKey";
+const keyInput=document.getElementById("adminKey"),authMsg=document.getElementById("authMsg"),app=document.getElementById("app"),cartsEl=document.getElementById("carts"),statsEl=document.getElementById("stats"),searchEl=document.getElementById("search"),filterEl=document.getElementById("filter");
+let carts=[],statuses=[];
+try{keyInput.value=sessionStorage.getItem(ADMIN_SESSION_KEY)||""}catch{}
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money=n=>(Number(n)||0).toFixed(3)+" TND";
+const fmtDate=v=>{try{return new Date(v).toLocaleString("fr-TN")}catch{return v||"-"}};
+const ageMin=v=>Math.max(0,Math.floor((Date.now()-new Date(v||0).getTime())/60000));
+const kindOf=c=>{if(c.lifecycle==="converted")return"converted";if(c.lifecycle==="cleared")return"cleared";return ageMin(c.lastSeen)>=30?"abandoned":"recent"};
+async function api(method="GET",body){const key=keyInput.value.trim();const res=await fetch(API,{method,headers:{"x-admin-key":key,"content-type":"application/json"},body:body?JSON.stringify(body):undefined,cache:"no-store",credentials:"same-origin"});const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||"Erreur");return data}
+function renderStats(){const abandoned=carts.filter(c=>kindOf(c)==="abandoned").length,recent=carts.filter(c=>kindOf(c)==="recent").length,converted=carts.filter(c=>kindOf(c)==="converted").length,value=carts.filter(c=>kindOf(c)==="abandoned").reduce((s,c)=>s+(Number(c.estimatedSubtotal)||0),0);statsEl.innerHTML=`<div class="stat"><span class="muted">Paniers abandonnés</span><strong>${abandoned}</strong></div><div class="stat"><span class="muted">Actifs récents</span><strong>${recent}</strong></div><div class="stat"><span class="muted">Convertis</span><strong>${converted}</strong></div><div class="stat"><span class="muted">Valeur abandonnée</span><strong>${money(value)}</strong></div>`}
+function lifecycleBadge(c){const k=kindOf(c);if(k==="converted")return'<span class="pill ok">Converti</span>';if(k==="cleared")return'<span class="pill dim">Panier vidé</span>';if(k==="abandoned")return'<span class="pill warn">Abandonné</span>';return'<span class="pill">Actif récent</span>'}
+function render(){renderStats();const q=searchEl.value.trim().toLowerCase(),f=filterEl.value;const filtered=carts.filter(c=>(f==="all"||kindOf(c)===f)&&JSON.stringify([c.sessionId,c.items,c.page,c.followUpStatus,c.orderNumber]).toLowerCase().includes(q));cartsEl.innerHTML=filtered.length?filtered.map(c=>{const items=(c.items||[]).map(i=>`<li>${esc(i.name||i.ref||"Produit")} ${i.ref?"("+esc(i.ref)+")":""} — ${i.qty||1} × ${money(i.price)}</li>`).join("");const opts=statuses.map(s=>`<option ${s===(c.followUpStatus||"Nouveau")?"selected":""}>${esc(s)}</option>`).join("");return `<article class="cart" data-session="${esc(c.sessionId)}"><div class="cart-head"><div><div class="num">${esc(c.sessionId)}</div><div class="muted">Dernière activité: ${fmtDate(c.lastSeen)} · il y a ${ageMin(c.lastSeen)} min</div></div>${lifecycleBadge(c)}</div><div class="grid"><div class="box"><h3>Produits</h3><ul class="products">${items||"<li>-</li>"}</ul><div class="sum">${money(c.estimatedSubtotal)}</div></div><div class="box"><h3>Suivi</h3><div class="muted">Première vue: ${fmtDate(c.firstSeen)}</div><div class="muted">Page: ${esc(c.page||"-")}</div>${c.orderNumber?`<div class="muted">Commande: ${esc(c.orderNumber)}</div>`:""}</div></div><div class="actions"><select class="status">${opts}</select><textarea class="note" placeholder="Note interne...">${esc(c.note||"")}</textarea><button class="gold save">Enregistrer</button></div></article>`}).join(""):'<div class="card muted">Aucun panier trouvé.</div>'}
+async function load(){authMsg.textContent="Chargement...";try{const data=await api();carts=data.carts||[];statuses=data.statuses||[];try{sessionStorage.setItem(ADMIN_SESSION_KEY,keyInput.value.trim())}catch{}app.hidden=false;authMsg.textContent="Connecté.";render()}catch(e){app.hidden=true;authMsg.innerHTML='<span class="error">'+esc(e.message)+'</span>'}}
+document.getElementById("connectBtn").onclick=load;document.getElementById("refreshBtn").onclick=load;document.getElementById("logoutBtn").onclick=()=>{try{sessionStorage.removeItem(ADMIN_SESSION_KEY)}catch{}keyInput.value="";app.hidden=true;authMsg.textContent="Déconnecté."};searchEl.addEventListener("input",render);filterEl.addEventListener("change",render);
+cartsEl.addEventListener("click",async e=>{const btn=e.target.closest(".save");if(!btn)return;const card=btn.closest("[data-session]");btn.disabled=true;try{const status=card.querySelector(".status").value,note=card.querySelector(".note").value;const data=await api("PATCH",{sessionId:card.dataset.session,followUpStatus:status,note});const i=carts.findIndex(c=>c.sessionId===data.cart.sessionId);if(i>=0)carts[i]=data.cart;render()}catch(err){alert(err.message);btn.disabled=false}});
+if(keyInput.value)load();
+</script>
+</body>
+</html>
