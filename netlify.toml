@@ -1,5 +1,5 @@
 [build]
-  command = "node build.js && node scripts/preserve-product-media.js && node scripts/enhance-catalogue-search.js && node scripts/ensure-admin-pages.js && node scripts/inject-first-party-analytics.js && node scripts/optimize-performance.js"
+  command = "node build.js && node scripts/preserve-product-media.js && node scripts/enhance-catalogue-search.js && node scripts/ensure-admin-pages.js && node scripts/inject-first-party-analytics.js && node scripts/optimize-performance.js && node scripts/enable-pwa.js"
   publish = "dist"
   functions = "netlify/functions"
 
@@ -26,6 +26,23 @@
     Cache-Control = "no-store"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "no-referrer"
+
+[[headers]]
+  for = "/service-worker.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Service-Worker-Allowed = "/"
+
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Content-Type = "application/manifest+json; charset=utf-8"
+
+[[headers]]
+  for = "/offline.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
 
 [[headers]]
   for = "/assets/*"
