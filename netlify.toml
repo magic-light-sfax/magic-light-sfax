@@ -3,6 +3,9 @@
   publish = "dist"
   functions = "netlify/functions"
 
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
+
 [[headers]]
   for = "/*"
   [headers.values]
