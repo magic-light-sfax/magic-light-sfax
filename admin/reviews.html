@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>MAGIC LIGHT — Avis clients</title>
+<style>
+:root{--gold:#c99a3c;--ink:#20242b;--line:#e5e7eb;--soft:#f6f7f9;--ok:#067647;--danger:#b42318;--muted:#737a84}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Tahoma,sans-serif;background:var(--soft);color:var(--ink)}
+.wrap{width:min(1180px,calc(100% - 24px));margin:24px auto 60px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}h1{margin:0}.nav{display:flex;gap:8px;flex-wrap:wrap}.back{padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;text-decoration:none;color:#222;font-weight:800}
+.auth,.toolbar{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:16px}.auth{display:grid;grid-template-columns:1fr auto;gap:10px}.auth input,.toolbar input,.toolbar select{height:44px;border:1px solid #d8dce2;border-radius:10px;padding:0 12px;font:inherit}button{height:42px;border:0;border-radius:10px;padding:0 14px;font-weight:900;cursor:pointer}.dark{background:#111;color:#fff}.gold{background:var(--gold);color:#111}.muted{color:var(--muted);font-size:.9rem}.error{color:var(--danger);font-weight:800}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.toolbar input{flex:1;min-width:220px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}.stat strong{display:block;font-size:1.45rem}.list{display:grid;gap:12px;margin-top:16px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}.head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}.product{font-weight:900}.ref{font-size:.78rem;color:#777;margin-top:3px}.stars{color:#d7a52f;letter-spacing:1px}.name{font-weight:900;margin-top:8px}.comment{margin:8px 0 0;line-height:1.5}.meta{font-size:.76rem;color:#8a919b;margin-top:8px}.pill{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:.75rem;font-weight:900}.pending{background:#fffaeb;color:#b54708}.approved{background:#ecfdf3;color:var(--ok)}.rejected{background:#fef3f2;color:var(--danger)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.approve{background:#0b7a4b;color:#fff}.reject{background:#b42318;color:#fff}.delete{background:#f0f1f2;color:#333}.flash{font-size:.8rem;font-weight:800;color:var(--ok);align-self:center}
+@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}.auth{grid-template-columns:1fr}.wrap{margin-top:12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div><h1>⭐ Avis clients MAGIC LIGHT</h1><div class="muted">Validez les avis avant leur affichage public.</div></div><div class="nav"><a class="back" href="/admin/stock.html">Stock</a><a class="back" href="/admin/orders.html">Commandes</a><a class="back" href="/admin/">← Produits / Admin</a></div></div>
+  <div class="auth"><input id="adminKey" type="password" placeholder="Clé Admin" autocomplete="current-password"><button class="dark" id="connectBtn">Ouvrir les avis</button><div id="authMsg" class="muted" style="grid-column:1/-1"></div></div>
+  <div id="app" hidden>
+    <div class="toolbar"><input id="search" type="search" placeholder="Rechercher produit, référence, client..."><select id="statusFilter"><option value="all">Tous les statuts</option><option value="Pending">En attente</option><option value="Approved">Approuvés</option><option value="Rejected">Refusés</option></select><button class="gold" id="refreshBtn">Actualiser</button><button id="logoutBtn">Déconnexion</button></div>
+    <div class="stats" id="stats"></div><div class="list" id="list"></div>
+  </div>
+</div>
+<script>
+const API='/.netlify/functions/admin-reviews';
+const key=document.getElementById('adminKey'),authMsg=document.getElementById('authMsg'),app=document.getElementById('app'),list=document.getElementById('list'),stats=document.getElementById('stats'),search=document.getElementById('search'),statusFilter=document.getElementById('statusFilter');let reviews=[];
+key.value=localStorage.getItem('magicLightOrdersKey')||'';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const stars=n=>'★'.repeat(Math.max(1,Math.min(5,Math.round(Number(n)||0))))+'☆'.repeat(5-Math.max(1,Math.min(5,Math.round(Number(n)||0))));
+const statusLabel=s=>s==='Approved'?'Approuvé':s==='Rejected'?'Refusé':'En attente';
+const fmt=v=>{try{return new Date(v).toLocaleString('fr-TN')}catch{return v||'—'}};
+function render(){const q=search.value.trim().toLowerCase(),sf=statusFilter.value;const filtered=reviews.filter(r=>(sf==='all'||r.status===sf)&&`${r.productName||''} ${r.productRef||''} ${r.name||''} ${r.comment||''}`.toLowerCase().includes(q));stats.innerHTML=`<div class="stat"><span class="muted">Total</span><strong>${reviews.length}</strong></div><div class="stat"><span class="muted">En attente</span><strong>${reviews.filter(r=>r.status==='Pending').length}</strong></div><div class="stat"><span class="muted">Approuvés</span><strong>${reviews.filter(r=>r.status==='Approved').length}</strong></div><div class="stat"><span class="muted">Refusés</span><strong>${reviews.filter(r=>r.status==='Rejected').length}</strong></div>`;list.innerHTML=filtered.map(r=>`<article class="card" data-id="${esc(r.id)}"><div class="head"><div><div class="product">${esc(r.productName||'Produit')}</div><div class="ref">${esc(r.productRef||'')}</div></div><span class="pill ${String(r.status||'Pending').toLowerCase()}">${statusLabel(r.status)}</span></div><div class="name">${esc(r.name||'Client')}</div><div class="stars">${stars(r.rating)}</div><p class="comment">${esc(r.comment||'')}</p><div class="meta">${esc(fmt(r.createdAt))}</div><div class="actions"><button class="approve" data-status="Approved">✓ Approuver</button><button class="reject" data-status="Rejected">✕ Refuser</button><button class="delete">Supprimer</button><span class="flash"></span></div></article>`).join('')||'<div class="card muted">Aucun avis trouvé.</div>'}
+async function load(){authMsg.textContent='Chargement...';try{const r=await fetch(API,{headers:{'x-admin-key':key.value.trim()},cache:'no-store'}),d=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(d.error||'Erreur'),{status:r.status});reviews=d.reviews||[];localStorage.setItem('magicLightOrdersKey',key.value.trim());app.hidden=false;authMsg.textContent='Connecté.';render()}catch(e){app.hidden=true;authMsg.innerHTML='<span class="error">'+esc(e.message)+'</span>'}}
+async function setStatus(id,status){const r=await fetch(API,{method:'PATCH',headers:{'content-type':'application/json','x-admin-key':key.value.trim()},body:JSON.stringify({id,status})}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Erreur');return d.review}
+async function del(id){const r=await fetch(`${API}?id=${encodeURIComponent(id)}`,{method:'DELETE',headers:{'x-admin-key':key.value.trim()}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Erreur')}
+document.getElementById('connectBtn').onclick=load;document.getElementById('refreshBtn').onclick=load;document.getElementById('logoutBtn').onclick=()=>{localStorage.removeItem('magicLightOrdersKey');key.value='';app.hidden=true;authMsg.textContent='Déconnecté.'};search.oninput=render;statusFilter.onchange=render;
+list.addEventListener('click',async e=>{const card=e.target.closest('.card');if(!card)return;const id=card.dataset.id,flash=card.querySelector('.flash');try{if(e.target.matches('[data-status]')){e.target.disabled=true;flash.textContent='...';const updated=await setStatus(id,e.target.dataset.status);reviews=reviews.map(r=>r.id===id?updated:r);render()}else if(e.target.matches('.delete')){if(!confirm('Supprimer cet avis ?'))return;e.target.disabled=true;await del(id);reviews=reviews.filter(r=>r.id!==id);render()}}catch(err){flash.textContent=err.message||'Erreur'}});
+if(key.value)load();
+</script>
+</body>
+</html>
