@@ -4,6 +4,7 @@ const path=require('path');
 const ROOT=process.cwd();
 const DIST=path.join(ROOT,'dist');
 const SITE='https://magic-light-sfax.netlify.app';
+const MAP_URL='https://maps.app.goo.gl/Gvz5bm2hPfZjKreR9';
 const TODAY=new Date().toISOString().slice(0,10);
 
 function escHtml(v=''){
@@ -104,9 +105,17 @@ if(fs.existsSync(home)){
     '@context':'https://schema.org',
     '@type':'Store',
     name:'MAGIC LIGHT',
+    alternateName:'Magic Light Yossri Gharbi',
     url:SITE+'/',
     image:SITE+'/assets/logo.jpg',
     telephone:'+21622181224',
+    hasMap:MAP_URL,
+    sameAs:[MAP_URL],
+    geo:{
+      '@type':'GeoCoordinates',
+      latitude:34.7447208,
+      longitude:10.7393222
+    },
     address:{
       '@type':'PostalAddress',
       streetAddress:'402 Avenue Majida Boulila',
