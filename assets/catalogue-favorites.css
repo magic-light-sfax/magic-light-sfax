@@ -1,0 +1,12 @@
+/* MAGIC LIGHT — Favorites */
+.card{position:relative}
+.ml-fav-btn{position:absolute;right:10px;top:10px;z-index:8;width:38px;height:38px;border:1px solid rgba(255,255,255,.75);border-radius:50%;background:rgba(255,255,255,.94);box-shadow:0 5px 18px rgba(0,0,0,.14);display:grid;place-items:center;cursor:pointer;font-size:18px;line-height:1;transition:.18s}
+.ml-fav-btn:hover{transform:scale(1.06)}
+.ml-fav-btn.active{background:#fff0f3;border-color:#ffd1da;color:#d7264b}
+.ml-fav-btn.active span{filter:none}
+.ml-fav-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px;padding:10px 12px;border:1px solid #eceef1;border-radius:13px;background:#fff}
+.ml-fav-toolbar strong{font-size:.86rem;color:#343941}
+.ml-fav-show{min-height:38px;padding:0 13px;border:1px solid #e0e3e7;border-radius:999px;background:#fff;font-weight:900;cursor:pointer;color:#30343a}
+.ml-fav-show.active{background:#111215;color:#fff;border-color:#111215}
+.ml-favorite-hidden{display:none!important}
+@media(max-width:620px){.ml-fav-btn{width:36px;height:36px;right:8px;top:8px}.ml-fav-toolbar{padding:9px 10px}.ml-fav-show{font-size:.78rem;padding:0 11px}}
