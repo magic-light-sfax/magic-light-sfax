@@ -3,7 +3,7 @@
   "private": true,
   "version": "9.0.0",
   "scripts": {
-    "build": "node build.js"
+    "build": "node build.js && node scripts/enhance-catalogue-search.js"
   },
   "dependencies": {
     "xlsx": "^0.18.5",
