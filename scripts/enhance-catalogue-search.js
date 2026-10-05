@@ -8,15 +8,26 @@ if (!fs.existsSync(file)) {
 }
 
 let html = fs.readFileSync(file, 'utf8');
-const cssTag = '<link rel="stylesheet" href="assets/catalogue-search-pro.css">';
-const jsTag = '<script src="assets/catalogue-search-pro.js" defer></script>';
 
-if (!html.includes('catalogue-search-pro.css')) {
-  html = html.replace(/<\/head>/i, `  ${cssTag}\n</head>`);
+const styles = [
+  'assets/catalogue-search-pro.css',
+  'assets/catalogue-filters-pro.css'
+];
+const scripts = [
+  'assets/catalogue-search-pro.js',
+  'assets/catalogue-filters-pro.js'
+];
+
+for (const href of styles) {
+  if (!html.includes(href)) {
+    html = html.replace(/<\/head>/i, `  <link rel="stylesheet" href="${href}">\n</head>`);
+  }
 }
-if (!html.includes('catalogue-search-pro.js')) {
-  html = html.replace(/<\/body>/i, `  ${jsTag}\n</body>`);
+for (const src of scripts) {
+  if (!html.includes(src)) {
+    html = html.replace(/<\/body>/i, `  <script src="${src}" defer></script>\n</body>`);
+  }
 }
 
 fs.writeFileSync(file, html, 'utf8');
-console.log('MAGIC LIGHT catalogue: professional search ON');
+console.log('MAGIC LIGHT catalogue: professional search + advanced filters ON');
