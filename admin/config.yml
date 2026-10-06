@@ -48,16 +48,22 @@ collections:
         field: {label: "Image 360", name: "image", widget: "image"}
       - {label: "Puissance / Watt", name: "watt", widget: "string", required: false, hint: "Ex: 18W, 200W, 2x20W. Pour plusieurs puissances avec prix différents, utilisez Variantes ci-dessous."}
       - {label: "Dimensions", name: "dimensions", widget: "string", required: false, hint: "Ex: 40 x 40 cm"}
+      - label: "Couleurs disponibles"
+        name: "colors"
+        widget: "list"
+        required: false
+        hint: "Pour un même modèle disponible en Noir, Blanc, Gold, Gris, etc. Si le prix ne change pas avec la couleur, ajoutez simplement les couleurs ici sans dupliquer les variantes de puissance."
+        field: {label: "Couleur", name: "color", widget: "string"}
       - label: "Variantes — puissance / couleur / prix"
         name: "variants"
         widget: "list"
         required: false
         collapsed: true
-        hint: "Un seul article peut avoir plusieurs puissances et couleurs. Ajoutez une ligne par combinaison disponible, par exemple 10W + Noir, 15W + Blanc, 18W + Gold. Le prix change automatiquement sur le site."
+        hint: "Un seul article peut avoir plusieurs puissances et couleurs. Si le prix change seulement avec la puissance, ajoutez 10W, 15W, 18W ici et laissez Couleur vide; utilisez Couleurs disponibles séparément. Si le prix change aussi selon la couleur, ajoutez chaque combinaison concernée."
         summary: "{{fields.watt}} {{fields.color}} — {{fields.price}} TND"
         fields:
           - {label: "Puissance / Watt", name: "watt", widget: "string", required: false, hint: "Ex: 10W, 15W, 18W. Laissez vide si la variante dépend seulement de la couleur."}
-          - {label: "Couleur", name: "color", widget: "string", required: false, hint: "Ex: Noir, Blanc, Gold, Gris. Laissez vide si la variante dépend seulement de la puissance."}
+          - {label: "Couleur", name: "color", widget: "string", required: false, hint: "Ex: Noir, Blanc, Gold, Gris. Laissez vide si le prix ne change pas selon la couleur."}
           - {label: "Prix de cette variante", name: "price", widget: "number", value_type: "float", min: 0, required: true, hint: "Prix propre à cette puissance/couleur."}
           - {label: "Référence variante", name: "reference", widget: "string", required: false, hint: "Optionnel. Ex: SPOT-18W-GOLD."}
           - {label: "Photo de la variante", name: "image", widget: "image", required: false, hint: "Optionnel. Si renseignée, la photo change quand le client choisit cette variante."}
