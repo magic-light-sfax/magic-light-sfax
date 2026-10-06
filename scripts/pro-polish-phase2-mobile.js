@@ -65,26 +65,43 @@ html.ml-mobile-device .menu-overlay{display:block!important;position:fixed!impor
 html.ml-mobile-device .menu-overlay.open{opacity:1!important;visibility:visible!important;pointer-events:auto!important}
 html.ml-mobile-device body.menu-open{overflow:hidden!important}
 
-/* Product listing: 2 comfortable columns, readable content */
+/* Product listing: compact and scalable for a 1000+ item catalogue */
 html.ml-mobile-device .grid,
 html.ml-mobile-device #adminProductsGrid,
 html.ml-mobile-device .products-grid,
-html.ml-mobile-device .product-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
-html.ml-mobile-device .card{border-radius:15px!important;box-shadow:0 7px 22px rgba(0,0,0,.055)!important;min-width:0!important}
-html.ml-mobile-device .card img{width:100%!important;height:auto!important;aspect-ratio:1/1!important;object-fit:cover!important}
-html.ml-mobile-device .card .body{padding:12px!important}
-html.ml-mobile-device .card h3{font-size:.95rem!important;line-height:1.28!important;margin:8px 0 4px!important}
-html.ml-mobile-device .card .ref{font-size:.7rem!important}
-html.ml-mobile-device .card p{font-size:.79rem!important;line-height:1.4!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-html.ml-mobile-device .card .badge{font-size:.68rem!important;padding:4px 8px!important}
-html.ml-mobile-device .card .actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;margin-top:11px!important}
-html.ml-mobile-device .card .actions .smallbtn{min-width:0!important;width:100%!important;padding:8px 6px!important;font-size:.74rem!important;white-space:normal!important;line-height:1.15!important}
+html.ml-mobile-device .product-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+html.ml-mobile-device .card{border-radius:14px!important;box-shadow:0 5px 18px rgba(0,0,0,.05)!important;min-width:0!important;transform:none!important}
+html.ml-mobile-device .card img{
+  width:100%!important;
+  height:clamp(140px,23vw,176px)!important;
+  max-height:176px!important;
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  background:#fff!important;
+}
+html.ml-mobile-device .card .body{padding:10px!important}
+html.ml-mobile-device .card h3{
+  min-height:2.35em!important;
+  font-size:.86rem!important;
+  line-height:1.22!important;
+  margin:7px 0 4px!important;
+  display:-webkit-box!important;
+  -webkit-line-clamp:2!important;
+  -webkit-box-orient:vertical!important;
+  overflow:hidden!important;
+}
+html.ml-mobile-device .card .ref{font-size:.65rem!important;line-height:1.2!important}
+html.ml-mobile-device .card p{display:none!important}
+html.ml-mobile-device .card .badge{max-width:100%!important;font-size:.62rem!important;padding:4px 7px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+html.ml-mobile-device .card .actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px!important;margin-top:9px!important}
+html.ml-mobile-device .card .actions .smallbtn{min-width:0!important;width:100%!important;min-height:36px!important;padding:7px 5px!important;font-size:.65rem!important;white-space:normal!important;line-height:1.1!important;border-radius:10px!important}
 html.ml-mobile-device .card .actions .smallbtn.primary{grid-column:1/-1!important}
-html.ml-mobile-device .admin-price{font-size:.92rem!important}
+html.ml-mobile-device .admin-price{font-size:.88rem!important;line-height:1.1!important;margin-top:6px!important}
 
 /* References / visual galleries */
-html.ml-mobile-device .refgrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
-html.ml-mobile-device .refitem{min-height:260px!important;border-radius:15px!important}
+html.ml-mobile-device .refgrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+html.ml-mobile-device .refitem{min-height:230px!important;border-radius:14px!important}
 
 /* Catalogue */
 html.ml-mobile-device .catalog{grid-template-columns:1fr!important;gap:14px!important}
@@ -107,11 +124,11 @@ html.ml-mobile-device .footergrid{grid-template-columns:repeat(2,minmax(0,1fr))!
 html.ml-mobile-device .footer h4{font-size:.92rem!important}
 html.ml-mobile-device .footer p,html.ml-mobile-device .footer li{font-size:.8rem!important;line-height:1.55!important}
 
-/* Product modal and cart: use the phone width, not a narrow desktop card */
+/* Product modal and cart: use the phone width without oversized media */
 html.ml-mobile-device .modal{padding:6px!important;align-items:center!important;justify-content:center!important}
 html.ml-mobile-device .modalbox{width:calc(100vw - 12px)!important;max-width:none!important;max-height:calc(100dvh - 12px)!important;grid-template-columns:1fr!important;border-radius:18px!important}
-html.ml-mobile-device .modalbox>img,html.ml-mobile-device #productGalleryStage{max-height:45dvh!important}
-html.ml-mobile-device #modalImg{max-height:45dvh!important;object-fit:contain!important}
+html.ml-mobile-device .modalbox>img,html.ml-mobile-device #productGalleryStage{max-height:40dvh!important}
+html.ml-mobile-device #modalImg{max-height:40dvh!important;object-fit:contain!important}
 html.ml-mobile-device .modalcopy{padding:16px!important}
 html.ml-mobile-device .close{width:42px!important;height:42px!important;right:10px!important;top:10px!important}
 html.ml-mobile-device #cartModal{padding:0!important;align-items:flex-end!important}
@@ -123,25 +140,30 @@ html.ml-mobile-device input,html.ml-mobile-device select,html.ml-mobile-device t
 html.ml-mobile-device .filterbar{gap:7px!important}
 html.ml-mobile-device .filter{font-size:.82rem!important;padding:8px 11px!important}
 
-/* Narrow phones */
+/* Narrow phones: keep two product columns; only structural sections collapse */
 html.ml-mobile-device.ml-mobile-narrow .grid,
 html.ml-mobile-device.ml-mobile-narrow #adminProductsGrid,
 html.ml-mobile-device.ml-mobile-narrow .products-grid,
 html.ml-mobile-device.ml-mobile-narrow .product-grid,
-html.ml-mobile-device.ml-mobile-narrow .refgrid,
+html.ml-mobile-device.ml-mobile-narrow .refgrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
 html.ml-mobile-device.ml-mobile-narrow .footergrid{grid-template-columns:1fr!important}
 html.ml-mobile-device.ml-mobile-narrow .catalog .spread{grid-template-columns:1fr!important}
 html.ml-mobile-device.ml-mobile-narrow .catalog .spread img{min-height:220px!important}
+html.ml-mobile-device.ml-mobile-narrow .card img{height:132px!important;max-height:132px!important}
+html.ml-mobile-device.ml-mobile-narrow .card .body{padding:8px!important}
+html.ml-mobile-device.ml-mobile-narrow .card h3{font-size:.78rem!important}
 
 /* Standard mobile viewports */
 @media(max-width:900px){
-  .grid,#adminProductsGrid,.products-grid,.product-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+  .grid,#adminProductsGrid,.products-grid,.product-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
   .contactgrid{grid-template-columns:1fr!important}
   .catalog{grid-template-columns:1fr!important}
   .footergrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
 @media(max-width:350px){
-  .grid,#adminProductsGrid,.products-grid,.product-grid,.refgrid,.footergrid{grid-template-columns:1fr!important}
+  .grid,#adminProductsGrid,.products-grid,.product-grid,.refgrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  .footergrid{grid-template-columns:1fr!important}
+  .card img{height:128px!important;max-height:128px!important}
 }
 </style>`;
 
