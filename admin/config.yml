@@ -32,7 +32,7 @@ collections:
       - {label: "Description", name: "description", widget: "text", required: false}
       - {label: "Prix", name: "price", widget: "number", value_type: "float", min: 0, required: false, hint: "Prix normal de l’article. Laissez vide si vous ne voulez pas afficher le prix ou si chaque variante a son propre prix."}
       - {label: "En promotion", name: "promo", widget: "boolean", default: false, required: false, hint: "Activez uniquement pour les articles en remise."}
-      - {label: "Remise (%)", name: "discount", widget: "number", value_type: "float", min: 0, max: 90, default: 0, required: false, hint: "Exemple : 25 ou 40. Si le produit a des variantes, la remise s’applique aussi au prix de la variante sélectionnée."}
+      - {label: "Remise (%)", name: "discount", widget: "number", value_type: "float", min: 0, max: 90, default: 0, required: false, hint: "Exemple : 25 ou 40. La remise s’applique aussi au prix de la variante sélectionnée."}
       - {label: "Photo principale", name: "image", widget: "image"}
       - label: "Galerie photos"
         name: "images"
@@ -46,30 +46,59 @@ collections:
         required: false
         hint: "Séquence de photos prises autour du produit dans le même ordre. 12 à 36 images donnent un meilleur résultat."
         field: {label: "Image 360", name: "image", widget: "image"}
-      - {label: "Puissance / Watt", name: "watt", widget: "string", required: false, hint: "Ex: 18W, 200W, 2x20W. Pour plusieurs puissances avec prix différents, utilisez Variantes ci-dessous."}
-      - {label: "Dimensions", name: "dimensions", widget: "string", required: false, hint: "Ex: 40 x 40 cm"}
-      - label: "Couleurs disponibles"
+      - {label: "Puissance / Watt", name: "watt", widget: "string", required: false, hint: "Ex: 18W. Pour plusieurs puissances ou prix différents, utilisez Variantes ci-dessous."}
+      - {label: "Dimensions", name: "dimensions", widget: "string", required: false, hint: "Ex: 40 x 40 cm. Pour une dimension différente par variante, utilisez Dimensions de cette variante."}
+
+      - label: "Couleurs disponibles — même prix"
         name: "colors"
         widget: "list"
         required: false
-        hint: "Pour un même modèle disponible en Noir, Blanc, Gold, Gris, etc. Si le prix ne change pas avec la couleur, ajoutez simplement les couleurs ici sans dupliquer les variantes de puissance."
+        hint: "Raccourci pour les couleurs du produit quand elles gardent le même prix. Ajoutez uniquement les couleurs réellement disponibles pour cet article."
         field: {label: "Couleur", name: "color", widget: "string"}
-      - label: "Variantes — puissance / couleur / prix"
+
+      - label: "Autres options disponibles — même prix"
+        name: "options"
+        widget: "list"
+        required: false
+        collapsed: true
+        hint: "Pour les choix qui ne changent pas le prix : Couleur d’éclairage, Intensité, Longueur, Pack, finition, etc. Vous choisissez librement le nom de l’option et ses valeurs."
+        summary: "{{fields.name}}"
+        fields:
+          - {label: "Nom de l’option", name: "name", widget: "string", hint: "Ex: Couleur d’éclairage, Intensité, Longueur, Pack..."}
+          - label: "Valeurs disponibles"
+            name: "values"
+            widget: "list"
+            required: false
+            field: {label: "Valeur", name: "value", widget: "string", hint: "Ex: 3000K, 4000K, 6500K"}
+
+      - label: "Variantes — prix / stock / référence / options"
         name: "variants"
         widget: "list"
         required: false
         collapsed: true
-        hint: "Un seul article peut avoir plusieurs puissances et couleurs. Si le prix change seulement avec la puissance, ajoutez 10W, 15W, 18W ici et laissez Couleur vide; utilisez Couleurs disponibles séparément. Si le prix change aussi selon la couleur, ajoutez chaque combinaison concernée."
+        hint: "Utilisez une variante quand le prix, la référence, le stock, la photo ou la dimension change selon le choix. Watt et Couleur restent disponibles en raccourci. Pour tout autre choix, utilisez Options supplémentaires de cette variante."
         summary: "{{fields.watt}} {{fields.color}} — {{fields.price}} TND"
         fields:
-          - {label: "Puissance / Watt", name: "watt", widget: "string", required: false, hint: "Ex: 10W, 15W, 18W. Laissez vide si la variante dépend seulement de la couleur."}
-          - {label: "Couleur", name: "color", widget: "string", required: false, hint: "Ex: Noir, Blanc, Gold, Gris. Laissez vide si le prix ne change pas selon la couleur."}
-          - {label: "Prix de cette variante", name: "price", widget: "number", value_type: "float", min: 0, required: true, hint: "Prix propre à cette puissance/couleur."}
-          - {label: "Dimensions de cette variante", name: "dimensions", widget: "string", required: false, hint: "Ex: 7.5 cm, 12.5 cm, 16.5 cm. La dimension affichée change automatiquement quand le client change de variante."}
-          - {label: "Référence variante", name: "reference", widget: "string", required: false, hint: "Optionnel. Ex: SPOT-18W-GOLD."}
+          - {label: "Puissance / Watt", name: "watt", widget: "string", required: false, hint: "Ex: 6W, 12W, 18W. Laissez vide si cette variante ne dépend pas du Watt."}
+          - {label: "Couleur", name: "color", widget: "string", required: false, hint: "Ex: Noir, Blanc, Gold, Gris. Laissez vide si cette variante ne dépend pas de la couleur."}
+          - label: "Options supplémentaires de cette variante"
+            name: "attributes"
+            widget: "list"
+            required: false
+            collapsed: true
+            hint: "Pour toute autre caractéristique qui sert de choix client : CCT, Intensité, Longueur, Diamètre, Pack, finition, etc."
+            summary: "{{fields.name}}: {{fields.value}}"
+            fields:
+              - {label: "Nom de l’option", name: "name", widget: "string", hint: "Ex: Intensité"}
+              - {label: "Valeur", name: "value", widget: "string", hint: "Ex: 16A"}
+          - {label: "Prix de cette variante", name: "price", widget: "number", value_type: "float", min: 0, required: false, hint: "Si vide, le prix général de l’article est utilisé."}
+          - {label: "Dimensions de cette variante", name: "dimensions", widget: "string", required: false, hint: "Ex: 7.5 cm, 12.5 cm, 16.5 cm. La dimension affichée change automatiquement avec la variante."}
+          - {label: "Référence variante", name: "reference", widget: "string", required: false, hint: "Optionnel. Utilisez la référence réelle si elle existe."}
           - {label: "Photo de la variante", name: "image", widget: "image", required: false, hint: "Optionnel. Si renseignée, la photo change quand le client choisit cette variante."}
           - {label: "Quantité en stock variante", name: "stockQty", widget: "number", value_type: "int", min: 0, required: false, hint: "Optionnel. 0 = rupture de stock pour cette variante."}
+          - {label: "Texte disponibilité variante", name: "stock", widget: "string", required: false, hint: "Ex: Sur commande, Disponible sous 48h."}
           - {label: "Variante disponible", name: "active", widget: "boolean", default: true, required: false}
+
       - {label: "Quantité en stock", name: "stockQty", widget: "number", value_type: "int", min: 0, required: false, hint: "Quantité physique disponible. Laissez vide si le stock n'est pas suivi pour cet article."}
       - {label: "Alerte stock faible", name: "stockAlert", widget: "number", value_type: "int", min: 0, default: 3, required: false, hint: "Ex: 3 = afficher Stock faible à partir de 3 pièces restantes."}
       - {label: "Texte disponibilité", name: "stock", widget: "string", required: false, hint: "Optionnel si aucune quantité n'est saisie. Ex: Sur commande, Nous contacter."}
