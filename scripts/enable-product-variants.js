@@ -7,7 +7,8 @@ const DATA=path.join(DIST,'data','products.json');
 const PRODUCT_DIR=path.join(ROOT,'content','products');
 const PAGES=['produits.html','products.html'];
 const SCRIPTS=[
-  '/assets/product-variants.js'
+  '/assets/product-variants.js',
+  '/assets/product-variant-ui-fix.js'
 ];
 
 function refKey(v){return String(v||'').trim().toUpperCase();}
