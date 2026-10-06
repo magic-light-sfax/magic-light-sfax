@@ -1,10 +1,27 @@
 {
-  "name": "Spot LED COB 18W 3 CCT",
+  "name": "Spot LED COB 3 CCT",
   "reference": "18W-COB",
   "category": "Spots & Downlights",
   "description": "Spot LED COB encastrable haute puissance avec plusieurs températures de couleur.",
   "price": 25.0,
   "image": "/assets/products/04-spot-led-cob-18w.png",
+  "variants": [
+    {
+      "watt": "6W",
+      "price": 10.0,
+      "active": true
+    },
+    {
+      "watt": "12W",
+      "price": 18.0,
+      "active": true
+    },
+    {
+      "watt": "18W",
+      "price": 25.0,
+      "active": true
+    }
+  ],
   "featured": true,
   "active": true
 }
