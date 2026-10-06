@@ -65,6 +65,7 @@ collections:
           - {label: "Puissance / Watt", name: "watt", widget: "string", required: false, hint: "Ex: 10W, 15W, 18W. Laissez vide si la variante dépend seulement de la couleur."}
           - {label: "Couleur", name: "color", widget: "string", required: false, hint: "Ex: Noir, Blanc, Gold, Gris. Laissez vide si le prix ne change pas selon la couleur."}
           - {label: "Prix de cette variante", name: "price", widget: "number", value_type: "float", min: 0, required: true, hint: "Prix propre à cette puissance/couleur."}
+          - {label: "Dimensions de cette variante", name: "dimensions", widget: "string", required: false, hint: "Ex: 7.5 cm, 12.5 cm, 16.5 cm. La dimension affichée change automatiquement quand le client change de variante."}
           - {label: "Référence variante", name: "reference", widget: "string", required: false, hint: "Optionnel. Ex: SPOT-18W-GOLD."}
           - {label: "Photo de la variante", name: "image", widget: "image", required: false, hint: "Optionnel. Si renseignée, la photo change quand le client choisit cette variante."}
           - {label: "Quantité en stock variante", name: "stockQty", widget: "number", value_type: "int", min: 0, required: false, hint: "Optionnel. 0 = rupture de stock pour cette variante."}
