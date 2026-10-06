@@ -96,6 +96,16 @@ function injectA11yStyles(html) {
     `.dots{gap:0!important;bottom:8px!important}\n` +
     `.social-mini a:focus-visible,.btn:focus-visible,.smallbtn:focus-visible,.menu:focus-visible,.dot:focus-visible,.close:focus-visible{outline:3px solid #76551a!important;outline-offset:3px!important}\n` +
     `@media(max-width:900px){.hero-copy{bottom:88px!important}.hero-buttons{gap:12px!important}.hero-buttons .btn{min-height:48px!important;padding:0 20px!important}.dots{bottom:8px!important}}\n` +
+    `@media(max-width:620px){` +
+      `html.ml-mobile-device .card{align-self:start!important;overflow:hidden!important}` +
+      `html.ml-mobile-device .card img{width:100%!important;height:clamp(180px,48vw,210px)!important;max-height:210px!important;aspect-ratio:auto!important;object-fit:cover!important;object-position:center 18%!important;background:#f4f5f7!important}` +
+      `html.ml-mobile-device .card .body{padding:9px!important}` +
+      `html.ml-mobile-device .card h3{min-height:2.3em!important;font-size:.84rem!important;line-height:1.2!important;margin:7px 0 3px!important}` +
+      `html.ml-mobile-device .card .actions{gap:5px!important;margin-top:8px!important}` +
+      `html.ml-mobile-device .card .actions .smallbtn{min-height:34px!important;padding:6px 5px!important;font-size:.64rem!important;border-radius:9px!important}` +
+      `html.ml-mobile-device .admin-price{font-size:.86rem!important;margin-top:5px!important}` +
+    `}\n` +
+    `@media(max-width:380px){html.ml-mobile-device .card img{height:172px!important;max-height:172px!important}html.ml-mobile-device .card .body{padding:8px!important}}\n` +
     `</style>\n`;
   return html.replace(/<\/head>/i, css + '</head>');
 }
