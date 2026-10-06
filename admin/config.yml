@@ -30,9 +30,9 @@ collections:
       - {label: "Référence", name: "reference", widget: "string", hint: "Exemple: ML-001"}
       - {label: "Catégorie", name: "category", widget: "string", hint: "Ex: Lustres & suspensions, Spots LED, Solaire, RGB..."}
       - {label: "Description", name: "description", widget: "text", required: false}
-      - {label: "Prix", name: "price", widget: "number", value_type: "float", min: 0, required: false, hint: "Prix normal de l’article. Laissez vide si vous ne voulez pas afficher le prix."}
+      - {label: "Prix", name: "price", widget: "number", value_type: "float", min: 0, required: false, hint: "Prix normal de l’article. Laissez vide si vous ne voulez pas afficher le prix ou si chaque variante a son propre prix."}
       - {label: "En promotion", name: "promo", widget: "boolean", default: false, required: false, hint: "Activez uniquement pour les articles en remise."}
-      - {label: "Remise (%)", name: "discount", widget: "number", value_type: "float", min: 0, max: 90, default: 0, required: false, hint: "Exemple : 25 ou 40. Le site calcule automatiquement le prix promo."}
+      - {label: "Remise (%)", name: "discount", widget: "number", value_type: "float", min: 0, max: 90, default: 0, required: false, hint: "Exemple : 25 ou 40. Si le produit a des variantes, la remise s’applique aussi au prix de la variante sélectionnée."}
       - {label: "Photo principale", name: "image", widget: "image"}
       - label: "Galerie photos"
         name: "images"
@@ -46,8 +46,23 @@ collections:
         required: false
         hint: "Séquence de photos prises autour du produit dans le même ordre. 12 à 36 images donnent un meilleur résultat."
         field: {label: "Image 360", name: "image", widget: "image"}
-      - {label: "Puissance / Watt", name: "watt", widget: "string", required: false, hint: "Ex: 18W, 200W, 2x20W"}
+      - {label: "Puissance / Watt", name: "watt", widget: "string", required: false, hint: "Ex: 18W, 200W, 2x20W. Pour plusieurs puissances avec prix différents, utilisez Variantes ci-dessous."}
       - {label: "Dimensions", name: "dimensions", widget: "string", required: false, hint: "Ex: 40 x 40 cm"}
+      - label: "Variantes — puissance / couleur / prix"
+        name: "variants"
+        widget: "list"
+        required: false
+        collapsed: true
+        hint: "Un seul article peut avoir plusieurs puissances et couleurs. Ajoutez une ligne par combinaison disponible, par exemple 10W + Noir, 15W + Blanc, 18W + Gold. Le prix change automatiquement sur le site."
+        summary: "{{fields.watt}} {{fields.color}} — {{fields.price}} TND"
+        fields:
+          - {label: "Puissance / Watt", name: "watt", widget: "string", required: false, hint: "Ex: 10W, 15W, 18W. Laissez vide si la variante dépend seulement de la couleur."}
+          - {label: "Couleur", name: "color", widget: "string", required: false, hint: "Ex: Noir, Blanc, Gold, Gris. Laissez vide si la variante dépend seulement de la puissance."}
+          - {label: "Prix de cette variante", name: "price", widget: "number", value_type: "float", min: 0, required: true, hint: "Prix propre à cette puissance/couleur."}
+          - {label: "Référence variante", name: "reference", widget: "string", required: false, hint: "Optionnel. Ex: SPOT-18W-GOLD."}
+          - {label: "Photo de la variante", name: "image", widget: "image", required: false, hint: "Optionnel. Si renseignée, la photo change quand le client choisit cette variante."}
+          - {label: "Quantité en stock variante", name: "stockQty", widget: "number", value_type: "int", min: 0, required: false, hint: "Optionnel. 0 = rupture de stock pour cette variante."}
+          - {label: "Variante disponible", name: "active", widget: "boolean", default: true, required: false}
       - {label: "Quantité en stock", name: "stockQty", widget: "number", value_type: "int", min: 0, required: false, hint: "Quantité physique disponible. Laissez vide si le stock n'est pas suivi pour cet article."}
       - {label: "Alerte stock faible", name: "stockAlert", widget: "number", value_type: "int", min: 0, default: 3, required: false, hint: "Ex: 3 = afficher Stock faible à partir de 3 pièces restantes."}
       - {label: "Texte disponibilité", name: "stock", widget: "string", required: false, hint: "Optionnel si aucune quantité n'est saisie. Ex: Sur commande, Nous contacter."}
