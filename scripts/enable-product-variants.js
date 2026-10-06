@@ -25,15 +25,23 @@ if(fs.existsSync(DATA) && fs.existsSync(PRODUCT_DIR)){
     try{
       const src=JSON.parse(fs.readFileSync(path.join(PRODUCT_DIR,file),'utf8'));
       const target=byRef.get(refKey(src.reference));
-      if(!target || !Array.isArray(src.variants) || !src.variants.length) continue;
-      target.variants=src.variants;
-      merged++;
+      if(!target) continue;
+      let changed=false;
+      if(Array.isArray(src.variants) && src.variants.length){
+        target.variants=src.variants;
+        changed=true;
+      }
+      if(Array.isArray(src.colors) && src.colors.length){
+        target.colors=src.colors;
+        changed=true;
+      }
+      if(changed) merged++;
     }catch(e){
       console.warn('Variantes produit ignorées:',file,e.message);
     }
   }
   fs.writeFileSync(DATA,JSON.stringify(products,null,2),'utf8');
-  console.log(`MAGIC LIGHT variantes: ${merged} produit(s) enrichi(s) dans products.json.`);
+  console.log(`MAGIC LIGHT variantes: ${merged} produit(s) enrichi(s) (variantes/couleurs) dans products.json.`);
 }
 
 let injected=0;
