@@ -7,8 +7,7 @@ const DATA=path.join(DIST,'data','products.json');
 const PRODUCT_DIR=path.join(ROOT,'content','products');
 const PAGES=['produits.html','products.html'];
 const SCRIPTS=[
-  '/assets/product-variants.js',
-  '/assets/product-variant-dimensions.js'
+  '/assets/product-variants.js'
 ];
 
 function refKey(v){return String(v||'').trim().toUpperCase();}
@@ -39,13 +38,17 @@ if(fs.existsSync(DATA) && fs.existsSync(PRODUCT_DIR)){
         target.colors=src.colors;
         changed=true;
       }
+      if(Array.isArray(src.options) && src.options.length){
+        target.options=src.options;
+        changed=true;
+      }
       if(changed) merged++;
     }catch(e){
       console.warn('Variantes produit ignorées:',file,e.message);
     }
   }
   fs.writeFileSync(DATA,JSON.stringify(products,null,2),'utf8');
-  console.log(`MAGIC LIGHT variantes: ${merged} produit(s) enrichi(s) (variantes/couleurs) dans products.json.`);
+  console.log(`MAGIC LIGHT variantes: ${merged} produit(s) enrichi(s) (variantes/options) dans products.json.`);
 }
 
 let injected=0;
@@ -54,14 +57,14 @@ for(const file of PAGES){
   if(!fs.existsSync(p)) continue;
   let html=fs.readFileSync(p,'utf8');
   let changed=false;
+  // Remove the old dimensions helper: dimensions are now handled by product-variants.js.
+  html=html.replace(/\s*<script\s+defer\s+src=["']\/assets\/product-variant-dimensions\.js["']><\/script>\s*/gi,'\n');
   for(const src of SCRIPTS){
     if(html.includes(src)) continue;
     html=injectBeforeLastBody(html,src);
     changed=true;
   }
-  if(changed){
-    fs.writeFileSync(p,html,'utf8');
-    injected++;
-  }
+  fs.writeFileSync(p,html,'utf8');
+  if(changed) injected++;
 }
-console.log(`MAGIC LIGHT variantes: interface activée sur ${injected} page(s).`);
+console.log(`MAGIC LIGHT variantes: interface générique activée sur ${PAGES.length} page(s).`);
