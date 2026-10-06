@@ -8,14 +8,71 @@
   function key(v){return String(v||'').trim().toUpperCase();}
   function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
   function n(v){const x=Number(v);return Number.isFinite(x)?x:null;}
-  function uniq(values){return [...new Set(values.map(v=>String(v||'').trim()).filter(Boolean))];}
-
-  function productColors(product){
-    const raw=Array.isArray(product?.colors)?product.colors:[];
+  function clean(v){return String(v??'').trim();}
+  function uniq(values){return [...new Set(values.map(clean).filter(Boolean))];}
+  function sameLabel(a,b){return clean(a).toLocaleLowerCase('fr')===clean(b).toLocaleLowerCase('fr');}
+  function canonicalLabel(label){
+    const s=clean(label);
+    const k=s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    if(['watt','watts','puissance','power'].includes(k)) return 'Puissance';
+    if(['couleur','color','colour','couleur produit','couleur du produit'].includes(k)) return 'Couleur';
+    if(['cct','temperature de couleur','temperature couleur','couleur d eclairage','couleur eclairage'].includes(k)) return "Couleur d'éclairage";
+    if(['intensite','amperage','ampere','amperes'].includes(k)) return 'Intensité';
+    if(['longueur','length'].includes(k)) return 'Longueur';
+    if(['diametre','diameter'].includes(k)) return 'Diamètre';
+    if(['pack','conditionnement','lot'].includes(k)) return 'Pack';
+    return s;
+  }
+  function normalizeValueList(raw){
+    if(!Array.isArray(raw)) return [];
     return uniq(raw.map(v=>{
-      if(typeof v==='string') return v;
-      return v?.color ?? v?.name ?? v?.label ?? '';
+      if(typeof v==='string' || typeof v==='number') return v;
+      return v?.value ?? v?.label ?? v?.name ?? v?.color ?? '';
     }));
+  }
+
+  function legacyColors(product){
+    return normalizeValueList(product?.colors);
+  }
+
+  function explicitOptionGroups(product){
+    const groups=[];
+    const add=(name,values)=>{
+      name=canonicalLabel(name);
+      values=normalizeValueList(values);
+      if(!name || !values.length) return;
+      const existing=groups.find(g=>sameLabel(g.name,name));
+      if(existing) existing.values=uniq([...existing.values,...values]);
+      else groups.push({name,values,explicit:true});
+    };
+    (Array.isArray(product?.options)?product.options:[]).forEach(group=>{
+      if(typeof group==='string') return;
+      add(group?.name ?? group?.label ?? group?.option, group?.values ?? group?.choices ?? group?.options);
+    });
+    const colors=legacyColors(product);
+    if(colors.length) add('Couleur',colors);
+    return groups;
+  }
+
+  function normalizeAttributes(variant){
+    const attrs={};
+    const add=(name,value)=>{
+      name=canonicalLabel(name);
+      value=clean(value);
+      if(name && value) attrs[name]=value;
+    };
+    (Array.isArray(variant?.attributes)?variant.attributes:[]).forEach(pair=>{
+      if(!pair || typeof pair!=='object') return;
+      add(pair.name ?? pair.label ?? pair.option, pair.value ?? pair.val ?? pair.choice);
+    });
+    add('Puissance',variant?.watt ?? variant?.power);
+    add('Couleur',variant?.color ?? variant?.couleur);
+    add("Couleur d'éclairage",variant?.cct ?? variant?.temperature ?? variant?.temperatureColor);
+    add('Intensité',variant?.intensity ?? variant?.amperage);
+    add('Longueur',variant?.length);
+    add('Diamètre',variant?.diameter);
+    add('Pack',variant?.pack);
+    return attrs;
   }
 
   function normalizeVariants(product){
@@ -28,35 +85,64 @@
       const stockQty=(v?.stockQty===null||v?.stockQty===undefined||v?.stockQty==='')?null:n(v.stockQty);
       return {
         index,
-        watt:String(v?.watt ?? v?.power ?? '').trim(),
-        color:String(v?.color ?? v?.couleur ?? '').trim(),
+        attributes:normalizeAttributes(v),
         price,
-        reference:String(v?.reference ?? '').trim(),
-        image:String(v?.image ?? '').trim(),
+        reference:clean(v?.reference),
+        image:clean(v?.image),
+        dimensions:clean(v?.dimensions ?? v?.dimension ?? v?.diameterText),
         stockQty,
-        stock:String(v?.stock ?? '').trim()
+        stock:clean(v?.stock)
       };
     }).filter(Boolean);
   }
 
   function variantData(product){
     let variants=normalizeVariants(product);
-    const colors=productColors(product);
-    if(!variants.length && colors.length){
+    const explicit=explicitOptionGroups(product);
+    if(!variants.length && explicit.length){
       const raw=product?.price;
       const price=(raw===null||raw===undefined||raw==='')?null:n(raw);
       variants=[{
         index:-1,
-        watt:String(product?.watt||'').trim(),
-        color:'',
+        attributes:{},
         price,
         reference:'',
         image:'',
+        dimensions:clean(product?.dimensions),
         stockQty:null,
         stock:''
       }];
     }
-    return {variants,colors};
+
+    const groups=[];
+    const addGroup=(name,values,explicitFlag=false)=>{
+      name=canonicalLabel(name);
+      values=uniq(values||[]);
+      if(!name || !values.length) return;
+      const existing=groups.find(g=>sameLabel(g.name,name));
+      if(existing){
+        existing.values=uniq([...existing.values,...values]);
+        existing.explicit=existing.explicit||explicitFlag;
+      }else groups.push({name,values,explicit:explicitFlag});
+    };
+    explicit.forEach(g=>addGroup(g.name,g.values,true));
+
+    const attributeOrder=[];
+    variants.forEach(v=>Object.keys(v.attributes).forEach(name=>{
+      if(!attributeOrder.some(x=>sameLabel(x,name))) attributeOrder.push(name);
+    }));
+    const preferred=['Puissance','Couleur',"Couleur d'éclairage",'Intensité','Longueur','Diamètre','Pack'];
+    attributeOrder.sort((a,b)=>{
+      const ai=preferred.findIndex(x=>sameLabel(x,a));
+      const bi=preferred.findIndex(x=>sameLabel(x,b));
+      if(ai===-1 && bi===-1) return 0;
+      if(ai===-1) return 1;
+      if(bi===-1) return -1;
+      return ai-bi;
+    });
+    attributeOrder.forEach(name=>addGroup(name,variants.map(v=>v.attributes[name]).filter(Boolean),false));
+
+    return {variants,groups};
   }
 
   function pricing(product,variant){
@@ -68,31 +154,61 @@
   }
 
   function stockText(product,variant){
-    if(variant.stockQty!==null){
+    if(variant?.stockQty!==null && variant?.stockQty!==undefined){
       const qty=Math.max(0,Math.floor(Number(variant.stockQty)||0));
       if(qty<=0) return 'Rupture de stock';
       return qty===1?'En stock (1 pièce)':`En stock (${qty} pièces)`;
     }
-    if(variant.stock) return variant.stock;
+    if(variant?.stock) return variant.stock;
     if(product?.stockQty!==null && product?.stockQty!==undefined && product?.stockQty!==''){
       const qty=Math.max(0,Math.floor(Number(product.stockQty)||0));
       if(qty<=0) return 'Rupture de stock';
       return qty===1?'En stock (1 pièce)':`En stock (${qty} pièces)`;
     }
-    return String(product?.stock||'').trim()||'Nous contacter';
+    return clean(product?.stock)||'Nous contacter';
   }
 
   function isOutOfStock(variant){
-    return variant.stockQty!==null && Number(variant.stockQty)<=0;
+    return variant?.stockQty!==null && variant?.stockQty!==undefined && Number(variant.stockQty)<=0;
   }
 
-  function variantName(product,variant,state){
+  function selectedEntries(state){
+    return state.groups.map(g=>[g.name,clean(state.selected[g.name])]).filter(([,v])=>v);
+  }
+
+  function variantName(product,state){
     const bits=[product?.name||'Produit'];
-    const watt=state?.selectedWatt||variant?.watt||'';
-    const color=state?.selectedColor||variant?.color||'';
-    if(watt) bits.push(watt);
-    if(color) bits.push(color);
+    selectedEntries(state).forEach(([,value])=>{
+      if(value && !bits.includes(value)) bits.push(value);
+    });
     return bits.join(' — ');
+  }
+
+  function variantMatchesSelection(variant,selected,ignoreGroup=''){
+    for(const [name,value] of Object.entries(variant.attributes||{})){
+      if(ignoreGroup && sameLabel(name,ignoreGroup)) continue;
+      const selectedName=Object.keys(selected).find(k=>sameLabel(k,name));
+      const chosen=selectedName?clean(selected[selectedName]):'';
+      if(chosen && clean(value)!==chosen) return false;
+    }
+    return true;
+  }
+
+  function findCurrent(state){
+    const matches=state.variants.filter(v=>variantMatchesSelection(v,state.selected));
+    const pool=matches.length?matches:state.variants;
+    return pool.slice().sort((a,b)=>Object.keys(b.attributes||{}).length-Object.keys(a.attributes||{}).length)[0]||null;
+  }
+
+  function valueAvailable(state,group,value){
+    const constrained=state.variants.some(v=>Object.keys(v.attributes||{}).some(k=>sameLabel(k,group.name)));
+    if(!constrained) return true;
+    const probe={...state.selected,[group.name]:value};
+    return state.variants.some(v=>{
+      const attrName=Object.keys(v.attributes||{}).find(k=>sameLabel(k,group.name));
+      if(attrName && clean(v.attributes[attrName])!==clean(value)) return false;
+      return variantMatchesSelection(v,probe,group.name);
+    });
   }
 
   function ensureStyle(){
@@ -108,7 +224,7 @@
       .ml-variant-option:hover{border-color:#b98a31}
       .ml-variant-option.active{background:#111215;color:#fff;border-color:#111215;box-shadow:0 0 0 2px rgba(201,154,60,.18)}
       .ml-variant-option:disabled{opacity:.36;cursor:not-allowed;text-decoration:line-through}
-      .ml-variant-selected{margin-top:12px;padding-top:10px;border-top:1px solid #e5e7ea;font-size:.82rem;color:#686f79}
+      .ml-variant-selected{margin-top:12px;padding-top:10px;border-top:1px solid #e5e7ea;font-size:.82rem;color:#686f79;line-height:1.5}
       .ml-variant-selected strong{color:#222}
       .ml-variant-card-price{margin-top:8px;color:#a87925;font-weight:950}
       .ml-variant-card-hint{margin-top:6px;color:#6f7681;font-size:.78rem;font-weight:700}
@@ -132,61 +248,28 @@
     root.hidden=true;
     price.insertAdjacentElement('afterend',root);
     root.addEventListener('click',event=>{
-      const btn=event.target.closest('[data-variant-dim][data-variant-index]');
+      const btn=event.target.closest('[data-variant-group-index][data-variant-value-index]');
       if(!btn || btn.disabled || !root._state) return;
       const state=root._state;
-      const dim=btn.dataset.variantDim;
-      const values=dim==='watt'?state.watts:state.colors;
-      const value=values[Number(btn.dataset.variantIndex)];
+      const group=state.groups[Number(btn.dataset.variantGroupIndex)];
+      if(!group) return;
+      const value=group.values[Number(btn.dataset.variantValueIndex)];
       if(value===undefined) return;
-      if(dim==='watt'){
-        state.selectedWatt=value;
-        const candidates=state.variants.filter(v=>v.watt===value);
-        const hasUniversal=candidates.some(v=>!v.color);
-        const explicit=state.explicitColors.includes(state.selectedColor);
-        if(state.colors.length && !hasUniversal && !explicit && !candidates.some(v=>v.color===state.selectedColor)){
-          state.selectedColor=candidates.find(v=>v.color)?.color||state.explicitColors[0]||'';
-        }
-      }else{
-        state.selectedColor=value;
-      }
+      state.selected[group.name]=value;
       resolveAndRender(state);
     });
     return root;
   }
 
-  function findCurrent(state){
-    const sw=state.selectedWatt||'';
-    const sc=state.selectedColor||'';
-    const variants=state.variants;
-    let current=null;
-    if(sw && sc) current=variants.find(v=>v.watt===sw && v.color===sc);
-    if(!current && sw) current=variants.find(v=>v.watt===sw && !v.color);
-    if(!current && sc) current=variants.find(v=>!v.watt && v.color===sc);
-    if(!current) current=variants.find(v=>!v.watt && !v.color);
-    if(!current && sw) current=variants.find(v=>v.watt===sw);
-    if(!current && sc) current=variants.find(v=>v.color===sc);
-    current=current||variants[0];
-    if(current){
-      if(!state.selectedWatt && current.watt) state.selectedWatt=current.watt;
-      if(!state.selectedColor && current.color) state.selectedColor=current.color;
-    }
-    return current;
-  }
-
-  function optionsHtml(state,dim,values,label){
-    if(!values.length) return '';
-    return `<div class="ml-variant-group"><div class="ml-variant-label"><span>${esc(label)}</span></div><div class="ml-variant-options">${values.map((value,i)=>{
-      const active=(dim==='watt'?state.selectedWatt:state.selectedColor)===value;
-      let disabled=false;
-      if(dim==='color' && state.watts.length && state.selectedWatt && !state.explicitColors.includes(value)){
-        const universalColor=state.variants.some(v=>!v.watt && v.color===value);
-        const universalWatt=state.variants.some(v=>v.watt===state.selectedWatt && !v.color);
-        const exact=state.variants.some(v=>v.watt===state.selectedWatt && v.color===value);
-        disabled=!(universalColor||universalWatt||exact);
-      }
-      return `<button type="button" class="ml-variant-option${active?' active':''}" data-variant-dim="${dim}" data-variant-index="${i}" aria-pressed="${active?'true':'false'}"${disabled?' disabled':''}>${esc(value)}</button>`;
-    }).join('')}</div></div>`;
+  function optionsHtml(state,group,groupIndex){
+    if(!group?.values?.length) return '';
+    const chosen=clean(state.selected[group.name]);
+    const buttons=group.values.map((value,i)=>{
+      const active=chosen===clean(value);
+      const disabled=!valueAvailable(state,group,value);
+      return `<button type="button" class="ml-variant-option${active?' active':''}" data-variant-group-index="${groupIndex}" data-variant-value-index="${i}" aria-pressed="${active?'true':'false'}"${disabled?' disabled':''}>${esc(value)}</button>`;
+    }).join('');
+    return `<div class="ml-variant-group"><div class="ml-variant-label"><span>${esc(group.name)}</span></div><div class="ml-variant-options">${buttons}</div></div>`;
   }
 
   function renderPrice(product,variant){
@@ -200,31 +283,42 @@
     }
     if(info.discount>0){
       priceEl.innerHTML=`<div class="promo-price"><span class="old-price">${info.original.toFixed(3)} TND</span><span class="new-price">${info.final.toFixed(3)} TND</span><span class="promo-badge">-${info.discount}%</span></div>`;
-    }else{
-      priceEl.textContent=info.final.toFixed(3)+' TND';
-    }
+    }else priceEl.textContent=info.final.toFixed(3)+' TND';
     priceEl.style.setProperty('display','block','important');
     return info;
+  }
+
+  function getSelected(state,label){
+    const hit=Object.keys(state.selected).find(k=>sameLabel(k,label));
+    return hit?clean(state.selected[hit]):'';
   }
 
   function applyVariantToModal(state,variant){
     if(!variant) return;
     const product=state.product;
     const info=renderPrice(product,variant);
-    const ref=variant.reference||String(product.reference||'').trim();
+    const ref=variant.reference||clean(product.reference);
     const stock=stockText(product,variant);
-    const name=variantName(product,variant,state);
+    const dimensions=variant.dimensions||clean(product.dimensions);
+    const power=getSelected(state,'Puissance')||clean(product.watt);
+    const name=variantName(product,state);
 
     const modalRef=document.getElementById('modalRef');
     const specRef=document.getElementById('specRef');
     const specPower=document.getElementById('specPower');
     const specPowerRow=document.getElementById('specPowerRow');
+    const specDimensions=document.getElementById('specDimensions');
+    const specDimensionsRow=document.getElementById('specDimensionsRow');
     const specStock=document.getElementById('specStock');
     if(modalRef) modalRef.textContent=ref;
     if(specRef) specRef.textContent=ref||'—';
     if(specPower){
-      specPower.textContent=state.selectedWatt||variant.watt||String(product.watt||'');
-      if(specPowerRow) specPowerRow.hidden=!specPower.textContent;
+      specPower.textContent=power;
+      if(specPowerRow) specPowerRow.hidden=!power;
+    }
+    if(specDimensions){
+      specDimensions.textContent=dimensions;
+      if(specDimensionsRow) specDimensionsRow.hidden=!dimensions;
     }
     if(specStock) specStock.textContent=stock;
 
@@ -239,8 +333,9 @@
       add.dataset.originalPrice=hasPrice?info.original.toFixed(3):'';
       add.dataset.discount=String(info.discount||0);
       add.dataset.ref=ref;
-      add.dataset.variantWatt=state.selectedWatt||variant.watt||'';
-      add.dataset.variantColor=state.selectedColor||variant.color||'';
+      add.dataset.variantWatt=power;
+      add.dataset.variantColor=getSelected(state,'Couleur');
+      add.dataset.variantOptions=JSON.stringify(Object.fromEntries(selectedEntries(state)));
       const unavailable=isOutOfStock(variant);
       add.disabled=unavailable||!hasPrice;
       add.textContent=unavailable?'Rupture de stock':'🛒 Ajouter au panier';
@@ -265,9 +360,13 @@
       price:hasPrice?info.final:0,
       originalPrice:hasPrice?info.original:0,
       discount:info.discount,
-      power:state.selectedWatt||variant.watt||current.power||'',
+      power:power||current.power||'',
+      dimensions,
       stock,
-      variant:{watt:state.selectedWatt||variant.watt||'',color:state.selectedColor||variant.color||'',reference:ref}
+      variant:{
+        reference:ref,
+        options:Object.fromEntries(selectedEntries(state))
+      }
     };
   }
 
@@ -277,13 +376,9 @@
     const current=findCurrent(state);
     root._state=state;
     root.hidden=false;
-    const parts=[];
-    parts.push(optionsHtml(state,'watt',state.watts,'Puissance'));
-    parts.push(optionsHtml(state,'color',state.colors,'Couleur'));
-    const labels=[];
-    if(current?.watt) labels.push(current.watt);
-    if(current?.color) labels.push(current.color);
-    if(labels.length) parts.push(`<div class="ml-variant-selected">Sélection : <strong>${esc(labels.join(' • '))}</strong></div>`);
+    const parts=state.groups.map((group,i)=>optionsHtml(state,group,i));
+    const labels=selectedEntries(state).map(([name,value])=>`${esc(name)}: <strong>${esc(value)}</strong>`);
+    if(labels.length) parts.push(`<div class="ml-variant-selected">Sélection : ${labels.join(' • ')}</div>`);
     root.innerHTML=parts.join('');
     applyVariantToModal(state,current);
   }
@@ -292,34 +387,33 @@
     const root=ensurePicker();
     if(!root) return;
     const data=variantData(product);
-    const variants=data.variants;
-    if(!variants.length){
+    if(!data.variants.length || !data.groups.length){
       root.hidden=true;
       root.innerHTML='';
       root._state=null;
       return;
     }
-    const watts=uniq(variants.map(v=>v.watt));
-    const colors=uniq([...variants.map(v=>v.color),...data.colors]);
-    const first=variants[0];
-    const state={
-      product,
-      variants,
-      watts,
-      colors,
-      explicitColors:data.colors,
-      selectedWatt:first.watt||'',
-      selectedColor:first.color||data.colors[0]||''
-    };
+    const first=data.variants[0];
+    const selected={};
+    data.groups.forEach(group=>{
+      const attrName=Object.keys(first.attributes||{}).find(k=>sameLabel(k,group.name));
+      selected[group.name]=attrName?first.attributes[attrName]:(group.values[0]||'');
+    });
+    const state={product,variants:data.variants,groups:data.groups,selected};
     resolveAndRender(state);
+  }
+
+  function cardHint(group){
+    const count=group.values.length;
+    if(sameLabel(group.name,'Puissance')) return count>1?`${count} puissances`:(group.values[0]||'');
+    if(sameLabel(group.name,'Couleur')) return count>1?`${count} couleurs`:(group.values[0]||'');
+    if(count===1) return `${group.name}: ${group.values[0]}`;
+    return `${group.name}: ${count} choix`;
   }
 
   function decorateCard(card,product){
     const data=variantData(product);
-    const variants=data.variants;
-    const colors=uniq([...variants.map(v=>v.color),...data.colors]);
-    const watts=uniq(variants.map(v=>v.watt));
-    const hasChoices=variants.length>1 || watts.length>1 || colors.length>0;
+    const hasChoices=data.groups.some(g=>g.values.length>0);
     if(!hasChoices || card.dataset.variantsReady==='1') return;
     card.dataset.variantsReady='1';
     const directAdd=card.querySelector('.add-cart');
@@ -329,7 +423,7 @@
 
     const body=card.querySelector('.body');
     if(!body) return;
-    const finals=variants.map(v=>pricing(product,v).final).filter(v=>v!==null && Number.isFinite(v));
+    const finals=data.variants.map(v=>pricing(product,v).final).filter(v=>v!==null && Number.isFinite(v));
     const min=finals.length?Math.min(...finals):null;
     const prices=uniq(finals.map(v=>Number(v).toFixed(3)));
     if(min!==null && !body.querySelector('.ml-variant-card-price')){
@@ -340,10 +434,7 @@
       (desc||body.querySelector('.ref'))?.insertAdjacentElement('afterend',el);
     }
     if(!body.querySelector('.ml-variant-card-hint')){
-      const bits=[];
-      if(watts.length>1) bits.push(`${watts.length} puissances`);
-      else if(watts.length===1) bits.push(watts[0]);
-      if(colors.length) bits.push(`${colors.length} couleur${colors.length>1?'s':''}`);
+      const bits=data.groups.map(cardHint).filter(Boolean);
       if(bits.length){
         const el=document.createElement('div');
         el.className='ml-variant-card-hint';
@@ -366,14 +457,14 @@
   function ensureProducts(){
     if(productsPromise) return productsPromise;
     productsPromise=fetch(DATA_URL+'?variants='+Date.now(),{cache:'no-store'})
-      .then(r=>{if(!r.ok) throw new Error('HTTP '+r.status); return r.json();})
+      .then(r=>{if(!r.ok) throw new Error('HTTP '+r.status);return r.json();})
       .then(products=>{
         productMap.clear();
         (Array.isArray(products)?products:[]).forEach(p=>{if(p?.reference) productMap.set(key(p.reference),p);});
         decorateCards();
         return products;
       })
-      .catch(err=>{console.warn('MAGIC LIGHT variantes indisponibles:',err); return [];});
+      .catch(err=>{console.warn('MAGIC LIGHT variantes indisponibles:',err);return [];});
     return productsPromise;
   }
 
