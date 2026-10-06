@@ -5,6 +5,9 @@
   "description": "Spot LED COB encastrable haute puissance avec plusieurs températures de couleur.",
   "price": 25.0,
   "image": "/assets/products/04-spot-led-cob-18w.png",
+  "colors": [
+    "Blanc"
+  ],
   "variants": [
     {
       "watt": "6W",
