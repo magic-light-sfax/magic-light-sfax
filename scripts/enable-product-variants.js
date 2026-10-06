@@ -6,9 +6,10 @@ const DIST=path.join(ROOT,'dist');
 const DATA=path.join(DIST,'data','products.json');
 const PRODUCT_DIR=path.join(ROOT,'content','products');
 const PAGES=['produits.html','products.html'];
+const VARIANT_BUILD='20261006-1930';
 const SCRIPTS=[
-  '/assets/product-variants.js',
-  '/assets/product-variant-ui-fix.js'
+  `/assets/product-variants.js?v=${VARIANT_BUILD}`,
+  `/assets/product-variant-ui-fix.js?v=${VARIANT_BUILD}`
 ];
 
 function refKey(v){return String(v||'').trim().toUpperCase();}
@@ -58,14 +59,16 @@ for(const file of PAGES){
   if(!fs.existsSync(p)) continue;
   let html=fs.readFileSync(p,'utf8');
   let changed=false;
-  // Remove the old dimensions helper: dimensions are now handled by product-variants.js.
-  html=html.replace(/\s*<script\s+defer\s+src=["']\/assets\/product-variant-dimensions\.js["']><\/script>\s*/gi,'\n');
+  // Always remove older variant helpers/scripts first so a stale PWA/browser cache
+  // cannot keep the previous selector logic alive after a deploy.
+  html=html.replace(/\s*<script\s+defer\s+src=["']\/assets\/product-variant-dimensions\.js(?:\?[^"']*)?["']><\/script>\s*/gi,'\n');
+  html=html.replace(/\s*<script\s+defer\s+src=["']\/assets\/product-variants\.js(?:\?[^"']*)?["']><\/script>\s*/gi,'\n');
+  html=html.replace(/\s*<script\s+defer\s+src=["']\/assets\/product-variant-ui-fix\.js(?:\?[^"']*)?["']><\/script>\s*/gi,'\n');
   for(const src of SCRIPTS){
-    if(html.includes(src)) continue;
     html=injectBeforeLastBody(html,src);
     changed=true;
   }
   fs.writeFileSync(p,html,'utf8');
   if(changed) injected++;
 }
-console.log(`MAGIC LIGHT variantes: interface générique activée sur ${PAGES.length} page(s).`);
+console.log(`MAGIC LIGHT variantes: interface générique activée sur ${PAGES.length} page(s), build ${VARIANT_BUILD}.`);
