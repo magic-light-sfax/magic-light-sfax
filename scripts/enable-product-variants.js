@@ -6,14 +6,18 @@ const DIST=path.join(ROOT,'dist');
 const DATA=path.join(DIST,'data','products.json');
 const PRODUCT_DIR=path.join(ROOT,'content','products');
 const PAGES=['produits.html','products.html'];
-const SCRIPT='\n<script defer src="/assets/product-variants.js"></script>\n';
+const SCRIPTS=[
+  '/assets/product-variants.js',
+  '/assets/product-variant-dimensions.js'
+];
 
 function refKey(v){return String(v||'').trim().toUpperCase();}
-function injectBeforeLastBody(html){
+function injectBeforeLastBody(html,src){
+  const tag=`\n<script defer src="${src}"></script>\n`;
   const lower=html.toLowerCase();
   const idx=lower.lastIndexOf('</body>');
-  if(idx===-1) return html+SCRIPT;
-  return html.slice(0,idx)+SCRIPT+html.slice(idx);
+  if(idx===-1) return html+tag;
+  return html.slice(0,idx)+tag+html.slice(idx);
 }
 
 if(fs.existsSync(DATA) && fs.existsSync(PRODUCT_DIR)){
@@ -49,9 +53,15 @@ for(const file of PAGES){
   const p=path.join(DIST,file);
   if(!fs.existsSync(p)) continue;
   let html=fs.readFileSync(p,'utf8');
-  if(html.includes('/assets/product-variants.js')) continue;
-  html=injectBeforeLastBody(html);
-  fs.writeFileSync(p,html,'utf8');
-  injected++;
+  let changed=false;
+  for(const src of SCRIPTS){
+    if(html.includes(src)) continue;
+    html=injectBeforeLastBody(html,src);
+    changed=true;
+  }
+  if(changed){
+    fs.writeFileSync(p,html,'utf8');
+    injected++;
+  }
 }
 console.log(`MAGIC LIGHT variantes: interface activée sur ${injected} page(s).`);
