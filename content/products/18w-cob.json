@@ -13,18 +13,21 @@
       "watt": "6W",
       "price": 10.0,
       "dimensions": "7.5 cm",
+      "reference": "6W-COB",
       "active": true
     },
     {
       "watt": "12W",
       "price": 18.0,
       "dimensions": "12.5 cm",
+      "reference": "12W-COB",
       "active": true
     },
     {
       "watt": "18W",
       "price": 25.0,
       "dimensions": "16.5 cm",
+      "reference": "18W-COB",
       "active": true
     }
   ],
