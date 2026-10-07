@@ -1,5 +1,5 @@
 {
   "enabled": true,
-  "file": "/assets/imports/magic_light_import_10_articles_prix_a_regler-1.xlsx",
-  "note": ""
+  "file": "/assets/imports/MAGIC_LIGHT_IMPORT_119_SANS_PRIX.csv",
+  "note": "Import 119 produits sans prix; prix à régler ensuite dans Admin"
 }
