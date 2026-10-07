@@ -1,12 +1,12 @@
 {
+  "discount": 30,
+  "active": true,
+  "price": 250,
   "name": "Suspension LED trois anneaux",
   "reference": "ML-WA-069",
-  "category": "Lustres & suspensions",
-  "description": "Suspension LED trois anneaux. Visuel produit MAGIC LIGHT.",
-  "price": null,
-  "promo": false,
-  "discount": 0,
+  "featured": true,
+  "promo": true,
   "image": "/assets/products/wa-2026-10/069_suspension-led-trois-anneaux.jpeg",
-  "featured": false,
-  "active": true
+  "description": "Suspension LED trois anneaux. Visuel produit MAGIC LIGHT.",
+  "category": "Lustres & suspensions"
 }
