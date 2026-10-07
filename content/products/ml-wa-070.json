@@ -1,12 +1,14 @@
 {
+  "discount": 50,
+  "active": true,
+  "price": 57,
   "name": "Humidificateur / diffuseur d'arômes",
   "reference": "ML-WA-070",
-  "category": "Décoration lumineuse",
-  "description": "Humidificateur / diffuseur d'arômes. Visuel produit MAGIC LIGHT.",
-  "price": null,
-  "promo": false,
-  "discount": 0,
+  "featured": true,
+  "promo": true,
+  "colors": [],
+  "images": [],
   "image": "/assets/products/wa-2026-10/070_humidificateur-diffuseur-d-aromes.jpeg",
-  "featured": false,
-  "active": true
+  "description": "Humidificateur / diffuseur d'arômes. Visuel produit MAGIC LIGHT.",
+  "category": "Décoration lumineuse"
 }
