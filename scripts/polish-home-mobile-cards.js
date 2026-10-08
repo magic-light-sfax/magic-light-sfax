@@ -5,13 +5,13 @@ const file = path.join(process.cwd(), 'dist', 'index.html');
 if (!fs.existsSync(file)) process.exit(0);
 
 let html = fs.readFileSync(file, 'utf8');
-const marker = 'home-mobile-cards-pro-v2';
+const marker = 'home-mobile-cards-pro-v3';
 
 if (!html.includes(marker)) {
   const css = `
 <style id="${marker}">
-/* MAGIC LIGHT • clear professional mobile cards on Home only */
-@media (max-width:620px){
+/* MAGIC LIGHT • Home mobile/tablet cards */
+@media (max-width:900px){
   body .section{padding:30px 0 !important;}
   body .section .container{width:calc(100% - 18px) !important;}
   body .section-head{margin-bottom:14px !important;gap:5px !important;}
@@ -114,5 +114,5 @@ if (!html.includes(marker)) {
 `;
   html = html.replace('</head>', `${css}</head>`);
   fs.writeFileSync(file, html, 'utf8');
-  console.log('MAGIC LIGHT Home mobile cards polished v2.');
+  console.log('MAGIC LIGHT Home mobile cards polished v3.');
 }
