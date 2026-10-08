@@ -1,0 +1,11 @@
+const fs=require('fs');
+const path=require('path');
+const dist=path.join(process.cwd(),'dist');
+if(!fs.existsSync(dist)) process.exit(0);
+const pages=['index.html','produits.html','products.html','nouveautes.html','references.html','catalogue.html','contact.html'];
+const brands=['Schneider Electric','Legrand','SOMEF','CHINT','TTI','SIAME'];
+const slug=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const pending=`<script id="ml-disjoncteur-pending">(function(){var q=new URLSearchParams(location.search);if(q.get('pending')!=='1')return;function clear(){document.querySelectorAll('.grid,#adminProductsGrid').forEach(function(e){e.innerHTML='';e.style.display='none'});if(document.getElementById('ml-brand-empty'))return;var d=document.createElement('div');d.id='ml-brand-empty';d.style.cssText='max-width:900px;margin:35px auto;padding:34px 20px;text-align:center;border:1px dashed #d9dde3;border-radius:16px;color:#777;background:#fff';d.innerHTML='<strong style="display:block;color:#222;font-size:1.1rem;margin-bottom:7px">Aucun produit pour le moment</strong><span>Les produits de cette marque seront ajoutés prochainement.</span>';var h=document.querySelector('#admin-catalogue')||document.querySelector('main')||document.body;h.appendChild(d)}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(clear,300)});else setTimeout(clear,300);setTimeout(clear,1200)})();</script>`;
+for(const p of pages){const f=path.join(dist,p);if(!fs.existsSync(f))continue;let h=fs.readFileSync(f,'utf8');h=h.replace(/<a class="ml-brand-link" href="produits\.html\?categorie=hager"><span>Hager<\/span><\/a>/g,'');for(const b of brands){const s=slug(b);h=h.replace(new RegExp('href="produits\\.html\\?categorie='+esc(s)+'"','g'),'href="produits.html?categorie='+s+'&pending=1"')}if(p==='produits.html'||p==='products.html'){h=h.replace(/<script id="ml-disjoncteur-pending">[\s\S]*?<\/script>/g,'');h=h.replace(/<\/body>/i,pending+'\n</body>')}fs.writeFileSync(f,h,'utf8')}
+console.log('Disjoncteurs: Hager removed; approved brands point to empty pending pages until products are assigned.');
