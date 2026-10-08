@@ -5,13 +5,13 @@ const file = path.join(process.cwd(), 'dist', 'index.html');
 if (!fs.existsSync(file)) process.exit(0);
 
 let html = fs.readFileSync(file, 'utf8');
-const marker = 'home-mobile-cards-pro-v4';
+const marker = 'home-mobile-cards-pro-v5';
 
 if (!html.includes(marker)) {
   const css = `
 <style id="${marker}">
 /* MAGIC LIGHT • Home mobile/tablet product cards */
-@media (max-width:900px){
+@media (max-width:900px), ((max-width:1400px) and (any-pointer:coarse)){
   body .section{padding:30px 0 !important;}
   body .section .container{width:calc(100% - 18px) !important;}
   body .section-head{margin-bottom:14px !important;gap:5px !important;}
@@ -27,6 +27,7 @@ if (!html.includes(marker)) {
   }
   body .section .grid .card{
     min-width:0 !important;
+    width:100% !important;
     border-radius:16px !important;
     overflow:hidden !important;
     border:1px solid #e1e4e8 !important;
@@ -35,8 +36,6 @@ if (!html.includes(marker)) {
     flex-direction:column !important;
     background:#fff !important;
   }
-  body .section .grid .card > img,
-  body .section .grid .card > a > img,
   body .section .grid .card img{
     width:100% !important;
     height:250px !important;
@@ -54,6 +53,22 @@ if (!html.includes(marker)) {
   body .section .grid .card .actions{display:grid !important;grid-template-columns:1fr 1fr !important;gap:8px !important;}
   body .section .grid .card .smallbtn{min-height:40px !important;font-size:.76rem !important;}
 }
+
+/* Phones that request a wide/desktop viewport still receive the mobile layout. */
+html.ml-mobile-device body .section .grid{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) !important;
+  gap:14px !important;
+}
+html.ml-mobile-device body .section .grid .card{
+  width:100% !important;
+  min-width:0 !important;
+}
+html.ml-mobile-device body .section .grid .card img{
+  width:100% !important;
+  height:250px !important;
+  object-fit:contain !important;
+}
 </style>
 `;
 
@@ -63,11 +78,13 @@ if (!html.includes(marker)) {
   function isMobileLayout(){
     try{
       var ua=navigator.userAgent||'';
-      return window.innerWidth<=900 || /Android|iPhone|iPad|iPod|IEMobile|Opera Mini|Mobile/i.test(ua);
+      var coarse=!!(window.matchMedia&&window.matchMedia('(any-pointer:coarse)').matches);
+      return document.documentElement.classList.contains('ml-mobile-device') || coarse || window.innerWidth<=900 || /Android|iPhone|iPad|iPod|IEMobile|Opera Mini|Mobile/i.test(ua);
     }catch(e){ return false; }
   }
   function apply(){
     if(!isMobileLayout()) return;
+    document.documentElement.classList.add('ml-mobile-device');
     document.querySelectorAll('.section .grid').forEach(function(grid){
       if(!grid.querySelector('.card')) return;
       grid.style.setProperty('display','grid','important');
@@ -89,9 +106,9 @@ if (!html.includes(marker)) {
   document.addEventListener('DOMContentLoaded',apply);
   window.addEventListener('load',apply);
   window.addEventListener('resize',apply);
-  try{
-    new MutationObserver(apply).observe(document.body,{childList:true,subtree:true});
-  }catch(e){}
+  setTimeout(apply,250);
+  setTimeout(apply,1000);
+  try{ new MutationObserver(apply).observe(document.body,{childList:true,subtree:true}); }catch(e){}
 })();
 </script>
 `;
@@ -99,5 +116,5 @@ if (!html.includes(marker)) {
   html = html.replace('</head>', `${css}</head>`);
   html = html.replace('</body>', `${js}</body>`);
   fs.writeFileSync(file, html, 'utf8');
-  console.log('MAGIC LIGHT Home mobile cards forced to one column v4.');
+  console.log('MAGIC LIGHT Home mobile cards forced for detected mobile devices v5.');
 }
