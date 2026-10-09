@@ -3,6 +3,10 @@
   const anchor = document.querySelector('.filterbar') || document.querySelector('.mobile-category-trigger') || document.querySelector('.section-head');
   if (!anchor) return;
 
+  const pendingCategories = new Set(['systeme-43','systeme-45','systeme-44','schneider-electric','legrand','somef','chint','tti','siame']);
+  const requestedCategory = (new URLSearchParams(location.search).get('categorie') || '').toLowerCase();
+  const isPendingCategory = pendingCategories.has(requestedCategory);
+
   const panel = document.createElement('div');
   panel.className = 'ml-filter-panel';
   panel.innerHTML = `
@@ -69,7 +73,6 @@
     ensureOrder();
     const mode = sort.value;
     if(mode==='default') return;
-
     internalReorder=true;
     document.querySelectorAll('.grid').forEach(grid=>{
       const current=[...grid.children].filter(el=>el.classList?.contains('card'));
@@ -87,7 +90,24 @@
     queueMicrotask(()=>{ internalReorder=false; });
   }
 
+  function ensurePendingEmpty(){
+    if(!isPendingCategory) return false;
+    cards().forEach(card=>card.classList.add('ml-advanced-hidden'));
+    result.textContent='0 produit dans le catalogue';
+    let empty=document.getElementById('ml-category-empty');
+    if(!empty){
+      empty=document.createElement('div');
+      empty.id='ml-category-empty';
+      empty.style.cssText='max-width:900px;margin:30px auto;padding:30px 20px;text-align:center;border:1px dashed #d9dde3;border-radius:16px;background:#fff;color:#777';
+      empty.innerHTML='<strong style="display:block;color:#222;font-size:1.1rem;margin-bottom:7px">Aucun produit pour le moment</strong><span>Les produits de cette catégorie seront ajoutés prochainement.</span>';
+      const grid=document.getElementById('adminProductsGrid')||document.querySelector('.grid');
+      if(grid&&grid.parentNode) grid.parentNode.insertBefore(empty,grid);
+    }
+    return true;
+  }
+
   function apply(){
+    if(ensurePendingEmpty()) return;
     const cat = category.value;
     const lo = min.value === '' ? null : Number(min.value);
     const hi = max.value === '' ? null : Number(max.value);
