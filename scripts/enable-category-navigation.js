@@ -11,7 +11,9 @@ const brands=['Schneider Electric','Legrand','Hager','SOMEF','CHINT','TTI','SIAM
 const categories=[
   ['Électricité domestique',[
     {name:'Protection électrique',children:[{name:'Disjoncteurs',children:brands}]},
-    'Appareillage domestique','Interrupteurs & prises','Tableaux & coffrets'
+    'Appareillage domestique',
+    {name:'Interrupteurs & prises',children:['Système 43','Système 45','Système 44']},
+    'Tableaux & coffrets'
   ]],
   ['Électricité industrielle',['Appareillage industriel','Protection & commande','Contacteurs','Variateurs de fréquence','Connexion industrielle','Automatismes']],
   ['Éclairage',[
