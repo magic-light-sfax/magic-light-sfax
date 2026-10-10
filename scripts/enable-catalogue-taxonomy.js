@@ -3,7 +3,7 @@ const path=require('path');
 const file=path.join(process.cwd(),'dist','produits.html');
 if(!fs.existsSync(file)) process.exit(0);
 let html=fs.readFileSync(file,'utf8');
-const marker='magic-light-taxonomy-v3';
+const marker='magic-light-taxonomy-v4';
 const js=`(function(){
  const norm=v=>String(v||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
  const q=new URLSearchParams(location.search),requested=norm(q.get('categorie')),system=norm(q.get('systeme'));if(!requested)return;
@@ -15,14 +15,14 @@ const js=`(function(){
  async function render(){const host=document.getElementById('adminProductsGrid');if(!host)return;try{const r=await fetch('/data/products.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const all=await r.json(),products=all.filter(matches);updateText(products.length);empty(products.length);if(!products.length){host.innerHTML='';return}if(typeof card==='function')host.innerHTML=products.map(card).join('')}catch(e){console.error('MAGIC LIGHT taxonomy',e)}}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render,{once:true});else render();window.addEventListener('load',()=>setTimeout(render,50),{once:true});
 })();`;
-// Remove every previous taxonomy injection first.
-html=html.replace(/<script id="magic-light-taxonomy-v\d+">[\s\S]*?<\/script>/g,'');
-// Inject before the LAST closing body tag. Using lastIndexOf avoids inserting inside
-// JavaScript/template strings that may contain the literal text </body>.
+// IMPORTANT: never regex-remove old taxonomy blocks here. A regex ending at </script>
+// can terminate on literal closing-script text stored inside another JavaScript string and
+// corrupt the page. build.js recreates dist from clean source on every deploy, so there is
+// no old generated taxonomy block to remove.
 const lower=html.toLowerCase();
 const pos=lower.lastIndexOf('</body>');
 if(pos<0) throw new Error('produits.html has no closing body tag');
 const script='\n<script id="'+marker+'">'+js+'<\/script>\n';
 html=html.slice(0,pos)+script+html.slice(pos);
 fs.writeFileSync(file,html,'utf8');
-console.log('Scalable catalogue taxonomy v3 safely injected at final body boundary.');
+console.log('Scalable catalogue taxonomy v4 safely appended without destructive regex cleanup.');
