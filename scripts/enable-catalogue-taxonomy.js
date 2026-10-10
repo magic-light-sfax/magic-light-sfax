@@ -3,49 +3,47 @@ const path=require('path');
 const file=path.join(process.cwd(),'dist','produits.html');
 if(!fs.existsSync(file)) process.exit(0);
 let html=fs.readFileSync(file,'utf8');
-const marker='magic-light-taxonomy-v1';
+const marker='magic-light-taxonomy-v2';
 const script=`<script id="${marker}">(function(){
-  const norm=v=>String(v||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-  const params=new URLSearchParams(location.search);
-  const requested=norm(params.get('categorie')||'');
-  if(!requested) return;
-  const legacyPending=new Set(['systeme-43','systeme-45','systeme-44']);
-  function productPaths(card){
-    const btn=card.querySelector('.view-product');
-    const values=[
-      card.dataset.categorie,card.dataset.category,card.dataset.cat,
-      card.dataset.famille,card.dataset.systeme,card.dataset.sousCategorie,card.dataset.subcategory,
-      btn?.dataset.categorie,btn?.dataset.category,btn?.dataset.famille,btn?.dataset.systeme,btn?.dataset.sousCategorie,btn?.dataset.subcategory
-    ].filter(Boolean);
-    return values.map(norm);
-  }
-  function apply(){
-    const cards=[...document.querySelectorAll('.card[data-cat],.admin-product-card')];
-    let count=0;
-    cards.forEach(card=>{
-      const paths=productPaths(card);
-      const match=paths.includes(requested);
-      card.style.setProperty('display',match?'':'none',match?'':'important');
-      if(match) count++;
-    });
-    document.querySelectorAll('.ml-filter-result').forEach(el=>el.textContent=count+' produit'+(count===1?'':'s')+' dans cette catégorie');
-    let empty=document.getElementById('ml-taxonomy-empty');
-    if(count===0){
-      if(!empty){
-        empty=document.createElement('div');empty.id='ml-taxonomy-empty';empty.className='admin-empty';
-        empty.style.cssText='max-width:900px;margin:28px auto;padding:28px 18px;text-align:center;border:1px dashed #d9dde3;border-radius:16px;background:#fff;color:#777';
-        empty.innerHTML='<strong style="display:block;color:#222;margin-bottom:7px">0 produit dans cette catégorie pour le moment.</strong>';
-        const grid=document.getElementById('adminProductsGrid')||document.querySelector('#products .grid');
-        if(grid&&grid.parentNode) grid.parentNode.insertBefore(empty,grid);
-      }
-    } else if(empty) empty.remove();
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',apply); else apply();
-  const host=document.getElementById('adminProductsGrid');
-  if(host) new MutationObserver(()=>requestAnimationFrame(apply)).observe(host,{childList:true,subtree:true});
-  setTimeout(apply,250);setTimeout(apply,900);
+ const norm=v=>String(v||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+ const q=new URLSearchParams(location.search);
+ const requested=norm(q.get('categorie'));
+ const system=norm(q.get('systeme'));
+ if(!requested)return;
+ const fields=['category','categorie','famille','family','systeme','system','sous_categorie','sousCategorie','subcategory','sub_category','type','gamme'];
+ const vals=p=>fields.flatMap(k=>Array.isArray(p?.[k])?p[k]:[p?.[k]]).filter(Boolean).map(norm);
+ const matches=p=>{
+   const v=vals(p);
+   if(system&&!v.includes(system))return false;
+   return v.includes(requested);
+ };
+ function updateText(n){
+   document.querySelectorAll('.ml-filter-result').forEach(el=>el.textContent=n+' produit'+(n===1?'':'s')+' dans cette catégorie');
+   const hero=document.querySelector('.pagehero p');if(hero)hero.textContent=n? n+' produit'+(n===1?'':'s')+' dans cette catégorie.':'0 produit dans cette catégorie pour le moment.';
+ }
+ function empty(n){
+   let e=document.getElementById('ml-taxonomy-empty');
+   if(n){if(e)e.remove();return;}
+   if(e)return;
+   const grid=document.getElementById('adminProductsGrid')||document.querySelector('#products .grid');if(!grid)return;
+   e=document.createElement('div');e.id='ml-taxonomy-empty';e.className='admin-empty';e.style.cssText='max-width:900px;margin:28px auto;padding:28px 18px;text-align:center;border:1px dashed #d9dde3;border-radius:16px;background:#fff;color:#777';e.innerHTML='<strong style="display:block;color:#222;margin-bottom:7px">0 produit dans cette catégorie pour le moment.</strong>';
+   grid.parentNode.insertBefore(e,grid);
+ }
+ async function render(){
+   const host=document.getElementById('adminProductsGrid');if(!host)return;
+   try{
+     const r=await fetch('/data/products.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);
+     const all=await r.json();const products=all.filter(matches);
+     updateText(products.length);empty(products.length);
+     if(!products.length){host.innerHTML='';return;}
+     if(typeof card==='function'){host.innerHTML=products.map(card).join('');return;}
+     const old=[...host.querySelectorAll('.card')];old.forEach(c=>c.style.display='none');
+   }catch(e){console.error('MAGIC LIGHT taxonomy',e);}
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render,{once:true});else render();
+ window.addEventListener('load',()=>setTimeout(render,50),{once:true});
 })();</script>`;
-html=html.replace(new RegExp('<script id="'+marker+'">[\\s\\S]*?<\\/script>','g'),'');
+html=html.replace(/<script id="magic-light-taxonomy-v[12]">[\s\S]*?<\/script>/g,'');
 html=html.replace(/<\/body>/i,script+'\n</body>');
 fs.writeFileSync(file,html,'utf8');
-console.log('Scalable catalogue taxonomy filtering enabled.');
+console.log('Scalable catalogue taxonomy v2 enabled from product data.');
