@@ -2,7 +2,7 @@ const fs=require('fs');
 const path=require('path');
 const dist=path.join(process.cwd(),'dist');
 const pages=['produits.html','products.html'];
-const marker='magic-light-pending-systems-v1';
+const marker='magic-light-pending-systems-v2';
 const patch=`
 <style id="${marker}-style">
 body.ml-pending-system #products .card[data-cat],
@@ -18,9 +18,9 @@ body.ml-pending-system #ml-system-empty{display:block!important}
   var q=new URLSearchParams(location.search);
   var c=(q.get('categorie')||'').toLowerCase();
   if(['systeme-43','systeme-45','systeme-44'].indexOf(c)===-1)return;
-  document.documentElement.classList.add('ml-pending-system');
   function enforce(){
     if(!document.body)return;
+    document.documentElement.classList.add('ml-pending-system');
     document.body.classList.add('ml-pending-system');
     document.querySelectorAll('#products .card[data-cat],#adminProductsGrid .card').forEach(function(card){card.style.setProperty('display','none','important')});
     var result=document.querySelector('.ml-filter-result');
@@ -36,20 +36,19 @@ body.ml-pending-system #ml-system-empty{display:block!important}
       if(grid&&grid.parentNode)grid.parentNode.insertBefore(empty,grid);else host.appendChild(empty);
     }
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enforce);else enforce();
-  window.addEventListener('load',enforce);
-  var observer=new MutationObserver(enforce);
-  observer.observe(document.documentElement,{childList:true,subtree:true});
-  setTimeout(enforce,100);setTimeout(enforce,500);setTimeout(enforce,1500);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enforce,{once:true});else enforce();
+  window.addEventListener('load',enforce,{once:true});
+  setTimeout(enforce,250);
+  setTimeout(enforce,1200);
 })();
 </script>`;
 for(const page of pages){
   const file=path.join(dist,page);
   if(!fs.existsSync(file))continue;
   let html=fs.readFileSync(file,'utf8');
-  html=html.replace(new RegExp('<style id="'+marker+'-style">[\\s\\S]*?<\\/style>','g'),'');
-  html=html.replace(new RegExp('<script id="'+marker+'">[\\s\\S]*?<\\/script>','g'),'');
+  html=html.replace(/<style id="magic-light-pending-systems-v[12]-style">[\s\S]*?<\/style>/g,'');
+  html=html.replace(/<script id="magic-light-pending-systems-v[12]">[\s\S]*?<\/script>/g,'');
   html=html.replace(/<\/body>/i,patch+'\n</body>');
   fs.writeFileSync(file,html,'utf8');
 }
-console.log('MAGIC LIGHT pending systems: System 43/45/44 forced to zero products at render level.');
+console.log('MAGIC LIGHT pending systems v2: zero products without recursive observer.');
