@@ -12,7 +12,10 @@ const categories=[
   ['Électricité domestique',[
     {name:'Protection électrique',children:[{name:'Disjoncteurs',children:brands}]},
     'Appareillage domestique',
-    {name:'Interrupteurs & prises',children:['Système 43','Système 45','Système 44']},
+    {name:'Interrupteurs & prises',children:[
+      {name:'Système 43',children:['Plaques murales','Prises','Interrupteurs','Gamme étanche','Boîtes','Montures']},
+      'Système 45','Système 44'
+    ]},
     'Tableaux & coffrets'
   ]],
   ['Électricité industrielle',['Appareillage industriel','Protection & commande','Contacteurs','Variateurs de fréquence','Connexion industrielle','Automatismes']],
