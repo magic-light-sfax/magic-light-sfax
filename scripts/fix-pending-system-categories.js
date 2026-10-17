@@ -48,7 +48,10 @@ for(const page of pages){
   let html=fs.readFileSync(file,'utf8');
   html=html.replace(/<style id="magic-light-pending-systems-v[12]-style">[\s\S]*?<\/style>/g,'');
   html=html.replace(/<script id="magic-light-pending-systems-v[12]">[\s\S]*?<\/script>/g,'');
-  html=html.replace(/<\/body>/i,patch+'\n</body>');
+  /* Use the final page body, not </body> inside the cart print template. */
+  const bodyEnd=html.toLowerCase().lastIndexOf('</body>');
+  if(bodyEnd<0)throw new Error("scripts/fix-pending-system-categories.js: final </body> not found");
+  html=html.slice(0,bodyEnd)+patch+'\n'+html.slice(bodyEnd);
   fs.writeFileSync(file,html,'utf8');
 }
 console.log('MAGIC LIGHT pending systems v2: zero products without recursive observer.');
