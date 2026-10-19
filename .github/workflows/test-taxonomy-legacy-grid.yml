@@ -1,0 +1,39 @@
+name: Test taxonomy legacy grid
+
+on:
+  push:
+    branches:
+      - fix-taxonomy-hide-legacy-grid
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build site
+        run: npm run build
+      - name: Verify taxonomy legacy grid behavior
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const html=fs.readFileSync('dist/produits.html','utf8');
+          const products=JSON.parse(fs.readFileSync('dist/data/products.json','utf8'));
+          if(!html.includes('magic-light-taxonomy-v5')) throw new Error('taxonomy v5 marker missing');
+          if(!html.includes("document.querySelector('#products > .container > .grid')")) throw new Error('legacy grid selector missing');
+          if(!html.includes("g.style.display='none'")) throw new Error('legacy grid hide behavior missing');
+          if(!html.includes("if(!requested)return")) throw new Error('taxonomy guard missing; unfiltered catalogue could be affected');
+          const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+          const fields=['category','categorie','famille','family','systeme','system','sous_categorie','sousCategorie','subcategory','sub_category','type','gamme'];
+          const vals=p=>fields.flatMap(k=>Array.isArray(p&&p[k])?p[k]:[p&&p[k]]).filter(Boolean).map(norm);
+          const count=(requested,system='')=>products.filter(p=>{const v=vals(p);return (!system||v.includes(system))&&v.includes(requested)}).length;
+          if(count('systeme-43')!==0) throw new Error('Systeme 43 should still be empty');
+          for(const slug of ['plaques-murales','prises','interrupteurs','gamme-etanche','boites','montures']){
+            if(count(slug,'systeme-43')!==0) throw new Error(slug+' should still be empty inside Systeme 43');
+          }
+          console.log('OK: build succeeded; taxonomy v5 hides the legacy grid only on taxonomy pages; Systeme 43 and six children remain 0.');
+          NODE
