@@ -18,7 +18,6 @@ function copyDir(src,dest){
   }
 }
 
-
 function loadAnalyticsConfig(){
   const defaults={ga4Enabled:false,ga4MeasurementId:"",metaEnabled:false,metaPixelId:""};
   if(!fs.existsSync(analyticsConfigPath)) return defaults;
@@ -157,6 +156,8 @@ function rowToProduct(row){
     name,
     reference,
     category:String(pick(row,["category","catégorie","categorie","famille"]) || "Autres").trim() || "Autres",
+    systeme:String(pick(row,["systeme","système","system","systeme produit","système produit"])).trim(),
+    sous_categorie:String(pick(row,["sous_categorie","sous-categorie","sous categorie","sous catégorie","sous-catégorie","subcategory","sub category"])).trim(),
     description:String(pick(row,["description","desc"])).trim(),
     price:(()=>{ const n=parseNumber(pick(row,["price","prix","prix normal","normal price"])); return n!==null && n>0 ? n : null; })(),
     promo:promoFlag && discount>0,
@@ -269,6 +270,8 @@ if(fs.existsSync(productDir)){
           name:obj.name||"",
           reference:obj.reference||"",
           category:obj.category||"Autres",
+          systeme:obj.systeme||obj.system||"",
+          sous_categorie:obj.sous_categorie||obj.sousCategorie||obj.subcategory||"",
           description:obj.description||"",
           price:obj.price ?? null,
           promo:obj.promo===true,
