@@ -29,6 +29,8 @@ collections:
       - {label: "Nom du produit", name: "name", widget: "string"}
       - {label: "Référence", name: "reference", widget: "string", hint: "Exemple: ML-001"}
       - {label: "Catégorie", name: "category", widget: "string", hint: "Ex: Lustres & suspensions, Spots LED, Solaire, RGB..."}
+      - {label: "Système", name: "systeme", widget: "string", required: false, hint: "Ex: Système 43. Laissez vide si le produit n'appartient pas à un système."}
+      - {label: "Sous-catégorie", name: "sous_categorie", widget: "string", required: false, hint: "Ex: Plaques murales, Prises, Interrupteurs, Gamme étanche, Boîtes, Montures."}
       - {label: "Description", name: "description", widget: "text", required: false}
       - {label: "Prix", name: "price", widget: "number", value_type: "float", min: 0, required: false, hint: "Prix normal de l’article. Laissez vide si vous ne voulez pas afficher le prix ou si chaque variante a son propre prix."}
       - {label: "En promotion", name: "promo", widget: "boolean", default: false, required: false, hint: "Activez uniquement pour les articles en remise."}
