@@ -1,0 +1,51 @@
+name: Test Systeme 43 taxonomy
+
+on:
+  push:
+    branches:
+      - fix-systeme-43-taxonomy
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build site
+        run: npm run build
+
+      - name: Verify Systeme 43 taxonomy
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const html=fs.readFileSync('dist/produits.html','utf8');
+          const products=JSON.parse(fs.readFileSync('dist/data/products.json','utf8'));
+          const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+          const fields=['category','categorie','famille','family','systeme','system','sous_categorie','sousCategorie','subcategory','sub_category','type','gamme'];
+          const vals=p=>fields.flatMap(k=>Array.isArray(p&&p[k])?p[k]:[p&&p[k]]).filter(Boolean).map(norm);
+          const count=(requested,system='')=>products.filter(p=>{const v=vals(p);return (!system||v.includes(system))&&v.includes(requested)}).length;
+
+          if(!html.includes('magic-light-taxonomy-v4')) throw new Error('taxonomy script missing from produits.html');
+          if(html.includes('magic-light-pending-systems-v2')) throw new Error('old hard-coded pending-system script still present');
+          for(const slug of ['plaques-murales','prises','interrupteurs','gamme-etanche','boites','montures']){
+            if(!html.includes(`categorie=${slug}&systeme=systeme-43`)) throw new Error(`Systeme 43 link missing scope: ${slug}`);
+          }
+          if(!products.every(p=>Object.prototype.hasOwnProperty.call(p,'systeme')&&Object.prototype.hasOwnProperty.call(p,'sous_categorie'))){
+            throw new Error('generated products do not all expose systeme and sous_categorie');
+          }
+          if(count('systeme-43')!==0) throw new Error(`Systeme 43 should be empty now, got ${count('systeme-43')}`);
+          for(const slug of ['plaques-murales','prises','interrupteurs','gamme-etanche','boites','montures']){
+            const n=count(slug,'systeme-43');
+            if(n!==0) throw new Error(`${slug} should be empty inside Systeme 43, got ${n}`);
+          }
+          console.log(`OK: ${products.length} products built; Systeme 43 and all six child categories correctly resolve to 0.`);
+          NODE
