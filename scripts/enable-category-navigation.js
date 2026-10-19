@@ -4,7 +4,7 @@ const path=require('path');
 const dist=path.join(process.cwd(),'dist');
 if(!fs.existsSync(dist)) process.exit(0);
 
-const marker='magic-light-category-navigation-v3';
+const marker='magic-light-category-navigation-v4';
 const pages=['index.html','produits.html','products.html','nouveautes.html','references.html','catalogue.html','contact.html'];
 
 const brands=['Schneider Electric','Legrand','Hager','SOMEF','CHINT','TTI','SIAME'];
@@ -39,18 +39,20 @@ const categories=[
 ];
 
 const slug=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-const href=s=>`produits.html?categorie=${encodeURIComponent(slug(s))}`;
+const href=(s,system='')=>`produits.html?categorie=${encodeURIComponent(slug(s))}${system?`&systeme=${encodeURIComponent(system)}`:''}`;
 const brandClass=s=>brands.includes(s)?' ml-brand-link':'';
-const desktopNode=(s,level=3)=>{
- if(typeof s==='string') return `<a class="${brandClass(s).trim()}" href="${href(s)}"><span>${s}</span></a>`;
+const systemSlug=s=>/^Système\s+\d+$/i.test(String(s||''))?slug(s):'';
+const desktopNode=(s,level=3,parentSystem='')=>{
+ if(typeof s==='string') return `<a class="${brandClass(s).trim()}" href="${href(s,parentSystem)}"><span>${s}</span></a>`;
  const next=level+1;
- return `<div class="ml-cat-group ml-level-${level}"><a class="ml-cat-group-title" href="${href(s.name)}">${s.name}<span>›</span></a><div class="ml-cat-level ml-cat-level-${next}">${s.children.map(c=>desktopNode(c,next)).join('')}</div></div>`;
+ const ownSystem=systemSlug(s.name)||parentSystem;
+ return `<div class="ml-cat-group ml-level-${level}"><a class="ml-cat-group-title" href="${href(s.name,parentSystem)}">${s.name}<span>›</span></a><div class="ml-cat-level ml-cat-level-${next}">${s.children.map(c=>desktopNode(c,next,ownSystem)).join('')}</div></div>`;
 };
-const desktopSubs=subs=>subs.map(s=>desktopNode(s,3)).join('');
-const mobileNode=s=>typeof s==='string'
- ? `<a class="${brandClass(s).trim()}" href="${href(s)}"><span>${s}</span></a>`
- : `<details class="ml-cat-mobile-level3"><summary>${s.name}<span>+</span></summary><div>${s.children.map(mobileNode).join('')}</div></details>`;
-const mobileSubs=subs=>subs.map(mobileNode).join('');
+const desktopSubs=subs=>subs.map(s=>desktopNode(s,3,'')).join('');
+const mobileNode=(s,parentSystem='')=>typeof s==='string'
+ ? `<a class="${brandClass(s).trim()}" href="${href(s,parentSystem)}"><span>${s}</span></a>`
+ : (()=>{const ownSystem=systemSlug(s.name)||parentSystem;return `<details class="ml-cat-mobile-level3"><summary>${s.name}<span>+</span></summary><div>${s.children.map(c=>mobileNode(c,ownSystem)).join('')}</div></details>`;})();
+const mobileSubs=subs=>subs.map(s=>mobileNode(s,'')).join('');
 
 const desktop=categories.map(([name,subs])=>`<div class="ml-cat-item"><a href="${href(name)}">${name}<span>›</span></a><div class="ml-cat-sub"><h3>${name}</h3><div class="ml-cat-subgrid">${desktopSubs(subs)}</div></div></div>`).join('');
 const mobile=categories.map(([name,subs])=>`<details class="ml-cat-mobile"><summary>${name}<span>+</span></summary><div>${mobileSubs(subs)}</div></details>`).join('');
@@ -64,11 +66,11 @@ const block=`\n<style id="${marker}">
 for(const page of pages){
  const file=path.join(dist,page); if(!fs.existsSync(file)) continue;
  let html=fs.readFileSync(file,'utf8');
- html=html.replace(/\n?<style id="magic-light-category-navigation-v[12]">[\s\S]*?<\/style>\s*<div class="ml-category-nav"[\s\S]*?<\/div><\/div><\/div>\s*/,'\n');
+ html=html.replace(/\n?<style id="magic-light-category-navigation-v[123]-?[^\"]*">[\s\S]*?<\/style>\s*<div class="ml-category-nav"[\s\S]*?<\/div><\/div><\/div>\s*/,'\n');
  if(html.includes(marker)) continue;
  const navEnd=html.indexOf('</nav>');
  if(navEnd>=0) html=html.slice(0,navEnd+6)+block+html.slice(navEnd+6);
  else { const headerEnd=html.indexOf('</header>'); if(headerEnd>=0) html=html.slice(0,headerEnd+9)+block+html.slice(headerEnd+9); else continue; }
  fs.writeFileSync(file,html,'utf8');
 }
-console.log('MAGIC LIGHT category navigation v3 enabled.');
+console.log('MAGIC LIGHT category navigation v4 enabled with system-aware child links.');
