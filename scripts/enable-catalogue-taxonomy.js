@@ -10,13 +10,37 @@ if(!html.includes(loadNeedle)) throw new Error('Taxonomy patch target not found:
 const loadReplacement=`      let products=await r.json();
       const taxonomyNorm=v=>String(v||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
       const taxonomyParams=new URLSearchParams(location.search);
-      const taxonomyRequested=taxonomyNorm(taxonomyParams.get('categorie'));
-      const taxonomySystem=taxonomyNorm(taxonomyParams.get('systeme'));
-      const taxonomyActive=Boolean(taxonomyRequested);
+      const taxonomyRequested=taxonomyNorm(taxonomyParams.get('categorie')||taxonomyParams.get('cat'));
+      const taxonomySystemRaw=taxonomyNorm(taxonomyParams.get('systeme')||taxonomyParams.get('system'));
+      const taxonomyIsSystemRequest=/^systeme-\\d+$/.test(taxonomyRequested);
+      const taxonomySystem=taxonomySystemRaw || (taxonomyIsSystemRequest?taxonomyRequested:'');
+      const taxonomyLeaf=taxonomyIsSystemRequest?'':taxonomyRequested;
+      const taxonomyActive=Boolean(taxonomyRequested||taxonomySystemRaw);
+      const taxonomySystemAliases=v=>{
+        const n=taxonomyNorm(v);
+        if(!n) return [];
+        const out=[n];
+        const m=n.match(/(?:systeme-)?(\\d+)$/);
+        if(m){out.push(m[1], 'systeme-'+m[1]);}
+        return [...new Set(out)];
+      };
+      const taxonomyValueAliases=v=>{
+        const n=taxonomyNorm(v);
+        return n?[n]:[];
+      };
       if(taxonomyActive){
-        const taxonomyFields=['category','categorie','famille','family','systeme','system','sous_categorie','sousCategorie','subcategory','sub_category','type','gamme'];
-        const taxonomyVals=p=>taxonomyFields.flatMap(k=>Array.isArray(p&&p[k])?p[k]:[p&&p[k]]).filter(Boolean).map(taxonomyNorm);
-        products=products.filter(p=>{const v=taxonomyVals(p);return (!taxonomySystem||v.includes(taxonomySystem))&&v.includes(taxonomyRequested)});
+        products=products.filter(p=>{
+          const systemValues=[p&&p.systeme,p&&p.system].flatMap(taxonomySystemAliases);
+          const leafValues=[
+            p&&p.category,p&&p.categorie,p&&p.famille,p&&p.family,
+            p&&p.sous_categorie,p&&p.sousCategorie,p&&p.subcategory,p&&p.sub_category,
+            p&&p.type,p&&p.gamme
+          ].flatMap(taxonomyValueAliases);
+          const wantedSystems=taxonomySystemAliases(taxonomySystem);
+          const systemOk=!taxonomySystem || wantedSystems.some(v=>systemValues.includes(v));
+          const leafOk=!taxonomyLeaf || leafValues.includes(taxonomyLeaf);
+          return systemOk && leafOk;
+        });
         const legacyGrid=document.querySelector('#products .container > .grid');
         if(legacyGrid) legacyGrid.style.display='none';
         const n=products.length;
@@ -40,4 +64,4 @@ const emptyReplacement=`      if(!products.length){
 html=html.replace(emptyNeedle,emptyReplacement);
 
 fs.writeFileSync(file,html,'utf8');
-console.log('MAGIC LIGHT taxonomy v5 enabled inside the primary product load: one fetch, one render, no race.');
+console.log('MAGIC LIGHT taxonomy v6 enabled: category, system and subcategory filtering from product data.');
