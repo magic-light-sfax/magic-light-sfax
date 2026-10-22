@@ -1,7 +1,9 @@
 {
   "name": "Suspension ampoule corde",
   "reference": "ML-WA-084",
-  "category": "Lustres & suspensions",
+  "famille": "Éclairage",
+  "sous_categorie": "Suspensions",
+  "category": "Suspensions",
   "description": "Suspension ampoule corde. Visuel produit MAGIC LIGHT.",
   "price": null,
   "promo": false,
