@@ -31,6 +31,20 @@ for(const page of pages){
   if(!html.includes('magic-light-system-url-normalizer-v1')){
     failures.push(page+': system URL normalizer missing');
   }
+
+  if(!html.includes('magic-light-category-navigation-v5')){
+    failures.push(page+': category navigation v5 missing');
+  }
+
+  for(const system of ['43','44','45']){
+    if(!html.includes('produits.html?systeme=systeme-'+system)){
+      failures.push(page+': direct Système '+system+' URL missing');
+    }
+  }
+
+  if(!html.includes('produits.html?categorie=gamme-etanche&systeme=systeme-43')){
+    failures.push(page+': Système 43 / Gamme étanche child URL missing');
+  }
 }
 
 const filterFile=path.join(dist,'assets','catalogue-filters-pro.js');
@@ -52,4 +66,4 @@ if(failures.length){
   process.exit(1);
 }
 
-console.log('Nettoyage Catalogue V1 validation OK: one mobile layout authority, one product source, normalized system URLs, taxonomy finalizer v5.');
+console.log('Nettoyage Catalogue V1 validation OK: one mobile layout authority, one product source, direct system navigation, normalized legacy URLs, taxonomy finalizer v5.');
