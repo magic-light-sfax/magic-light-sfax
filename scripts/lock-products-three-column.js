@@ -85,16 +85,42 @@ const runtime=`
     }catch(e){ return false; }
   }
 
-  function cardCount(grid){
-    return [...grid.children].filter(el=>el.classList&&el.classList.contains('card')&&!el.hidden&&getComputedStyle(el).display!=='none').length;
+  function visibleCards(grid){
+    return [...grid.children].filter(el=>el.classList&&el.classList.contains('card')&&!el.hidden&&getComputedStyle(el).display!=='none');
   }
 
-  function desiredColumns(grid){
-    if(grid.id==='adminProductsGrid' && taxonomyActive()){
-      const n=cardCount(grid);
-      return Math.max(1,Math.min(3,n||1));
+  function applyFilteredLayout(grid){
+    const cards=visibleCards(grid);
+    const filtered=grid.id==='adminProductsGrid' && taxonomyActive();
+
+    if(filtered){
+      grid.dataset.magicLightColumns='2';
+      grid.style.setProperty('grid-template-columns','repeat(2,minmax(0,1fr))','important');
+      cards.forEach(card=>{
+        card.style.removeProperty('grid-column');
+        card.style.removeProperty('justify-self');
+        card.style.setProperty('width','100%','important');
+        card.style.setProperty('max-width','none','important');
+      });
+
+      if(cards.length%2===1){
+        const last=cards[cards.length-1];
+        last.style.setProperty('grid-column','1 / -1','important');
+        last.style.setProperty('justify-self','center','important');
+        last.style.setProperty('width','calc(50% - 3.5px)','important');
+        last.style.setProperty('max-width','360px','important');
+      }
+      return;
     }
-    return 3;
+
+    grid.dataset.magicLightColumns='3';
+    grid.style.setProperty('grid-template-columns','repeat(3,minmax(0,1fr))','important');
+    cards.forEach(card=>{
+      card.style.removeProperty('grid-column');
+      card.style.removeProperty('justify-self');
+      card.style.setProperty('width','100%','important');
+      card.style.setProperty('max-width','none','important');
+    });
   }
 
   function apply(){
@@ -108,10 +134,7 @@ const runtime=`
     });
 
     document.querySelectorAll('#products .grid,#adminProductsGrid').forEach(g=>{
-      const columns=desiredColumns(g);
-      g.dataset.magicLightColumns=String(columns);
       g.style.setProperty('display','grid','important');
-      g.style.setProperty('grid-template-columns','repeat('+columns+',minmax(0,1fr))','important');
       g.style.setProperty('gap','7px','important');
       g.style.setProperty('align-items','start','important');
       g.style.setProperty('align-content','start','important');
@@ -120,10 +143,11 @@ const runtime=`
       g.style.setProperty('width','100%','important');
       g.style.setProperty('max-width','none','important');
 
+      applyFilteredLayout(g);
+
       g.querySelectorAll(':scope > .card').forEach(card=>{
         card.style.setProperty('display','flex','important');
         card.style.setProperty('flex-direction','column','important');
-        card.style.setProperty('width','100%','important');
         card.style.setProperty('min-width','0','important');
         card.style.setProperty('height','auto','important');
         card.style.setProperty('min-height','0','important');
@@ -194,4 +218,4 @@ for(const name of PAGES){
   if(fs.existsSync(file)) inject(file);
 }
 
-console.log('MAGIC LIGHT Products v4: mobile grid adaptive on taxonomy pages (1 result=1 column, 2=2, 3+=3); full catalogue stays 3 columns.');
+console.log('MAGIC LIGHT Products v4: filtered mobile catalogue uses consistent 2-column cards; odd final card is centered; full catalogue stays 3 columns.');
