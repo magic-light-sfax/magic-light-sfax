@@ -4,9 +4,11 @@
   "price": 250,
   "name": "Suspension LED trois anneaux",
   "reference": "ML-WA-069",
+  "famille": "Éclairage",
+  "sous_categorie": "Suspensions",
+  "category": "Suspensions",
   "featured": true,
   "promo": true,
   "image": "/assets/products/wa-2026-10/069_suspension-led-trois-anneaux.jpeg",
-  "description": "Suspension LED trois anneaux. Visuel produit MAGIC LIGHT.",
-  "category": "Lustres & suspensions"
+  "description": "Suspension LED trois anneaux. Visuel produit MAGIC LIGHT."
 }
