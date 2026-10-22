@@ -1,7 +1,9 @@
 {
   "name": "Suspension moderne anneau",
   "reference": "ML-WA-068",
-  "category": "Lustres & suspensions",
+  "famille": "Éclairage",
+  "sous_categorie": "Suspensions",
+  "category": "Suspensions",
   "description": "Suspension moderne anneau. Visuel produit MAGIC LIGHT.",
   "price": null,
   "promo": false,
