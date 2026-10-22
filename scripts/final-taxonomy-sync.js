@@ -15,13 +15,21 @@ for(const page of pages){
   html=html.replace(/<script id="magic-light-taxonomy-early-v\d+">[\s\S]*?<\/script>\s*<style id="magic-light-taxonomy-early-v\d+-style">[\s\S]*?<\/style>/g,'');
   html=html.replace(/<style id="magic-light-final-taxonomy-sync-v\d+-style">[\s\S]*?<\/style>/g,'');
   html=html.replace(/<script id="magic-light-final-taxonomy-sync-v\d+">[\s\S]*?<\/script>/g,'');
+
   const headMatch=html.match(/<head\b[^>]*>/i);
-  if(!headMatch) throw new Error('final-taxonomy-sync: <head> not found in '+page);
-  const headIdx=headMatch.index+headMatch[0].length;
-  html=html.slice(0,headIdx)+'\n'+early+'\n'+html.slice(headIdx);
+  if(headMatch){
+    const headIdx=headMatch.index+headMatch[0].length;
+    html=html.slice(0,headIdx)+'\n'+early+'\n'+html.slice(headIdx);
+  }else{
+    html=early+'\n'+html;
+  }
+
   const idx=html.toLowerCase().lastIndexOf('</body>');
-  if(idx<0) throw new Error('final-taxonomy-sync: </body> not found in '+page);
-  html=html.slice(0,idx)+patch+html.slice(idx);
+  if(idx<0){
+    html=html+'\n'+patch;
+  }else{
+    html=html.slice(0,idx)+patch+html.slice(idx);
+  }
   fs.writeFileSync(file,html,'utf8');
 }
-console.log('MAGIC LIGHT final taxonomy sync v7: no legacy flash and no reserved mobile catalogue space on filtered taxonomy pages.');
+console.log('MAGIC LIGHT final taxonomy sync v7: build-safe early prehide, no legacy flash and no reserved mobile catalogue space.');
