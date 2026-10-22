@@ -35,7 +35,7 @@ const loadReplacement=`      let products=await r.json();
           const leafValues=[
             p&&p.category,p&&p.categorie,p&&p.famille,p&&p.family,
             p&&p.sous_categorie,p&&p.sousCategorie,p&&p.subcategory,p&&p.sub_category,
-            p&&p.type,p&&p.gamme
+            p&&p.type,p&&p.gamme,p&&p.marque,p&&p.brand
           ].flatMap(taxonomyValueAliases);
           const wantedSystems=taxonomySystemAliases(taxonomySystem);
           const systemOk=!taxonomySystem || wantedSystems.some(v=>systemValues.includes(v));
@@ -65,4 +65,4 @@ const emptyReplacement=`      if(!products.length){
 html=html.replace(emptyNeedle,emptyReplacement);
 
 fs.writeFileSync(file,html,'utf8');
-console.log('MAGIC LIGHT taxonomy v7 enabled: robust direct system, category and subcategory filtering.');
+console.log('MAGIC LIGHT taxonomy v7 enabled: robust direct system, family, category, subcategory and brand filtering.');
