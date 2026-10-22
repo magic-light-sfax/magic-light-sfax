@@ -1,7 +1,9 @@
 {
   "name": "Suspension moderne globe",
   "reference": "ML-WA-063",
-  "category": "Lustres & suspensions",
+  "famille": "Éclairage",
+  "sous_categorie": "Suspensions",
+  "category": "Suspensions",
   "description": "Suspension moderne globe. Visuel produit MAGIC LIGHT.",
   "price": null,
   "promo": false,
