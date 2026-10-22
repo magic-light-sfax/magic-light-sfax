@@ -12,7 +12,8 @@ const loadReplacement=`      let products=await r.json();
       const taxonomyParams=new URLSearchParams(location.search);
       const taxonomyRequested=taxonomyNorm(taxonomyParams.get('categorie')||taxonomyParams.get('cat'));
       const taxonomySystemRaw=taxonomyNorm(taxonomyParams.get('systeme')||taxonomyParams.get('system'));
-      const taxonomyIsSystemRequest=/^systeme-\\d+$/.test(taxonomyRequested);
+      const taxonomySystemSuffix=taxonomyRequested.startsWith('systeme-')?taxonomyRequested.slice(8):'';
+      const taxonomyIsSystemRequest=taxonomySystemSuffix!=='' && [...taxonomySystemSuffix].every(ch=>ch>='0'&&ch<='9');
       const taxonomySystem=taxonomySystemRaw || (taxonomyIsSystemRequest?taxonomyRequested:'');
       const taxonomyLeaf=taxonomyIsSystemRequest?'':taxonomyRequested;
       const taxonomyActive=Boolean(taxonomyRequested||taxonomySystemRaw);
@@ -20,8 +21,8 @@ const loadReplacement=`      let products=await r.json();
         const n=taxonomyNorm(v);
         if(!n) return [];
         const out=[n];
-        const m=n.match(/(?:systeme-)?(\\d+)$/);
-        if(m){out.push(m[1], 'systeme-'+m[1]);}
+        const suffix=n.startsWith('systeme-')?n.slice(8):n;
+        if(suffix && [...suffix].every(ch=>ch>='0'&&ch<='9')) out.push(suffix,'systeme-'+suffix);
         return [...new Set(out)];
       };
       const taxonomyValueAliases=v=>{
@@ -64,4 +65,4 @@ const emptyReplacement=`      if(!products.length){
 html=html.replace(emptyNeedle,emptyReplacement);
 
 fs.writeFileSync(file,html,'utf8');
-console.log('MAGIC LIGHT taxonomy v6 enabled: category, system and subcategory filtering from product data.');
+console.log('MAGIC LIGHT taxonomy v7 enabled: robust direct system, category and subcategory filtering.');
