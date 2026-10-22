@@ -3,8 +3,11 @@
   const anchor = document.querySelector('.filterbar') || document.querySelector('.mobile-category-trigger') || document.querySelector('.section-head');
   if (!anchor) return;
 
-  const pendingCategories = new Set(['systeme-45','systeme-44','schneider-electric','legrand','somef','chint','tti','siame']);
-  const requestedCategory = (new URLSearchParams(location.search).get('categorie') || '').toLowerCase();
+  const params = new URLSearchParams(location.search);
+  const pendingCategories = new Set(['schneider-electric','legrand','somef','chint','tti','siame']);
+  const requestedCategory = (params.get('categorie') || '').toLowerCase();
+  const requestedSystem = (params.get('systeme') || params.get('system') || '').toLowerCase();
+  const taxonomyUrlActive = Boolean(requestedCategory || requestedSystem);
   const isPendingCategory = pendingCategories.has(requestedCategory);
 
   const panel = document.createElement('div');
@@ -37,6 +40,7 @@
   const result = $('.ml-filter-result');
 
   function cards(){ return [...document.querySelectorAll('.card[data-cat],.card[data-search]')]; }
+  function taxonomyCards(){ return [...document.querySelectorAll('#adminProductsGrid .card')]; }
   function btn(card){ return card.querySelector('.view-product'); }
   function info(card){
     const b = btn(card);
@@ -55,7 +59,8 @@
 
   function populateCategories(){
     const current = category.value;
-    const cats = [...new Set(cards().map(c=>info(c).cat).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr'));
+    const source = taxonomyUrlActive && taxonomyCards().length ? taxonomyCards() : cards();
+    const cats = [...new Set(source.map(c=>info(c).cat).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr'));
     category.innerHTML = '<option value="">Toutes les catégories</option>' + cats.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
     if(cats.includes(current)) category.value = current;
   }
@@ -124,7 +129,9 @@
     const hi = max.value === '' ? null : Number(max.value);
     const promoOnly = promo.checked;
     const availableOnly = available.checked;
-    cards().forEach(card=>{
+    const source = taxonomyUrlActive ? taxonomyCards() : cards();
+
+    source.forEach(card=>{
       const p=info(card);
       let ok=true;
       if(cat && p.cat!==cat) ok=false;
@@ -134,12 +141,15 @@
       if(availableOnly && !p.available) ok=false;
       card.classList.toggle('ml-advanced-hidden',!ok);
     });
+
     applySort();
-    const combined=cards().filter(isActuallyVisible).length;
+    const combined=source.filter(isActuallyVisible).length;
     const active=!!(cat || min.value || max.value || promoOnly || availableOnly || sort.value!=='default');
     result.textContent = active
       ? `${combined} produit${combined>1?'s':''} affiché${combined>1?'s':''}`
-      : `${combined} produit${combined>1?'s':''} dans le catalogue`;
+      : taxonomyUrlActive
+        ? `${combined} produit${combined===1?'':'s'} dans cette catégorie`
+        : `${combined} produit${combined>1?'s':''} dans le catalogue`;
   }
 
   panel.querySelector('.ml-filter-toggle').addEventListener('click',e=>{
