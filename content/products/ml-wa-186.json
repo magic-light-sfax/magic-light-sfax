@@ -1,7 +1,9 @@
 {
   "name": "Suspension LED — Promo",
   "reference": "ML-WA-186",
-  "category": "Lustres & suspensions",
+  "famille": "Éclairage",
+  "sous_categorie": "Suspensions",
+  "category": "Suspensions",
   "description": "Suspension LED — Promo. Visuel produit MAGIC LIGHT.",
   "price": null,
   "promo": false,
