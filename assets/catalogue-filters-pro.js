@@ -1,17 +1,17 @@
 (() => {
   'use strict';
+  const SOURCE_MARKER = 'magic-light-catalogue-source-v1';
   const anchor = document.querySelector('.filterbar') || document.querySelector('.mobile-category-trigger') || document.querySelector('.section-head');
   if (!anchor) return;
 
   const params = new URLSearchParams(location.search);
-  const pendingCategories = new Set(['schneider-electric','legrand','somef','chint','tti','siame']);
   const requestedCategory = (params.get('categorie') || '').toLowerCase();
   const requestedSystem = (params.get('systeme') || params.get('system') || '').toLowerCase();
   const taxonomyUrlActive = Boolean(requestedCategory || requestedSystem);
-  const isPendingCategory = pendingCategories.has(requestedCategory);
 
   const panel = document.createElement('div');
   panel.className = 'ml-filter-panel';
+  panel.dataset.catalogueSource = SOURCE_MARKER;
   panel.innerHTML = `
     <button class="ml-filter-toggle" type="button" aria-expanded="false">
       <span>⚙️ Filtres avancés</span><span>Catégorie • Prix • Promo • Tri</span>
@@ -39,8 +39,13 @@
   const sort = $('[data-ml-filter="sort"]');
   const result = $('.ml-filter-result');
 
-  function cards(){ return [...document.querySelectorAll('.card[data-cat],.card[data-search]')]; }
-  function taxonomyCards(){ return [...document.querySelectorAll('#adminProductsGrid .card')]; }
+  function sourceGrid(){
+    return document.getElementById('adminProductsGrid') || document.querySelector('#products .container > .grid') || document.querySelector('#products .grid');
+  }
+  function sourceCards(){
+    const grid = sourceGrid();
+    return grid ? [...grid.children].filter(el => el.classList?.contains('card')) : [];
+  }
   function btn(card){ return card.querySelector('.view-product'); }
   function info(card){
     const b = btn(card);
@@ -59,17 +64,14 @@
 
   function populateCategories(){
     const current = category.value;
-    const source = taxonomyUrlActive && taxonomyCards().length ? taxonomyCards() : cards();
-    const cats = [...new Set(source.map(c=>info(c).cat).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr'));
+    const cats = [...new Set(sourceCards().map(c=>info(c).cat).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr'));
     category.innerHTML = '<option value="">Toutes les catégories</option>' + cats.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
     if(cats.includes(current)) category.value = current;
   }
 
   function ensureOrder(){
-    document.querySelectorAll('.grid').forEach(grid=>{
-      [...grid.children].filter(el=>el.classList?.contains('card')).forEach((card,i)=>{
-        if(card.dataset.mlOriginalOrder === undefined || card.dataset.mlOriginalOrder === '') card.dataset.mlOriginalOrder=String(i);
-      });
+    sourceCards().forEach((card,i)=>{
+      if(card.dataset.mlOriginalOrder === undefined || card.dataset.mlOriginalOrder === '') card.dataset.mlOriginalOrder=String(i);
     });
   }
 
@@ -77,38 +79,24 @@
   function applySort(){
     ensureOrder();
     const mode = sort.value;
-    if(mode==='default') return;
-    internalReorder=true;
-    document.querySelectorAll('.grid').forEach(grid=>{
-      const current=[...grid.children].filter(el=>el.classList?.contains('card'));
-      const desired=[...current].sort((a,b)=>{
-        const A=info(a), B=info(b);
-        if(mode==='price-asc') return (Number.isFinite(A.price)?A.price:Infinity)-(Number.isFinite(B.price)?B.price:Infinity);
-        if(mode==='price-desc') return (Number.isFinite(B.price)?B.price:-Infinity)-(Number.isFinite(A.price)?A.price:-Infinity);
-        if(mode==='name-asc') return A.name.localeCompare(B.name,'fr');
-        if(mode==='name-desc') return B.name.localeCompare(A.name,'fr');
-        return 0;
-      });
-      const changed=desired.some((card,i)=>card!==current[i]);
-      if(changed) desired.forEach(card=>grid.appendChild(card));
+    const grid = sourceGrid();
+    if(!grid) return;
+    const current = sourceCards();
+    let desired = [...current];
+    if(mode==='default') desired.sort((a,b)=>Number(a.dataset.mlOriginalOrder||0)-Number(b.dataset.mlOriginalOrder||0));
+    else desired.sort((a,b)=>{
+      const A=info(a), B=info(b);
+      if(mode==='price-asc') return (Number.isFinite(A.price)?A.price:Infinity)-(Number.isFinite(B.price)?B.price:Infinity);
+      if(mode==='price-desc') return (Number.isFinite(B.price)?B.price:-Infinity)-(Number.isFinite(A.price)?A.price:-Infinity);
+      if(mode==='name-asc') return A.name.localeCompare(B.name,'fr');
+      if(mode==='name-desc') return B.name.localeCompare(A.name,'fr');
+      return 0;
     });
+    const changed=desired.some((card,i)=>card!==current[i]);
+    if(!changed) return;
+    internalReorder=true;
+    desired.forEach(card=>grid.appendChild(card));
     queueMicrotask(()=>{ internalReorder=false; });
-  }
-
-  function ensurePendingEmpty(){
-    if(!isPendingCategory) return false;
-    cards().forEach(card=>card.classList.add('ml-advanced-hidden'));
-    result.textContent='0 produit dans le catalogue';
-    let empty=document.getElementById('ml-category-empty');
-    if(!empty){
-      empty=document.createElement('div');
-      empty.id='ml-category-empty';
-      empty.style.cssText='max-width:900px;margin:30px auto;padding:30px 20px;text-align:center;border:1px dashed #d9dde3;border-radius:16px;background:#fff;color:#777';
-      empty.innerHTML='<strong style="display:block;color:#222;font-size:1.1rem;margin-bottom:7px">Aucun produit pour le moment</strong><span>Les produits de cette catégorie seront ajoutés prochainement.</span>';
-      const grid=document.getElementById('adminProductsGrid')||document.querySelector('.grid');
-      if(grid&&grid.parentNode) grid.parentNode.insertBefore(empty,grid);
-    }
-    return true;
   }
 
   function isActuallyVisible(card){
@@ -123,13 +111,12 @@
   }
 
   function apply(){
-    if(ensurePendingEmpty()) return;
     const cat = category.value;
     const lo = min.value === '' ? null : Number(min.value);
     const hi = max.value === '' ? null : Number(max.value);
     const promoOnly = promo.checked;
     const availableOnly = available.checked;
-    const source = taxonomyUrlActive ? taxonomyCards() : cards();
+    const source = sourceCards();
 
     source.forEach(card=>{
       const p=info(card);
@@ -146,10 +133,10 @@
     const combined=source.filter(isActuallyVisible).length;
     const active=!!(cat || min.value || max.value || promoOnly || availableOnly || sort.value!=='default');
     result.textContent = active
-      ? `${combined} produit${combined>1?'s':''} affiché${combined>1?'s':''}`
+      ? `${combined} produit${combined===1?'':'s'} affiché${combined===1?'':'s'}`
       : taxonomyUrlActive
         ? `${combined} produit${combined===1?'':'s'} dans cette catégorie`
-        : `${combined} produit${combined>1?'s':''} dans le catalogue`;
+        : `${combined} produit${combined===1?'':'s'} dans le catalogue`;
   }
 
   panel.querySelector('.ml-filter-toggle').addEventListener('click',e=>{
@@ -163,10 +150,10 @@
 
   populateCategories(); ensureOrder(); apply();
 
-  const host=document.getElementById('adminProductsGrid');
+  const host=sourceGrid();
   if(host){
     const known=new WeakSet();
-    cards().forEach(card=>known.add(card));
+    sourceCards().forEach(card=>known.add(card));
     let pending=0;
     const observer=new MutationObserver(records=>{
       if(internalReorder) return;
@@ -175,8 +162,8 @@
         for(const node of record.addedNodes){
           if(!(node instanceof Element)) continue;
           const candidates=[];
-          if(node.matches?.('.card[data-cat],.card[data-search]')) candidates.push(node);
-          node.querySelectorAll?.('.card[data-cat],.card[data-search]').forEach(c=>candidates.push(c));
+          if(node.matches?.('.card')) candidates.push(node);
+          node.querySelectorAll?.('.card').forEach(c=>candidates.push(c));
           for(const card of candidates){
             if(!known.has(card)){ known.add(card); hasNewProduct=true; }
           }
