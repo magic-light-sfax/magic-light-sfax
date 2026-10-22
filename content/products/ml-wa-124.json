@@ -1,7 +1,9 @@
 {
   "name": "Suspension LED design moderne",
   "reference": "ML-WA-124",
-  "category": "Lustres & suspensions",
+  "famille": "Éclairage",
+  "sous_categorie": "Suspensions",
+  "category": "Suspensions",
   "description": "Suspension LED design moderne. Visuel produit MAGIC LIGHT.",
   "price": null,
   "promo": false,
