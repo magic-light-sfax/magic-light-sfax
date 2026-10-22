@@ -24,23 +24,14 @@ for(const page of pages){
   if(!fs.existsSync(file)){failures.push(page+': missing');continue;}
   const html=fs.readFileSync(file,'utf8');
 
-  if(/produits(?:\.html)?\?categorie=systeme-\d+/i.test(html)){
-    failures.push(page+': legacy system URL still present');
-  }
+  if(/produits(?:\.html)?\?categorie=systeme-\d+/i.test(html)) failures.push(page+': legacy system URL still present');
 
-  const layoutMarkers=[
-    'magic-light-products-final-v3',
-    'magic-light-products-sanity-v3',
-    'magic-light-products-3col-v4'
-  ].filter(mark=>html.includes(mark));
-  if(layoutMarkers.length!==1 || layoutMarkers[0]!=='magic-light-products-3col-v4'){
-    failures.push(page+': expected one mobile layout authority (magic-light-products-3col-v4), found '+layoutMarkers.join(', '));
-  }
+  const layoutMarkers=['magic-light-products-final-v3','magic-light-products-sanity-v3','magic-light-products-3col-v4'].filter(mark=>html.includes(mark));
+  if(layoutMarkers.length!==1 || layoutMarkers[0]!=='magic-light-products-3col-v4') failures.push(page+': expected one mobile layout authority (magic-light-products-3col-v4), found '+layoutMarkers.join(', '));
 
   const taxonomyScripts=(html.match(/<script id=["']magic-light-final-taxonomy-sync-v\d+["']/g)||[]);
-  if(taxonomyScripts.length!==1 || !taxonomyScripts[0].includes('magic-light-final-taxonomy-sync-v5')){
-    failures.push(page+': taxonomy finalizer mismatch: '+taxonomyScripts.join(', '));
-  }
+  if(taxonomyScripts.length!==1 || !taxonomyScripts[0].includes('magic-light-final-taxonomy-sync-v6')) failures.push(page+': taxonomy finalizer mismatch: '+taxonomyScripts.join(', '));
+  if(!html.includes("legacy.style.setProperty('display','none','important')")) failures.push(page+': taxonomy legacy-grid mobile protection missing');
 
   if(!html.includes('magic-light-system-url-normalizer-v1')) failures.push(page+': system URL normalizer missing');
   if(!html.includes('magic-light-category-navigation-v5')) failures.push(page+': category navigation v5 missing');
@@ -50,7 +41,6 @@ for(const page of pages){
   for(const system of ['43','44','45']){
     if(!html.includes('produits.html?systeme=systeme-'+system)) failures.push(page+': direct Système '+system+' URL missing');
   }
-
   if(!html.includes('produits.html?categorie=gamme-etanche&systeme=systeme-43')) failures.push(page+': Système 43 / Gamme étanche child URL missing');
 
   for(const asset of requiredCatalogueAssets){
@@ -60,15 +50,12 @@ for(const page of pages){
 }
 
 const filterFile=path.join(dist,'assets','catalogue-filters-pro.js');
-if(!fs.existsSync(filterFile)){
-  failures.push('assets/catalogue-filters-pro.js: missing');
-}else{
+if(!fs.existsSync(filterFile)) failures.push('assets/catalogue-filters-pro.js: missing');
+else{
   const filters=fs.readFileSync(filterFile,'utf8');
   if(!filters.includes('magic-light-catalogue-source-v1')) failures.push('catalogue filters: single-source marker missing');
   if(filters.includes('pendingCategories') || filters.includes('function taxonomyCards()')) failures.push('catalogue filters: legacy multi-source/pending logic still present');
-  for(const token of ['data-ml-filter="min"','data-ml-filter="max"','data-ml-filter="promo"','data-ml-filter="available"','data-ml-filter="sort"','price-asc','price-desc','name-asc','name-desc']){
-    if(!filters.includes(token)) failures.push('catalogue filters: missing '+token);
-  }
+  for(const token of ['data-ml-filter="min"','data-ml-filter="max"','data-ml-filter="promo"','data-ml-filter="available"','data-ml-filter="sort"','price-asc','price-desc','name-asc','name-desc']) if(!filters.includes(token)) failures.push('catalogue filters: missing '+token);
 }
 
 const searchFile=path.join(dist,'assets','catalogue-search-pro.js');
@@ -77,9 +64,8 @@ const favoritesFile=path.join(dist,'assets','catalogue-favorites.js');
 if(!fs.existsSync(favoritesFile) || fs.statSync(favoritesFile).size<100) failures.push('catalogue favorites: missing or unexpectedly empty');
 
 const productsJson=path.join(dist,'data','products.json');
-if(!fs.existsSync(productsJson)){
-  failures.push('data/products.json: missing');
-}else{
+if(!fs.existsSync(productsJson)) failures.push('data/products.json: missing');
+else{
   try{
     const products=JSON.parse(fs.readFileSync(productsJson,'utf8'));
     if(!Array.isArray(products) || products.length===0) failures.push('data/products.json: no products');
@@ -90,9 +76,7 @@ if(!fs.existsSync(productsJson)){
       if(refs.has(ref)) failures.push('data/products.json: duplicate reference '+ref);
       refs.add(ref);
     }
-  }catch(e){
-    failures.push('data/products.json: invalid JSON - '+e.message);
-  }
+  }catch(e){ failures.push('data/products.json: invalid JSON - '+e.message); }
 }
 
 if(failures.length){
@@ -101,4 +85,4 @@ if(failures.length){
   process.exit(1);
 }
 
-console.log('Nettoyage Catalogue V1 FINAL validation OK: one product source, one mobile layout authority, polished universal catalogue navigation v5 for desktop/tablet/mobile, catalogue assets present once, filters valid, product data readable and references unique.');
+console.log('Nettoyage Catalogue V1 FINAL validation OK: taxonomy v6 protects mobile pages from the legacy all-products grid, one product source, one mobile layout authority, universal catalogue navigation v5, catalogue assets valid, product data readable and references unique.');
