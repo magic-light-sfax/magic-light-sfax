@@ -1,7 +1,9 @@
 {
   "name": "Appliques murales géométriques",
   "reference": "ML-WA-039",
-  "category": "Éclairage extérieur",
+  "famille": "Éclairage",
+  "sous_categorie": "Appliques",
+  "category": "Applique moderne",
   "description": "Appliques murales géométriques. Visuel produit MAGIC LIGHT.",
   "price": null,
   "promo": false,
