@@ -1,7 +1,9 @@
 {
   "name": "Suspension industrielle tuyau vintage",
   "reference": "LUS-IND-001",
-  "category": "Lustres & suspensions",
+  "famille": "Éclairage",
+  "sous_categorie": "Suspensions",
+  "category": "Suspensions",
   "description": "Suspension décorative industrielle style tuyau avec douille vintage, idéale pour café, restaurant, cuisine ou loft.",
   "price": 150.0,
   "promo": true,
