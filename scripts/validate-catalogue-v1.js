@@ -34,7 +34,7 @@ for(const page of pages){
   if(!html.includes('magic-light-taxonomy-early-v1')) failures.push(page+': early taxonomy prehide missing');
 
   if(!html.includes('magic-light-system-url-normalizer-v1')) failures.push(page+': system URL normalizer missing');
-  if(!html.includes('magic-light-category-navigation-v5')) failures.push(page+': category navigation v5 missing');
+  if(!html.includes('magic-light-category-navigation-v6-real-families')) failures.push(page+': real-family catalogue navigation v6 missing');
   if(!html.includes('magic-light-catalogue-context-nav-v5')) failures.push(page+': polished universal contextual catalogue navigation v5 missing');
   if(!html.includes('Parcourir le catalogue')) failures.push(page+': mobile catalogue trigger missing');
 
@@ -85,4 +85,4 @@ if(failures.length){
   process.exit(1);
 }
 
-console.log('Nettoyage Catalogue V1 FINAL validation OK: taxonomy v7 and early prehide present, one product source, one mobile layout authority, universal catalogue navigation v5, catalogue assets valid, product data readable and references unique.');
+console.log('Nettoyage Catalogue V1 FINAL validation OK: taxonomy v7, real-family navigation v6, early prehide, one product source, one mobile layout authority, catalogue assets valid, product data readable and references unique.');
