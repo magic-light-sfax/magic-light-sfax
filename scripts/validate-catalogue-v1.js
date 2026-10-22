@@ -50,6 +50,10 @@ for(const page of pages){
     failures.push(page+': category navigation v5 missing');
   }
 
+  if(!html.includes('magic-light-catalogue-context-nav-v1')){
+    failures.push(page+': contextual catalogue navigation missing');
+  }
+
   for(const system of ['43','44','45']){
     if(!html.includes('produits.html?systeme=systeme-'+system)){
       failures.push(page+': direct Système '+system+' URL missing');
@@ -127,4 +131,4 @@ if(failures.length){
   process.exit(1);
 }
 
-console.log('Nettoyage Catalogue V1 FINAL validation OK: one product source, one mobile layout authority, catalogue assets present once, dynamic filter controls validated in their script, direct system navigation valid, product data readable and references unique.');
+console.log('Nettoyage Catalogue V1 FINAL validation OK: one product source, one mobile layout authority, contextual navigation present, catalogue assets present once, dynamic filter controls validated in their script, direct system navigation valid, product data readable and references unique.');
