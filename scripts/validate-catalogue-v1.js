@@ -42,27 +42,16 @@ for(const page of pages){
     failures.push(page+': taxonomy finalizer mismatch: '+taxonomyScripts.join(', '));
   }
 
-  if(!html.includes('magic-light-system-url-normalizer-v1')){
-    failures.push(page+': system URL normalizer missing');
-  }
-
-  if(!html.includes('magic-light-category-navigation-v5')){
-    failures.push(page+': category navigation v5 missing');
-  }
-
-  if(!html.includes('magic-light-catalogue-context-nav-v3')){
-    failures.push(page+': universal contextual catalogue navigation v3 missing');
-  }
+  if(!html.includes('magic-light-system-url-normalizer-v1')) failures.push(page+': system URL normalizer missing');
+  if(!html.includes('magic-light-category-navigation-v5')) failures.push(page+': category navigation v5 missing');
+  if(!html.includes('magic-light-catalogue-context-nav-v4')) failures.push(page+': professional universal contextual catalogue navigation v4 missing');
+  if(!html.includes('Parcourir le catalogue')) failures.push(page+': mobile catalogue trigger missing');
 
   for(const system of ['43','44','45']){
-    if(!html.includes('produits.html?systeme=systeme-'+system)){
-      failures.push(page+': direct Système '+system+' URL missing');
-    }
+    if(!html.includes('produits.html?systeme=systeme-'+system)) failures.push(page+': direct Système '+system+' URL missing');
   }
 
-  if(!html.includes('produits.html?categorie=gamme-etanche&systeme=systeme-43')){
-    failures.push(page+': Système 43 / Gamme étanche child URL missing');
-  }
+  if(!html.includes('produits.html?categorie=gamme-etanche&systeme=systeme-43')) failures.push(page+': Système 43 / Gamme étanche child URL missing');
 
   for(const asset of requiredCatalogueAssets){
     const count=countLiteral(html,asset);
@@ -75,36 +64,17 @@ if(!fs.existsSync(filterFile)){
   failures.push('assets/catalogue-filters-pro.js: missing');
 }else{
   const filters=fs.readFileSync(filterFile,'utf8');
-  if(!filters.includes('magic-light-catalogue-source-v1')){
-    failures.push('catalogue filters: single-source marker missing');
-  }
-  if(filters.includes('pendingCategories') || filters.includes('function taxonomyCards()')){
-    failures.push('catalogue filters: legacy multi-source/pending logic still present');
-  }
-  for(const token of [
-    'data-ml-filter="min"',
-    'data-ml-filter="max"',
-    'data-ml-filter="promo"',
-    'data-ml-filter="available"',
-    'data-ml-filter="sort"',
-    'price-asc',
-    'price-desc',
-    'name-asc',
-    'name-desc'
-  ]){
+  if(!filters.includes('magic-light-catalogue-source-v1')) failures.push('catalogue filters: single-source marker missing');
+  if(filters.includes('pendingCategories') || filters.includes('function taxonomyCards()')) failures.push('catalogue filters: legacy multi-source/pending logic still present');
+  for(const token of ['data-ml-filter="min"','data-ml-filter="max"','data-ml-filter="promo"','data-ml-filter="available"','data-ml-filter="sort"','price-asc','price-desc','name-asc','name-desc']){
     if(!filters.includes(token)) failures.push('catalogue filters: missing '+token);
   }
 }
 
 const searchFile=path.join(dist,'assets','catalogue-search-pro.js');
-if(!fs.existsSync(searchFile) || fs.statSync(searchFile).size<100){
-  failures.push('catalogue search: missing or unexpectedly empty');
-}
-
+if(!fs.existsSync(searchFile) || fs.statSync(searchFile).size<100) failures.push('catalogue search: missing or unexpectedly empty');
 const favoritesFile=path.join(dist,'assets','catalogue-favorites.js');
-if(!fs.existsSync(favoritesFile) || fs.statSync(favoritesFile).size<100){
-  failures.push('catalogue favorites: missing or unexpectedly empty');
-}
+if(!fs.existsSync(favoritesFile) || fs.statSync(favoritesFile).size<100) failures.push('catalogue favorites: missing or unexpectedly empty');
 
 const productsJson=path.join(dist,'data','products.json');
 if(!fs.existsSync(productsJson)){
@@ -131,4 +101,4 @@ if(failures.length){
   process.exit(1);
 }
 
-console.log('Nettoyage Catalogue V1 FINAL validation OK: one product source, one mobile layout authority, universal contextual navigation v3 present with sibling/child levels, catalogue assets present once, dynamic filter controls validated in their script, direct system navigation valid, product data readable and references unique.');
+console.log('Nettoyage Catalogue V1 FINAL validation OK: one product source, one mobile layout authority, professional universal catalogue navigation v4 for desktop/tablet/mobile, catalogue assets present once, filters valid, product data readable and references unique.');
