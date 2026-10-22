@@ -1,7 +1,9 @@
 {
   "name": "Système linéaire suspendu",
   "reference": "ML-WA-115",
-  "category": "Lustres & suspensions",
+  "famille": "Éclairage",
+  "sous_categorie": "Systèmes linéaires",
+  "category": "Système linéaire suspendu",
   "description": "Système linéaire suspendu. Visuel produit MAGIC LIGHT.",
   "price": null,
   "promo": false,
