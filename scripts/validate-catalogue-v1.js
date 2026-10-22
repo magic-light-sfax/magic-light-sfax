@@ -34,14 +34,14 @@ for(const page of pages){
   if(!html.includes('magic-light-taxonomy-early-v1')) failures.push(page+': early taxonomy prehide missing');
 
   if(!html.includes('magic-light-system-url-normalizer-v1')) failures.push(page+': system URL normalizer missing');
-  if(!html.includes('magic-light-category-navigation-v6-real-families')) failures.push(page+': real-family catalogue navigation v6 missing');
+  if(!html.includes('magic-light-category-navigation-v5')) failures.push(page+': category navigation v5 missing');
   if(!html.includes('magic-light-catalogue-context-nav-v5')) failures.push(page+': polished universal contextual catalogue navigation v5 missing');
   if(!html.includes('Parcourir le catalogue')) failures.push(page+': mobile catalogue trigger missing');
 
-  // Real-family navigation is generated from products.json. Do not require empty legacy
-  // families/systems (43/44/45) to be present as static links in every build.
-  if(!html.includes('ml-real-family-link')) failures.push(page+': real product-family links missing');
-  if(!html.includes('TOUTES NOS FAMILLES') && !html.includes('FAMILLES MAGIC LIGHT')) failures.push(page+': real-family menu labels missing');
+  for(const system of ['43','44','45']){
+    if(!html.includes('produits.html?systeme=systeme-'+system)) failures.push(page+': direct Système '+system+' URL missing');
+  }
+  if(!html.includes('produits.html?categorie=gamme-etanche&systeme=systeme-43')) failures.push(page+': Système 43 / Gamme étanche child URL missing');
 
   for(const asset of requiredCatalogueAssets){
     const count=countLiteral(html,asset);
@@ -70,19 +70,12 @@ else{
     const products=JSON.parse(fs.readFileSync(productsJson,'utf8'));
     if(!Array.isArray(products) || products.length===0) failures.push('data/products.json: no products');
     const refs=new Set();
-    let realFamilies=0;
-    const familySet=new Set();
     for(const product of Array.isArray(products)?products:[]){
       const ref=String(product.reference||'').trim();
-      if(ref){
-        if(refs.has(ref)) failures.push('data/products.json: duplicate reference '+ref);
-        refs.add(ref);
-      }
-      const family=String(product.famille||'').trim();
-      if(family && family!=='À classer') familySet.add(family);
+      if(!ref) continue;
+      if(refs.has(ref)) failures.push('data/products.json: duplicate reference '+ref);
+      refs.add(ref);
     }
-    realFamilies=familySet.size;
-    if(realFamilies===0) failures.push('data/products.json: no real product families after normalization');
   }catch(e){ failures.push('data/products.json: invalid JSON - '+e.message); }
 }
 
@@ -92,4 +85,4 @@ if(failures.length){
   process.exit(1);
 }
 
-console.log('Nettoyage Catalogue V1 FINAL validation OK: taxonomy v7, dynamic real-family navigation v6, early prehide, one product source, one mobile layout authority, catalogue assets valid, product data readable and references unique.');
+console.log('Nettoyage Catalogue V1 FINAL validation OK: taxonomy v7 and early prehide present, one product source, one mobile layout authority, universal catalogue navigation v5, catalogue assets valid, product data readable and references unique.');
