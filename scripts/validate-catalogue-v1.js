@@ -30,8 +30,11 @@ for(const page of pages){
   if(layoutMarkers.length!==1 || layoutMarkers[0]!=='magic-light-products-3col-v4') failures.push(page+': expected one mobile layout authority (magic-light-products-3col-v4), found '+layoutMarkers.join(', '));
 
   const taxonomyScripts=(html.match(/<script id=["']magic-light-final-taxonomy-sync-v\d+["']/g)||[]);
-  if(taxonomyScripts.length!==1 || !taxonomyScripts[0].includes('magic-light-final-taxonomy-sync-v6')) failures.push(page+': taxonomy finalizer mismatch: '+taxonomyScripts.join(', '));
+  if(taxonomyScripts.length!==1 || !taxonomyScripts[0].includes('magic-light-final-taxonomy-sync-v7')) failures.push(page+': taxonomy finalizer mismatch: '+taxonomyScripts.join(', '));
+  if(!html.includes('magic-light-taxonomy-early-v1')) failures.push(page+': early taxonomy prehide missing');
+  if(!html.includes("products.style.setProperty('display','none','important')")) failures.push(page+': full legacy catalogue collapse missing');
   if(!html.includes("legacy.style.setProperty('display','none','important')")) failures.push(page+': taxonomy legacy-grid mobile protection missing');
+  if(!html.includes("adminGrid.style.setProperty('grid-auto-rows','max-content','important')")) failures.push(page+': filtered grid height normalization missing');
 
   if(!html.includes('magic-light-system-url-normalizer-v1')) failures.push(page+': system URL normalizer missing');
   if(!html.includes('magic-light-category-navigation-v5')) failures.push(page+': category navigation v5 missing');
@@ -85,4 +88,4 @@ if(failures.length){
   process.exit(1);
 }
 
-console.log('Nettoyage Catalogue V1 FINAL validation OK: taxonomy v6 protects mobile pages from the legacy all-products grid, one product source, one mobile layout authority, universal catalogue navigation v5, catalogue assets valid, product data readable and references unique.');
+console.log('Nettoyage Catalogue V1 FINAL validation OK: taxonomy v7 pre-hides and fully collapses the legacy catalogue on filtered pages, filtered grid height normalized, one product source, one mobile layout authority, universal catalogue navigation v5, catalogue assets valid, product data readable and references unique.');
