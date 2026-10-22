@@ -23,9 +23,9 @@ for(const page of pages){
     failures.push(page+': expected one mobile layout authority (magic-light-products-3col-v4), found '+layoutMarkers.join(', '));
   }
 
-  const taxonomyMarkers=(html.match(/magic-light-final-taxonomy-sync-v\d+/g)||[]);
-  if(taxonomyMarkers.length!==1 || taxonomyMarkers[0]!=='magic-light-final-taxonomy-sync-v3'){
-    failures.push(page+': taxonomy finalizer mismatch: '+taxonomyMarkers.join(', '));
+  const taxonomyScripts=(html.match(/<script id=["']magic-light-final-taxonomy-sync-v\d+["']/g)||[]);
+  if(taxonomyScripts.length!==1 || !taxonomyScripts[0].includes('magic-light-final-taxonomy-sync-v4')){
+    failures.push(page+': taxonomy finalizer mismatch: '+taxonomyScripts.join(', '));
   }
 
   if(!html.includes('magic-light-system-url-normalizer-v1')){
@@ -39,4 +39,4 @@ if(failures.length){
   process.exit(1);
 }
 
-console.log('Nettoyage Catalogue V1 validation OK: one mobile layout authority, normalized system URLs, one taxonomy finalizer.');
+console.log('Nettoyage Catalogue V1 validation OK: one mobile layout authority, normalized system URLs, one taxonomy finalizer v4.');
