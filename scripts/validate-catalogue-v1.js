@@ -24,12 +24,25 @@ for(const page of pages){
   }
 
   const taxonomyScripts=(html.match(/<script id=["']magic-light-final-taxonomy-sync-v\d+["']/g)||[]);
-  if(taxonomyScripts.length!==1 || !taxonomyScripts[0].includes('magic-light-final-taxonomy-sync-v4')){
+  if(taxonomyScripts.length!==1 || !taxonomyScripts[0].includes('magic-light-final-taxonomy-sync-v5')){
     failures.push(page+': taxonomy finalizer mismatch: '+taxonomyScripts.join(', '));
   }
 
   if(!html.includes('magic-light-system-url-normalizer-v1')){
     failures.push(page+': system URL normalizer missing');
+  }
+}
+
+const filterFile=path.join(dist,'assets','catalogue-filters-pro.js');
+if(!fs.existsSync(filterFile)){
+  failures.push('assets/catalogue-filters-pro.js: missing');
+}else{
+  const filters=fs.readFileSync(filterFile,'utf8');
+  if(!filters.includes('magic-light-catalogue-source-v1')){
+    failures.push('catalogue filters: single-source marker missing');
+  }
+  if(filters.includes('pendingCategories') || filters.includes('function taxonomyCards()')){
+    failures.push('catalogue filters: legacy multi-source/pending logic still present');
   }
 }
 
@@ -39,4 +52,4 @@ if(failures.length){
   process.exit(1);
 }
 
-console.log('Nettoyage Catalogue V1 validation OK: one mobile layout authority, normalized system URLs, one taxonomy finalizer v4.');
+console.log('Nettoyage Catalogue V1 validation OK: one mobile layout authority, one product source, normalized system URLs, taxonomy finalizer v5.');
