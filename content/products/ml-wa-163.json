@@ -1,7 +1,8 @@
 {
   "name": "Applique extérieure lanterne",
   "reference": "ML-WA-163",
-  "category": "Éclairage extérieur",
+  "sous_categorie": "Appliques",
+  "category": "Applique extérieure",
   "description": "Applique extérieure lanterne. Visuel produit MAGIC LIGHT.",
   "price": null,
   "promo": false,
