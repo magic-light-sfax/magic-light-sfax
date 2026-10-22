@@ -1,7 +1,9 @@
 {
   "name": "Applique murale carrée IP65",
   "reference": "ML-WA-030",
-  "category": "Éclairage extérieur",
+  "famille": "Éclairage",
+  "sous_categorie": "Appliques",
+  "category": "Applique extérieure",
   "description": "Applique murale carrée IP65. Visuel produit MAGIC LIGHT.",
   "price": null,
   "promo": false,
