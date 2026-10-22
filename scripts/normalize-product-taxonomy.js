@@ -23,170 +23,166 @@ function classify(p){
   const oldFamily=String(p.famille||p.family||'').trim();
   const oldSystem=String(p.systeme||p.system||'').trim();
   const text=norm([p.name,p.reference,oldCategory,oldSub,oldFamily,p.description,p.image].filter(Boolean).join(' '));
-  const out={famille:oldFamily,sous_categorie:oldSub,category:oldCategory,systeme:oldSystem,marque:firstBrand(text)};
-  const set=(fam,sub,cat,system)=>{
-    out.famille=fam||''; out.sous_categorie=sub||''; out.category=cat||sub||fam||'Autres';
+  const out={famille:oldFamily||oldCategory||'À classer',sous_categorie:'',category:oldCategory||oldFamily||'À classer',systeme:oldSystem,marque:firstBrand(text)};
+  const set=(family,category=family,system)=>{
+    out.famille=family;
+    out.sous_categorie='';
+    out.category=category;
     if(system!==undefined) out.systeme=system||'';
   };
 
-  // Keep the known SOMEF Système 43 waterproof range exact.
-  if((has(text,'prise etanche','gamme etanche') || has(text,'ip55')) && has(text,'somef')){
-    set('Électricité domestique','Interrupteurs & prises','Gamme étanche','Système 43'); return out;
-  }
-
-  // SECURITY & COMMUNICATION — before solar/lighting rules.
+  // Cameras: each real type stays separate.
   if(has(text,'camera','cameras','surveillance','ptz','dome')){
-    set('Sécurité & communication','Caméras de surveillance',has(text,'solaire')?'Caméras solaires':has(text,'wifi')?'Caméras WiFi':'Caméras de surveillance'); return out;
-  }
-  if(has(text,'interphone','visiophone','video doorbell','doorbell','intercom','akuvox')){
-    set('Sécurité & communication','Interphones',has(text,'visiophone','video','ecran')?'Interphone vidéo':'Interphones'); return out;
-  }
-
-  // SPORT / LEISURE / CAMPING.
-  if(has(text,'matelas gonflable','dura beam')){
-    set('Sport & loisirs','Camping & plein air','Matelas gonflables'); return out;
-  }
-  if(has(text,'camping','peche') && has(text,'lampe','eclairage','rgb','solaire')){
-    set('Sport & loisirs','Camping & plein air','Éclairage camping'); return out;
+    if(has(text,'solaire') && has(text,'4g')) set('Caméras solaires 4G');
+    else if(has(text,'solaire') && has(text,'wifi')) set('Caméras solaires Wi‑Fi');
+    else if(has(text,'solaire')) set('Caméras solaires');
+    else if(has(text,'wifi') && has(text,'exterieur')) set('Caméras Wi‑Fi extérieures');
+    else if(has(text,'wifi') && has(text,'interieur')) set('Caméras Wi‑Fi intérieures');
+    else if(has(text,'wifi')) set('Caméras Wi‑Fi');
+    else if(has(text,'exterieur')) set('Caméras extérieures');
+    else if(has(text,'interieur','dome')) set('Caméras intérieures');
+    else set('Caméras de surveillance');
+    return out;
   }
 
-  // DECORATION / GIFTS / WELLNESS.
-  if(has(text,'horloge murale','horloge decorative')){
-    set('Décoration & cadeaux','Horloges décoratives','Horloges décoratives'); return out;
-  }
-  if(has(text,'cadre photo','cadres photo')){
-    set('Décoration & cadeaux','Cadres photo','Cadres photo'); return out;
-  }
-  if(has(text,'statue','rhinoceros','objet decoratif','decoration rhinoceros')){
-    set('Décoration & cadeaux','Statues & objets déco','Statues & objets déco'); return out;
-  }
-  if(has(text,'meuble decoratif','tiroirs fleuris','rangement decoratif')){
-    set('Décoration & cadeaux','Rangements décoratifs','Rangements décoratifs'); return out;
-  }
-  if(has(text,'humidificateur','diffuseur d aromes','aromatherapie')){
-    set('Bien-être & maison','Humidificateurs & diffuseurs','Humidificateurs & diffuseurs'); return out;
-  }
-  if(has(text,'ventilateur')){
-    set('Bien-être & maison','Ventilateurs','Ventilateurs'); return out;
-  }
+  // Interphones / video door entry.
+  if(has(text,'visiophone')){ set('Visiophones'); return out; }
+  if(has(text,'interphone video','video doorbell','intercom video')){ set('Interphones vidéo'); return out; }
+  if(has(text,'interphone','doorbell','intercom','akuvox')){ set('Interphones'); return out; }
 
-  // ELECTRICITY.
-  if(has(text,'fil rigide','h07vu','fil electrique','fils electriques')){
-    set('Câbles, fils & conduites','Fils électriques','Fils rigides'); return out;
-  }
-  if(has(text,'cable electrique','cables electriques')){
-    set('Câbles, fils & conduites','Câbles électriques','Câbles électriques'); return out;
-  }
-  if(has(text,'gaine','conduite')){
-    set('Câbles, fils & conduites','Conduites & gaines','Conduites & gaines'); return out;
-  }
-  if(has(text,'disjoncteur','disjoncteurs')){
-    set('Électricité domestique','Protection électrique','Disjoncteurs'); return out;
-  }
-  if(has(text,'coffret hager','coffret electrique','tableau electrique','tableaux coffrets')){
-    set('Électricité domestique','Tableaux & coffrets','Coffrets électriques'); return out;
-  }
-  if(has(text,'controleur protecteur','protecteur electrique','protection commande')){
-    set('Électricité industrielle','Protection & commande','Protection & commande'); return out;
-  }
-  if(has(text,'contacteur')){
-    set('Électricité industrielle','Contacteurs','Contacteurs'); return out;
-  }
-  if(has(text,'variateur de frequence')){
-    set('Électricité industrielle','Variateurs de fréquence','Variateurs de fréquence'); return out;
-  }
-  if(has(text,'detecteur de mouvement','detecteur mouvement','detecteur presence')){
-    set('Relais & temporisateurs','Détecteurs mouvement / présence','Détecteur de mouvement'); return out;
-  }
-  if(has(text,'maison connectee')){
-    set('Électricité domestique','Appareillage domestique','Maison connectée'); return out;
-  }
-  if(has(text,'interrupteurs prises','interrupteur et prise','interrupteurs et prises')){
-    set('Électricité domestique','Interrupteurs & prises','Interrupteurs & prises',oldSystem); return out;
-  }
-  if(has(text,'prise de sol','prises de sol','colonnes somef')){
-    set('Électricité domestique','Interrupteurs & prises','Prises'); return out;
-  }
+  // Solar lighting: no mixing with normal projectors/spots/appliques.
+  if(has(text,'projecteur solaire')){ set('Projecteurs solaires'); return out; }
+  if(has(text,'lampadaire solaire')){ set('Lampadaires solaires'); return out; }
+  if(has(text,'spot solaire')){ set('Spots solaires'); return out; }
+  if(has(text,'applique solaire','lampe solaire murale')){ set('Appliques solaires'); return out; }
+  if(has(text,'lampe solaire') && has(text,'camping','peche')){ set('Lampes solaires camping'); return out; }
 
-  // PHOTOVOLTAIC (not lighting/cameras).
-  if(has(text,'panneau solaire','panneaux solaires')){
-    set('Photovoltaïque','Panneaux solaires','Panneaux solaires'); return out;
-  }
-  if(has(text,'onduleur solaire')){
-    set('Photovoltaïque','Onduleurs solaires','Onduleurs solaires'); return out;
-  }
-  if(has(text,'chargeur solaire')){
-    set('Photovoltaïque','Accessoires solaires','Chargeurs solaires'); return out;
-  }
-
-  // LIGHTING — specific rules before generic lamp/LED rules.
-  if(has(text,'lampadaire solaire','lampe solaire murale','spot solaire jardin','spot solaire','eclairage solaire')){
-    set('Éclairage','Éclairage solaire',has(text,'lampadaire')?'Lampadaires solaires':has(text,'spot')?'Spots solaires':'Appliques solaires'); return out;
-  }
-  if(has(text,'par led','evenementiel','uv eclairage','lampe uv')){
-    set('Éclairage','Éclairage événementiel',has(text,'par led')?'PAR LED':'Éclairage événementiel'); return out;
-  }
-  if(has(text,'lampe de secours','spot secours','secours led')){
-    set('Éclairage','Éclairage de secours','Éclairage de secours'); return out;
-  }
-  if(has(text,'step light','escalier','meubles placards','spot meuble')){
-    set('Éclairage','Éclairage meuble & escalier',has(text,'step','escalier')?'Éclairage d’escalier':'Éclairage meuble'); return out;
-  }
-  if(has(text,'luminaire led industriel','luminaire industriel')){
-    set('Éclairage','Luminaires industriels','Luminaires industriels'); return out;
-  }
+  // Projectors stay separate from other outdoor lighting.
   if(has(text,'projecteur','projecteurs')){
-    set('Éclairage','Projecteurs LED',has(text,'portable','rechargeable')?'Projecteurs portables':has(text,'professionnel')?'Projecteurs professionnels':'Projecteurs extérieurs'); return out;
-  }
-  if(has(text,'plafonnier','plafonniers')){
-    set('Éclairage','Plafonniers LED','Plafonniers LED'); return out;
-  }
-  if(has(text,'panel led','panels led','panneau led','panneaux led')){
-    set('Éclairage','Panneaux LED','Panneaux LED'); return out;
-  }
-  if(has(text,'lustre','lustres')){
-    set('Éclairage','Lustres','Lustres'); return out;
-  }
-  if(has(text,'suspension','suspendu','suspendue')){
-    set('Éclairage','Suspensions','Suspensions'); return out;
-  }
-  if(has(text,'applique','appliques')){
-    const cat=has(text,'exterieur','ip65','ip66','lanterne')?'Applique extérieure':has(text,'chevet')?'Applique intérieure':'Applique moderne';
-    set('Éclairage','Appliques',cat); return out;
-  }
-  if(has(text,'guirlande','rideau led','rideaux led')){
-    set('Éclairage','Guirlandes & rideaux LED','Guirlandes & rideaux LED'); return out;
-  }
-  if(has(text,'profil aluminium','profils aluminium','profile led','profils led','profil led')){
-    set('Éclairage','Profilés LED',has(text,'silicone')?'Profilé silicone':'Profilé aluminium'); return out;
-  }
-  if(has(text,'ruban led','rubans led','flex led neon','neon flexible')){
-    set('Éclairage','Ruban LED',has(text,'220v')?'Ruban LED 220V':has(text,'24v')?'Ruban LED 24V':has(text,'12v')?'Ruban LED 12V':'Ruban LED'); return out;
-  }
-  if(has(text,'spot','downlight','cob')){
-    const cat=has(text,'rail')?'Spot sur rail':has(text,'gu10')?'Spot GU10':has(text,'mr16')?'Spot MR16':has(text,'piscine')?'Spot piscine':has(text,'meuble')?'Spot meuble':has(text,'exterieur','jardin','piquet')?'Spot extérieur':has(text,'encastr','downlight','cob')?'Spot encastré':'Spot LED apparent';
-    set('Éclairage','Spots',cat); return out;
-  }
-  if(has(text,'ampoule','ampoules','e27','e14','b22','mr16','gu10','g4')){
-    const cat=has(text,'gu10')?'GU10':has(text,'mr16')?'MR16':has(text,'e14')?'E14':has(text,'b22')?'B22':has(text,'g4')?'G4':has(text,'filament')?'Filament':has(text,'e27')?'E27':has(text,'rgb')?'Ampoule RGB':'Ampoules LED';
-    set('Éclairage','Lampes / Ampoules',cat); return out;
-  }
-  if(has(text,'lampe de table','lampes de table','lampe de bureau','lampes de bureau')){
-    set('Éclairage','Lampes décoratives',has(text,'bureau')?'Lampe de bureau':'Lampe de table'); return out;
-  }
-  if(has(text,'lampe decorative','lanterne led decorative')){
-    set('Éclairage','Lampes décoratives','Lampe décorative'); return out;
-  }
-  if(has(text,'reglette led')){
-    set('Éclairage','Réglettes LED',has(text,'etanche')?'Réglette LED étanche':'Réglettes LED'); return out;
+    if(has(text,'portable','rechargeable')) set('Projecteurs portables rechargeables');
+    else if(has(text,'professionnel')) set('Projecteurs LED professionnels');
+    else if(has(text,'exterieur','ip65','ip66')) set('Projecteurs LED extérieurs');
+    else set('Projecteurs LED');
+    return out;
   }
 
-  // Generic category fallbacks.
-  if(has(text,'decoration interieure','decoration bien etre')) set('Décoration & cadeaux','Objets déco','Objets déco');
-  else if(has(text,'ampoules lampes','eclairage','led','luminaire')) set('Éclairage','Autres éclairages','Autres éclairages');
-  else if(has(text,'accessoires electriques')) set('Accessoires & outillage','Accessoires de montage','Accessoires électriques');
-  else if(has(text,'solaire','photovoltaique')) set('Photovoltaïque','Accessoires solaires','Accessoires solaires');
-  else set(oldFamily||'Autres',oldSub||'',oldCategory&&oldCategory!=='Autres'?oldCategory:'Autres',oldSystem);
+  // Suspensions are their own family.
+  if(has(text,'suspension','suspendu','suspendue')){ set('Suspensions'); return out; }
+
+  // Lustres are not suspensions.
+  if(has(text,'lustre','lustres')){ set('Lustres'); return out; }
+
+  // Wall lights: exact separation indoor/outdoor when the product says so.
+  if(has(text,'applique','appliques')){
+    if(has(text,'exterieur','ip65','ip66','lanterne')) set('Appliques murales extérieures');
+    else if(has(text,'chevet','interieur')) set('Appliques murales intérieures');
+    else set('Appliques murales');
+    return out;
+  }
+
+  // Outdoor lighting that is neither projector nor applique nor solar.
+  if(has(text,'eclairage exterieur','luminaire exterieur','luminaires exterieurs')){ set('Éclairage extérieur'); return out; }
+
+  // Fibre optic lighting only exists if an actual matching product exists.
+  if(has(text,'fibre optique','fiber optic')){ set('Éclairage fibre optique'); return out; }
+
+  // Panels / Eblue: 3D panel is never a plafonnier.
+  if(has(text,'panneau led 3d','panel led 3d','panneaux led 3d','eblue')){ set('Eblue'); return out; }
+  if(has(text,'panel led','panels led','panneau led','panneaux led')){ set('Panneaux LED'); return out; }
+
+  // Plafonniers only when the product explicitly says plafonnier.
+  if(has(text,'plafonnier','plafonniers')){ set('Plafonniers LED'); return out; }
+
+  // Spots: keep actual spot type separate.
+  if(has(text,'spot','downlight','cob')){
+    if(has(text,'rail')) set('Spots sur rail');
+    else if(has(text,'gu10')) set('Spots GU10');
+    else if(has(text,'mr16')) set('Spots MR16');
+    else if(has(text,'piscine')) set('Spots piscine');
+    else if(has(text,'meuble','placard')) set('Spots meubles');
+    else if(has(text,'jardin','piquet','exterieur')) set('Spots extérieurs');
+    else if(has(text,'encastr','downlight','cob')) set('Spots encastrables');
+    else set('Spots');
+    return out;
+  }
+
+  // LED strips / neon stay together only with the exact corresponding product type.
+  if(has(text,'ruban led','rubans led')){
+    if(has(text,'cob')) set('Rubans LED COB');
+    else if(has(text,'220v')) set('Rubans LED 220V');
+    else if(has(text,'24v')) set('Rubans LED 24V');
+    else if(has(text,'12v')) set('Rubans LED 12V');
+    else set('Rubans LED');
+    return out;
+  }
+  if(has(text,'flex led neon','neon flexible')){ set('Néon LED flexible'); return out; }
+
+  // Profiles stay separate from strips.
+  if(has(text,'profil aluminium','profils aluminium')){ set('Profilés aluminium LED'); return out; }
+  if(has(text,'profil silicone','profils silicone')){ set('Profilés silicone LED'); return out; }
+
+  // Bulbs separated by socket/type when explicitly known.
+  if(has(text,'ampoule','ampoules','e27','e14','b22','mr16','gu10','g4')){
+    if(has(text,'gu10')) set('Ampoules GU10');
+    else if(has(text,'mr16')) set('Ampoules MR16');
+    else if(has(text,'e14')) set('Ampoules E14');
+    else if(has(text,'b22')) set('Ampoules B22');
+    else if(has(text,'g4')) set('Ampoules G4');
+    else if(has(text,'filament')) set('Ampoules filament');
+    else if(has(text,'e27')) set('Ampoules E27');
+    else if(has(text,'rgb')) set('Ampoules RGB');
+    else set('Ampoules LED');
+    return out;
+  }
+
+  // Table/desk/decorative lamps: exact own families.
+  if(has(text,'lampe de bureau','lampes de bureau')){ set('Lampes de bureau'); return out; }
+  if(has(text,'lampe de table','lampes de table')){ set('Lampes de table'); return out; }
+  if(has(text,'lampe decorative','lanterne led decorative')){ set('Lampes décoratives'); return out; }
+
+  if(has(text,'reglette led')){ set(has(text,'etanche')?'Réglettes LED étanches':'Réglettes LED'); return out; }
+  if(has(text,'guirlande','rideau led','rideaux led')){ set('Guirlandes & rideaux LED'); return out; }
+  if(has(text,'par led','evenementiel')){ set('Éclairage événementiel'); return out; }
+  if(has(text,'lampe uv','eclairage uv')){ set('Éclairage UV'); return out; }
+  if(has(text,'lampe de secours','spot secours','secours led')){ set('Éclairage de secours'); return out; }
+  if(has(text,'step light','eclairage escalier','escalier')){ set('Éclairage d’escalier'); return out; }
+  if(has(text,'luminaire led industriel','luminaire industriel')){ set('Luminaires industriels'); return out; }
+
+  // Electrical products: each family is direct.
+  if(has(text,'prise etanche','gamme etanche','ip55') && has(text,'somef')){ set('Prises étanches SOMEF','Prises étanches SOMEF','Système 43'); return out; }
+  if(has(text,'disjoncteur','disjoncteurs')){ set('Disjoncteurs'); return out; }
+  if(has(text,'coffret hager','coffret electrique','tableau electrique')){ set('Coffrets électriques'); return out; }
+  if(has(text,'fil rigide','h07vu')){ set('Fils électriques rigides'); return out; }
+  if(has(text,'fil electrique','fils electriques')){ set('Fils électriques'); return out; }
+  if(has(text,'cable electrique','cables electriques')){ set('Câbles électriques'); return out; }
+  if(has(text,'gaine','conduite')){ set('Gaines & conduites'); return out; }
+  if(has(text,'detecteur de mouvement','detecteur mouvement','detecteur presence')){ set('Détecteurs de mouvement'); return out; }
+  if(has(text,'interrupteurs prises','interrupteur et prise','interrupteurs et prises')){ set('Interrupteurs & prises', 'Interrupteurs & prises', oldSystem); return out; }
+  if(has(text,'prise de sol','prises de sol')){ set('Prises de sol'); return out; }
+  if(has(text,'maison connectee')){ set('Maison connectée'); return out; }
+  if(has(text,'controleur protecteur','protecteur electrique')){ set('Protecteurs électriques'); return out; }
+  if(has(text,'contacteur')){ set('Contacteurs'); return out; }
+  if(has(text,'variateur de frequence')){ set('Variateurs de fréquence'); return out; }
+
+  // Photovoltaic products, separate from solar lighting.
+  if(has(text,'panneau solaire','panneaux solaires')){ set('Panneaux solaires'); return out; }
+  if(has(text,'onduleur solaire')){ set('Onduleurs solaires'); return out; }
+  if(has(text,'chargeur solaire')){ set('Chargeurs solaires'); return out; }
+
+  // Decoration / gift / home items remain exact, never merged with lighting.
+  if(has(text,'horloge murale','horloge decorative')){ set('Horloges murales décoratives'); return out; }
+  if(has(text,'cadre photo','cadres photo')){ set('Cadres photo'); return out; }
+  if(has(text,'statue')){ set('Statues décoratives'); return out; }
+  if(has(text,'rhinoceros','objet decoratif','decoration rhinoceros')){ set('Objets décoratifs'); return out; }
+  if(has(text,'meuble decoratif','tiroirs fleuris','rangement decoratif')){ set('Rangements décoratifs'); return out; }
+  if(has(text,'humidificateur','diffuseur d aromes','aromatherapie')){ set('Humidificateurs & diffuseurs'); return out; }
+  if(has(text,'ventilateur')){ set('Ventilateurs'); return out; }
+  if(has(text,'matelas gonflable','dura beam')){ set('Matelas gonflables'); return out; }
+
+  // Preserve an existing meaningful product category instead of inventing a broad family.
+  if(oldCategory && oldCategory!=='Autres') set(oldCategory,oldCategory,oldSystem);
+  else if(oldFamily && oldFamily!=='Autres') set(oldFamily,oldFamily,oldSystem);
+  else set('À classer');
   return out;
 }
 
@@ -201,18 +197,18 @@ for(const p of products){
   const before=JSON.stringify([p.famille||'',p.sous_categorie||'',p.category||'',p.systeme||'',p.marque||'']);
   const c=classify(p);
   p.famille=c.famille;
-  p.sous_categorie=c.sous_categorie;
+  p.sous_categorie='';
   p.category=c.category;
   p.systeme=c.systeme;
   if(c.marque) p.marque=c.marque;
   const after=JSON.stringify([p.famille||'',p.sous_categorie||'',p.category||'',p.systeme||'',p.marque||'']);
   if(before!==after) changed++;
   counts[p.famille]=(counts[p.famille]||0)+1;
-  if(!p.famille || p.famille==='Autres' || !p.category || p.category==='Autres') unknown++;
+  if(!p.famille || p.famille==='À classer') unknown++;
 }
 
 fs.writeFileSync(file,JSON.stringify(products,null,2),'utf8');
-const report={generatedAt:new Date().toISOString(),total:products.length,changed,unknown,byFamily:Object.fromEntries(Object.entries(counts).sort((a,b)=>b[1]-a[1]))};
+const report={generatedAt:new Date().toISOString(),total:products.length,changed,unknown,byFamily:Object.fromEntries(Object.entries(counts).sort((a,b)=>a[0].localeCompare(b[0],'fr')))};
 fs.writeFileSync(path.join(path.dirname(file),'product-taxonomy-summary.json'),JSON.stringify(report,null,2),'utf8');
-console.log('MAGIC LIGHT taxonomy normalization: '+products.length+' produits, '+changed+' reclassés, '+unknown+' à revoir.');
-console.log('Familles:',report.byFamily);
+console.log('MAGIC LIGHT strict product families: '+products.length+' produits, '+changed+' reclassés, '+unknown+' à revoir.');
+console.log('Familles réelles:',report.byFamily);
