@@ -64,13 +64,6 @@ for(const page of pages){
     const count=countLiteral(html,asset);
     if(count!==1) failures.push(page+': expected '+asset+' exactly once, found '+count);
   }
-
-  if(!html.includes('data-ml-filter="min"') || !html.includes('data-ml-filter="max"')){
-    failures.push(page+': price filter controls missing');
-  }
-  if(!html.includes('data-ml-filter="promo"')) failures.push(page+': promo filter missing');
-  if(!html.includes('data-ml-filter="available"')) failures.push(page+': availability filter missing');
-  if(!html.includes('data-ml-filter="sort"')) failures.push(page+': sort control missing');
 }
 
 const filterFile=path.join(dist,'assets','catalogue-filters-pro.js');
@@ -84,7 +77,17 @@ if(!fs.existsSync(filterFile)){
   if(filters.includes('pendingCategories') || filters.includes('function taxonomyCards()')){
     failures.push('catalogue filters: legacy multi-source/pending logic still present');
   }
-  for(const token of ['price-asc','price-desc','name-asc','name-desc','data-ml-filter="promo"','data-ml-filter="available"']){
+  for(const token of [
+    'data-ml-filter="min"',
+    'data-ml-filter="max"',
+    'data-ml-filter="promo"',
+    'data-ml-filter="available"',
+    'data-ml-filter="sort"',
+    'price-asc',
+    'price-desc',
+    'name-asc',
+    'name-desc'
+  ]){
     if(!filters.includes(token)) failures.push('catalogue filters: missing '+token);
   }
 }
@@ -124,4 +127,4 @@ if(failures.length){
   process.exit(1);
 }
 
-console.log('Nettoyage Catalogue V1 FINAL validation OK: one product source, one mobile layout authority, search/filters/favorites present once, direct system navigation valid, product data readable and references unique.');
+console.log('Nettoyage Catalogue V1 FINAL validation OK: one product source, one mobile layout authority, catalogue assets present once, dynamic filter controls validated in their script, direct system navigation valid, product data readable and references unique.');
