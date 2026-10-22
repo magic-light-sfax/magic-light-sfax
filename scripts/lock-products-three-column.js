@@ -20,7 +20,6 @@ const style=`
   html body #products .grid,
   html body #adminProductsGrid{
     display:grid!important;
-    grid-template-columns:repeat(3,minmax(0,1fr))!important;
     gap:7px!important;
     align-items:start!important;
     grid-auto-flow:row!important;
@@ -79,6 +78,25 @@ const runtime=`
     return window.innerWidth<=900 || document.documentElement.classList.contains('ml-mobile-device');
   }
 
+  function taxonomyActive(){
+    try{
+      const p=new URLSearchParams(location.search);
+      return Boolean(p.get('categorie')||p.get('cat')||p.get('systeme')||p.get('system'));
+    }catch(e){ return false; }
+  }
+
+  function cardCount(grid){
+    return [...grid.children].filter(el=>el.classList&&el.classList.contains('card')&&!el.hidden&&getComputedStyle(el).display!=='none').length;
+  }
+
+  function desiredColumns(grid){
+    if(grid.id==='adminProductsGrid' && taxonomyActive()){
+      const n=cardCount(grid);
+      return Math.max(1,Math.min(3,n||1));
+    }
+    return 3;
+  }
+
   function apply(){
     if(!mobile()) return;
 
@@ -90,11 +108,13 @@ const runtime=`
     });
 
     document.querySelectorAll('#products .grid,#adminProductsGrid').forEach(g=>{
-      g.dataset.magicLightColumns='3';
+      const columns=desiredColumns(g);
+      g.dataset.magicLightColumns=String(columns);
       g.style.setProperty('display','grid','important');
-      g.style.setProperty('grid-template-columns','repeat(3,minmax(0,1fr))','important');
+      g.style.setProperty('grid-template-columns','repeat('+columns+',minmax(0,1fr))','important');
       g.style.setProperty('gap','7px','important');
       g.style.setProperty('align-items','start','important');
+      g.style.setProperty('align-content','start','important');
       g.style.setProperty('grid-auto-flow','row','important');
       g.style.setProperty('grid-auto-rows','max-content','important');
       g.style.setProperty('width','100%','important');
@@ -132,8 +152,8 @@ const runtime=`
     apply();
     const hosts=[document.getElementById('products'),document.getElementById('admin-catalogue')].filter(Boolean);
     const observer=new MutationObserver(()=>requestAnimationFrame(apply));
-    hosts.forEach(host=>observer.observe(host,{childList:true,subtree:true}));
-    [60,180,400,800,1500,3000,6000,10000].forEach(ms=>setTimeout(apply,ms));
+    hosts.forEach(host=>observer.observe(host,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','style','class']}));
+    [60,180,400,800,1500,3000].forEach(ms=>setTimeout(apply,ms));
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true});
@@ -174,4 +194,4 @@ for(const name of PAGES){
   if(fs.existsSync(file)) inject(file);
 }
 
-console.log('MAGIC LIGHT Products v4: 3 mobile columns locked; images use their natural full width.');
+console.log('MAGIC LIGHT Products v4: mobile grid adaptive on taxonomy pages (1 result=1 column, 2=2, 3+=3); full catalogue stays 3 columns.');
