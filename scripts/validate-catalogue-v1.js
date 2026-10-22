@@ -44,7 +44,7 @@ for(const page of pages){
 
   if(!html.includes('magic-light-system-url-normalizer-v1')) failures.push(page+': system URL normalizer missing');
   if(!html.includes('magic-light-category-navigation-v5')) failures.push(page+': category navigation v5 missing');
-  if(!html.includes('magic-light-catalogue-context-nav-v4')) failures.push(page+': professional universal contextual catalogue navigation v4 missing');
+  if(!html.includes('magic-light-catalogue-context-nav-v5')) failures.push(page+': polished universal contextual catalogue navigation v5 missing');
   if(!html.includes('Parcourir le catalogue')) failures.push(page+': mobile catalogue trigger missing');
 
   for(const system of ['43','44','45']){
@@ -101,4 +101,4 @@ if(failures.length){
   process.exit(1);
 }
 
-console.log('Nettoyage Catalogue V1 FINAL validation OK: one product source, one mobile layout authority, professional universal catalogue navigation v4 for desktop/tablet/mobile, catalogue assets present once, filters valid, product data readable and references unique.');
+console.log('Nettoyage Catalogue V1 FINAL validation OK: one product source, one mobile layout authority, polished universal catalogue navigation v5 for desktop/tablet/mobile, catalogue assets present once, filters valid, product data readable and references unique.');
