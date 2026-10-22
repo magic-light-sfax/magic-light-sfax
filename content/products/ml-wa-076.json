@@ -1,7 +1,9 @@
 {
   "name": "Suspension triple style moderne",
   "reference": "ML-WA-076",
-  "category": "Lustres & suspensions",
+  "famille": "Éclairage",
+  "sous_categorie": "Suspensions",
+  "category": "Suspensions",
   "description": "Suspension triple style moderne. Visuel produit MAGIC LIGHT.",
   "price": null,
   "promo": false,
