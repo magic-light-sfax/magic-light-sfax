@@ -3,7 +3,7 @@
   const anchor = document.querySelector('.filterbar') || document.querySelector('.mobile-category-trigger') || document.querySelector('.section-head');
   if (!anchor) return;
 
-  const pendingCategories = new Set(['systeme-43','systeme-45','systeme-44','schneider-electric','legrand','somef','chint','tti','siame']);
+  const pendingCategories = new Set(['systeme-45','systeme-44','schneider-electric','legrand','somef','chint','tti','siame']);
   const requestedCategory = (new URLSearchParams(location.search).get('categorie') || '').toLowerCase();
   const isPendingCategory = pendingCategories.has(requestedCategory);
 
@@ -51,7 +51,7 @@
     return {card,b,name,cat,price,isPromo,available:!unavailable};
   }
 
-  function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+  function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#039;'}[m]));}
 
   function populateCategories(){
     const current = category.value;
@@ -106,6 +106,17 @@
     return true;
   }
 
+  function isActuallyVisible(card){
+    if(card.classList.contains('ml-advanced-hidden') || card.hidden) return false;
+    let el=card;
+    while(el && el!==document.documentElement){
+      const style=getComputedStyle(el);
+      if(style.display==='none' || style.visibility==='hidden') return false;
+      el=el.parentElement;
+    }
+    return true;
+  }
+
   function apply(){
     if(ensurePendingEmpty()) return;
     const cat = category.value;
@@ -124,9 +135,11 @@
       card.classList.toggle('ml-advanced-hidden',!ok);
     });
     applySort();
-    const combined=cards().filter(c=>!c.classList.contains('ml-advanced-hidden') && c.style.display!=='none').length;
+    const combined=cards().filter(isActuallyVisible).length;
     const active=!!(cat || min.value || max.value || promoOnly || availableOnly || sort.value!=='default');
-    result.textContent = active ? `${combined} produit${combined>1?'s':''} affiché${combined>1?'s':''}` : `${cards().length} produits dans le catalogue`;
+    result.textContent = active
+      ? `${combined} produit${combined>1?'s':''} affiché${combined>1?'s':''}`
+      : `${combined} produit${combined>1?'s':''} dans le catalogue`;
   }
 
   panel.querySelector('.ml-filter-toggle').addEventListener('click',e=>{
